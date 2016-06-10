@@ -1,5 +1,6 @@
 export const constants = {
   bindablePrefix: 'au-',
   attributePrefix: 'au-',
-  elementPrefix: 'au-'
+  elementPrefix: 'au-',
+  eventPrefix: 'tree-view-'
 };

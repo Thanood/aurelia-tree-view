@@ -22,6 +22,6 @@ export function fireEvent(element: Element, name: string, data? = {}) {
 * @param name The Event's name, without md-on prefix
 * @param data Addition data to attach to an event
 */
-export function fireBootstrapEvent(element: Element, name: string, data? = {}) {
+export function fireTreeViewEvent(element: Element, name: string, data? = {}) {
   return fireEvent(element, `${constants.eventPrefix}${name}`, data);
 }
