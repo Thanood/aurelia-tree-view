@@ -1,10 +1,9 @@
-import {NodeModel} from 'aurelia-tree-view/tree-view/node-model';
+import {NodeModel} from 'aurelia-tree-view';
 
 export class BasicUse {
   nodes = [];
 
   attached() {
-    console.debug('NodeModel', NodeModel);
     let texas = new NodeModel('Texas', [
       new NodeModel('Austin'),
       new NodeModel('Houston')
