@@ -9,15 +9,16 @@ module.exports = {
   source: appRoot + '**/*.js',
   html: appRoot + '**/*.html',
   style: appRoot + '**/*.css',
+  sass: appRoot + '**/*.scss',
   output: 'devbuild/',
   releaseOutput: 'dist/',
   sample: 'sample',
   sampleSrc: './sample/src/**/*.js',
   sampleStyle: './sample/styles/**/*.css',
   sampleHtml: './sample/src/**/*.html',
-  doc:'./doc',
+  doc: './doc',
   tests: 'test/unit/**/*.js',
   e2eSpecsSrc: 'test/e2e/src/*.js',
   e2eSpecsDist: 'test/e2e/dist/',
-  packageName: pkg.name,
+  packageName: pkg.name
 };

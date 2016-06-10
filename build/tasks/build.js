@@ -12,6 +12,12 @@ var tools = require('aurelia-tools');
 // var del = require('del');
 var sourcemaps = require('gulp-sourcemaps');
 // var vinylPaths = require('vinyl-paths');
+var changed = require('gulp-changed');
+var debug = require('gulp-debug');
+var sass = require('gulp-sass');
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
+var cssnano = require('cssnano');
 
 var jsName = paths.packageName + '.js';
 
@@ -102,13 +108,32 @@ gulp.task('copy-css', function() {
     .pipe(gulp.dest(paths.output + 'system'));
 });
 
+gulp.task('build-sass', function() {
+  var processors = [
+    autoprefixer,
+    cssnano
+  ];
+
+  return gulp.src(paths.sass)
+    .pipe(changed(paths.output, { extension: '.css' }))
+    .pipe(sourcemaps.init())
+    .pipe(debug({title: 'build-sass'}))
+    .pipe(sass().on('error', sass.logError))
+    .pipe(postcss(processors))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.output + 'es6'))
+    .pipe(gulp.dest(paths.output + 'commonjs'))
+    .pipe(gulp.dest(paths.output + 'amd'))
+    .pipe(gulp.dest(paths.output + 'dev'))
+    .pipe(gulp.dest(paths.output + 'system'));
+});
 
 gulp.task('build', function(callback) {
   return runSequence(
     'clean',
     'build-index',
     ['build-es6-temp', 'build-es6', 'build-commonjs', 'build-amd', 'build-system', 'build-dev'],
-    ['copy-html', 'copy-css'],
+    ['copy-html', 'copy-css', 'build-sass'],
     'build-dts',
     callback
   );
@@ -120,7 +145,7 @@ gulp.task('build-release', function(callback) {
     'clean',
     'build-index',
     ['build-es6-temp', 'build-es6', 'build-commonjs', 'build-amd', 'build-system', 'build-dev'],
-    ['copy-html', 'copy-css'],
+    ['copy-html', 'copy-css', 'build-sass'],
     'build-dts',
     callback
   );

@@ -10,7 +10,7 @@ export class ConfigBuilder {
   }
 
   useClickCounter(): ConfigBuilder {
-    this.globalResources.push('./click-counter');
+    this.globalResources.push('./tree-view/tree-view');
     return this;
   }
 }

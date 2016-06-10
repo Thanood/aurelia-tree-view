@@ -1,0 +1,44 @@
+tree-node {
+  &.tree-node--selected {
+    & > ul {
+      & > li {
+        & > div {
+          background-color: lightgrey;
+        }
+      }
+    }
+  }
+
+  ul.tree-node__wrapper {
+    list-style: none;
+    padding: 0 0 0 20px;
+
+    li {
+      div.tree-node__title-wrapper {
+        border-radius: 5px;
+        display: flex;
+        line-height: 31px;
+        padding: 5px;
+
+        span {
+          &.tree-node-border-icon {
+            // display: none;
+            visibility: hidden;
+            // position: relative;
+            // top: 7px;
+            // transform: rotate(90deg);
+          }
+          &.tree-node-arrow {
+            cursor: pointer;
+            position: relative;
+            top: 4px;
+          }
+          &.tree-node-title {
+            cursor: pointer;
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,9 +3,6 @@
   "samples": {
     "basic-use": {
       "default" : true,
-      "files": ["html", "js", "md"]
-    },
-    "click-counter": {
       "files": ["html", "js"]
     }
   }
