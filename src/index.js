@@ -10,3 +10,7 @@ export function configure(aurelia: Aurelia, configCallback?: (builder: ConfigBui
 
   aurelia.globalResources(builder.globalResources);
 }
+
+// build-index-remove start
+export * from './tree-view/node-model';
+// build-index-remove end
