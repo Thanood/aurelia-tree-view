@@ -1,9 +1,13 @@
 tree-node {
+  display: block;
+
   &.tree-node--selected {
-    & > ul {
-      & > li {
-        & > div {
-          background-color: lightgrey;
+    & > div {
+      & > ul {
+        & > li {
+          & > div {
+            background-color: lightgrey;
+          }
         }
       }
     }

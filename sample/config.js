@@ -41,6 +41,7 @@ System.config({
     "bootstrap": "github:twbs/bootstrap@3.3.6",
     "core-js": "npm:core-js@1.2.6",
     "css": "github:systemjs/plugin-css@0.1.20",
+    "dragula": "npm:dragula@3.7.1",
     "font-awesome": "npm:font-awesome@4.6.3",
     "google/code-prettify": "github:google/code-prettify@master",
     "jquery": "npm:jquery@2.2.3",
@@ -215,11 +216,27 @@ System.config({
     "npm:code-point-at@1.0.0": {
       "number-is-nan": "npm:number-is-nan@1.0.0"
     },
+    "npm:contra@1.9.4": {
+      "atoa": "npm:atoa@1.0.0",
+      "ticky": "npm:ticky@1.0.1"
+    },
     "npm:core-js@1.2.6": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
+    },
+    "npm:crossvent@1.5.4": {
+      "child_process": "github:jspm/nodelibs-child_process@0.1.0",
+      "custom-event": "npm:custom-event@1.0.0",
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
+    },
+    "npm:dragula@3.7.1": {
+      "contra": "npm:contra@1.9.4",
+      "crossvent": "npm:crossvent@1.5.4"
     },
     "npm:font-awesome@4.6.3": {
       "css": "github:systemjs/plugin-css@0.1.20"
@@ -261,6 +278,9 @@ System.config({
     },
     "npm:strip-ansi@3.0.1": {
       "ansi-regex": "npm:ansi-regex@2.0.0"
+    },
+    "npm:ticky@1.0.1": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",

@@ -115,7 +115,6 @@ gulp.task('build-sass', function() {
   ];
 
   return gulp.src(paths.sass)
-    .pipe(changed(paths.output, { extension: '.css' }))
     .pipe(sourcemaps.init())
     .pipe(debug({title: 'build-sass'}))
     .pipe(sass().on('error', sass.logError))

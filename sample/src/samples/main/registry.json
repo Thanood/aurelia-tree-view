@@ -10,6 +10,9 @@
     },
     "events": {
       "files": ["html", "js"]
+    },
+    "drag-and-drop": {
+      "files": ["html", "js"]
     }
   }
 }
