@@ -7,6 +7,9 @@
     },
     "expand-on-select": {
       "files": ["html", "js"]
+    },
+    "events": {
+      "files": ["html", "js"]
     }
   }
 }
