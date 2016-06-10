@@ -1,6 +1,8 @@
-import {bindable, bindingMode} from 'aurelia-framework';
+import {bindable, bindingMode, inject} from 'aurelia-framework';
 import {NodeModel} from './node-model';
+import {fireEvent} from '../common/events';
 
+@inject(Element)
 export class TreeView {
   @bindable() expandOnSelect: boolean = false;
   @bindable() nodes: NodeModel[];
@@ -8,7 +10,9 @@ export class TreeView {
     defaultBindingMode: bindingMode.twoWay
   }) selected: NodeModel = null;
 
-  constructor() { }
+  constructor(element) {
+    this.element = element;
+  }
 
   onSelected(e) {
     if (this.selected && this.selected !== e.detail.node) {
@@ -18,6 +22,7 @@ export class TreeView {
     if (this.expandOnSelect) {
       this.selected.expandNode();
     }
+    fireEvent(this.element, 'selected', e.detail);
   }
 
   expandOnSelectChanged(newValue) {
