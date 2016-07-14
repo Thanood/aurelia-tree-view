@@ -13,6 +13,9 @@
     },
     "drag-and-drop": {
       "files": ["html", "js"]
+    },
+    "lazy-load": {
+      "files": ["html", "js"]
     }
   }
 }
