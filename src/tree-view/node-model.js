@@ -3,7 +3,6 @@ export class NodeModel {
   children: NodeModel[];
   visible: boolean;
   expanded: boolean = false;
-  icon: string = '';
   selected = false;
 
   constructor(name: string, children?: NodeModel[]) {
@@ -11,8 +10,7 @@ export class NodeModel {
     this.children = children || [];
     this.visible = true;
     if (this.hasChildren()) {
-      this.expanded = true;
-      this.collapseNode();
+      this.collapseNode(true);
     }
   }
 
@@ -28,23 +26,21 @@ export class NodeModel {
     }
   }
 
-  expandNode() {
-    if (!this.expanded) {
+  expandNode(force = false) {
+    if (!this.expanded || force) {
       this.children.forEach(child => {
         child.visible = true;
       });
       this.expanded = true;
-      this.icon = 'keyboard_arrow_down';
     }
   }
 
-  collapseNode() {
-    if (this.expanded) {
+  collapseNode(force = false) {
+    if (this.expanded || force) {
       this.children.forEach(child => {
         child.visible = false;
       });
       this.expanded = false;
-      this.icon = 'keyboard_arrow_right';
     }
   }
 
