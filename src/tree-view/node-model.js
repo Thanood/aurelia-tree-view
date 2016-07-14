@@ -5,13 +5,20 @@ export class NodeModel {
   expanded: boolean = false;
   selected = false;
 
-  constructor(name: string, children?: NodeModel[]) {
+  constructor(name: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
     this.title = name;
-    this.children = children || [];
-    this.visible = true;
-    if (this.hasChildren()) {
-      this.collapseNode(true);
+    if (typeof children === 'function') {
+      children().then(ch => this.children = ch);
+      if (this.hasChildren()) {
+        this.collapseNode(true);
+      }
+    } else {
+      this.children = children || [];
+      if (this.hasChildren()) {
+        this.collapseNode(true);
+      }
     }
+    this.visible = true;
   }
 
   hasChildren() {

@@ -10,13 +10,19 @@ export class LazyLoad {
     ]);
 
     let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
+      new NodeModel('New York City', () => {
+        return new Promise((resolve, reject) => {
+          window.setTimeout(function() {
+            resolve([
+              new NodeModel('Manhattan'),
+              new NodeModel('Brooklyn'),
+              new NodeModel('Bronx'),
+              new NodeModel('Queens'),
+              new NodeModel('Staten Island')
+            ]);
+          }, 500);
+        });
+      }),
       new NodeModel('Buffalo')]);
 
     let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
@@ -26,5 +32,32 @@ export class LazyLoad {
       new NodeModel('San Francisco')
     ]);
     this.nodes = [texas, newYork, oregon, california];
+  }
+
+  fillTree() {
+    this.nodes = [
+      {
+        title: 'Texas',
+        children: [
+          { title: 'Austin' },
+          { title: 'Houston' }
+        ]
+      }, {
+        title: 'New York',
+        children: () => {
+          return new Promise((resolve, reject) => {
+            window.setTimeout(function() {
+              resolve([
+                new NodeModel('Manhattan'),
+                new NodeModel('Brooklyn'),
+                new NodeModel('Bronx'),
+                new NodeModel('Queens'),
+                new NodeModel('Staten Island')
+              ]);
+            }, 500);
+          });
+        }
+      }
+    ];
   }
 }
