@@ -5,7 +5,7 @@
       <li>
         <div class="tree-node__title-wrapper">
           <span if.bind="!model.hasChildren()" class="material-icons tree-node-border-icon">remove</span>
-          <span if.bind="model.hasChildren()" click.trigger="model.toggleNode()" class="material-icons tree-node-arrow ${ model.loading ? 'tree-node-rotate' : '' }">
+          <span if.bind="model.hasChildren()" click.trigger="toggleNode()" class="material-icons tree-node-arrow ${ model.loading ? 'tree-node-rotate' : '' }">
             ${ model.loading ? 'cached' : (model.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
           <span click.delegate="selectNode()" class="tree-node-title">${model.title}</span>

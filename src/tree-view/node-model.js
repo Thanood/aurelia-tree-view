@@ -40,13 +40,13 @@ export class NodeModel {
     return result;
   }
 
-  toggleNode() {
-    if (this.expanded) {
-      this.collapseNode();
-    } else {
-      this.expandNode();
-    }
-  }
+  // toggleNode() {
+  //   if (this.expanded) {
+  //     this.collapseNode();
+  //   } else {
+  //     this.expandNode();
+  //   }
+  // }
 
   expandNode(force = false) {
     if (!this.expanded || force) {

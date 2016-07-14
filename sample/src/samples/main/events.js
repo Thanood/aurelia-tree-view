@@ -28,6 +28,14 @@ export class Events {
     this.nodes = [texas, newYork, oregon, california];
   }
 
+  onCollapsed(e) {
+    this.logger.log(`node collapsed: ${e.detail.node.title}`);
+  }
+
+  onExpanded(e) {
+    this.logger.log(`node expanded: ${e.detail.node.title}`);
+  }
+
   onSelect(e) {
     this.logger.log(`node selected: ${e.detail.node.title}`);
   }
