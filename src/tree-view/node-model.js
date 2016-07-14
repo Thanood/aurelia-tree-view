@@ -1,28 +1,43 @@
 export class NodeModel {
   title = '';
   children: NodeModel[];
-  visible: boolean;
-  expanded: boolean = false;
+  childrenGetter: {():Promise<NodeModel[]>};
+  visible = true;
+  expanded = false;
   selected = false;
+  loading = false;
 
-  constructor(name: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
-    this.title = name;
+  constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
+    this.title = title;
+    // if (typeof children === 'function') {
+    //   children().then(ch => this.children = ch);
+    //   if (this.hasChildren()) {
+    //     this.collapseNode(true);
+    //   }
+    // } else {
+    //   this.children = children || [];
+    //   if (this.hasChildren()) {
+    //     this.collapseNode(true);
+    //   }
+    // }
     if (typeof children === 'function') {
-      children().then(ch => this.children = ch);
-      if (this.hasChildren()) {
-        this.collapseNode(true);
-      }
+      this.childrenGetter = children;
     } else {
       this.children = children || [];
-      if (this.hasChildren()) {
-        this.collapseNode(true);
-      }
     }
-    this.visible = true;
+    if (this.hasChildren()) {
+      this.collapseNode(true);
+    }
   }
 
   hasChildren() {
-    return this.children && this.children.length > 0;
+    let result = false;
+    if (this.children) {
+      result = this.children.length > 0;
+    } else {
+      result = true;
+    }
+    return result;
   }
 
   toggleNode() {
@@ -35,15 +50,25 @@ export class NodeModel {
 
   expandNode(force = false) {
     if (!this.expanded || force) {
-      this.children.forEach(child => {
-        child.visible = true;
+      let promise: Promise<NodeModel[]>;
+      if (this.childrenGetter) {
+        this.loading = true;
+        promise = this.childrenGetter().then(children => this.children = children);
+      } else {
+        promise = Promise.resolve();
+      }
+      promise.then(() => {
+        this.loading = false;
+        this.children.forEach(child => {
+          child.visible = true;
+        });
+        this.expanded = true;
       });
-      this.expanded = true;
     }
   }
 
   collapseNode(force = false) {
-    if (this.expanded || force) {
+    if (this.children && (this.expanded || force)) {
       this.children.forEach(child => {
         child.visible = false;
       });
