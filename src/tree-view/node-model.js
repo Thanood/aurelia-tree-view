@@ -1,3 +1,5 @@
+import {computedFrom} from 'aurelia-binding';
+
 export class NodeModel {
   title = '';
   children: NodeModel[];
@@ -25,12 +27,13 @@ export class NodeModel {
     } else {
       this.children = children || [];
     }
-    if (this.hasChildren()) {
+    if (this.hasChildren) {
       this.collapseNode(true);
     }
   }
 
-  hasChildren() {
+  @computedFrom('children')
+  get hasChildren() {
     let result = false;
     if (this.children) {
       result = this.children.length > 0;
@@ -53,7 +56,10 @@ export class NodeModel {
       let promise: Promise<NodeModel[]>;
       if (this.childrenGetter) {
         this.loading = true;
-        promise = this.childrenGetter().then(children => this.children = children);
+        promise = this.childrenGetter().then(children => {
+          this.children = children;
+          
+        });
       } else {
         promise = Promise.resolve();
       }
