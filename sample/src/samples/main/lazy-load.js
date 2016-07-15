@@ -2,6 +2,7 @@ import {NodeModel} from 'aurelia-tree-view';
 
 export class LazyLoad {
   nodes = [];
+  forceLazyLoad = false;
 
   attached() {
     let texas = new NodeModel('Texas', [
@@ -47,7 +48,18 @@ export class LazyLoad {
     nodes.forEach(node => {
       let children = node.children;
       if (typeof children !== 'function') {
-        children = node.children ? this.createNodeModels(node.children) : null;
+        if (this.forceLazyLoad) {
+          //make all children load lazily
+          children = () => {
+            return new Promise((resolve, reject) => {
+              window.setTimeout(() => {
+                resolve(node.children);
+              }, 1000);
+            });
+          };
+        } else {
+          children = node.children ? this.createNodeModels(node.children) : null;
+        }
       } else {
         // create promise wrapper so children are of type NodeModel
         children = () => {
@@ -103,8 +115,8 @@ export class LazyLoad {
         children: () => {
           return new Promise((resolve, reject) => {
             resolve([
-              { title: 'Los Angeles' },
-              { title: 'San Francisco' }
+              // { title: 'Los Angeles' },
+              // { title: 'San Francisco' }
             ]);
           });
         }
