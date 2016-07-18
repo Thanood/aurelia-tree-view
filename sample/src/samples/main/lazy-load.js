@@ -39,40 +39,7 @@ export class LazyLoad {
       });
     });
     // this.nodes = [texas, newYork, oregon, california];
-    this.nodes = this.createNodeModels(this.getNodes());
-  }
-
-  createNodeModels(nodes) {
-    console.log(nodes);
-    let models = [];
-    nodes.forEach(node => {
-      let children = node.children;
-      if (typeof children !== 'function') {
-        if (this.forceLazyLoad) {
-          //make all children load lazily
-          children = () => {
-            return new Promise((resolve, reject) => {
-              window.setTimeout(() => {
-                resolve(node.children);
-              }, 1000);
-            });
-          };
-        } else {
-          children = node.children ? this.createNodeModels(node.children) : null;
-        }
-      } else {
-        // create promise wrapper so children are of type NodeModel
-        children = () => {
-          return new Promise((resolve, reject) => {
-            node.children().then(ch => {
-              resolve(this.createNodeModels(ch));
-            });
-          });
-        };
-      }
-      models.push(new NodeModel(node.title, children));
-    });
-    return models;
+    this.nodes = NodeModel.createFromJSON(this.getNodes());
   }
 
   getNodes() {

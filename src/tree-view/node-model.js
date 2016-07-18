@@ -9,6 +9,52 @@ export class NodeModel {
   selected = false;
   loading = false;
 
+  // static createFromJSON(node: any) {
+  //   if (!node.title) {
+  //     throw new Error('node must have at least a title');
+  //   }
+  //
+  //   let children = node.children;
+  //   if (typeof children === 'function') {
+  //     // create promise wrapper so children are of type NodeModel
+  //     children = () => {
+  //       return new Promise((resolve, reject) => {
+  //         node.children().then(ch => {
+  //           resolve(NodeModel.createFromJSON(ch));
+  //         });
+  //       });
+  //     };
+  //   } else {
+  //     if (node.children) {
+  //       children = node.children.map(child => {
+  //         return NodeModel.createFromJSON(child);
+  //       });
+  //     }
+  //   }
+  //   return new NodeModel(node.title, children);
+  // }
+
+  static createFromJSON(nodes: any[]) {
+    let models = [];
+    nodes.forEach(node => {
+      let children = node.children;
+      if (typeof children === 'function') {
+        // create promise wrapper so children are of type NodeModel
+        children = () => {
+          return new Promise((resolve, reject) => {
+            node.children().then(ch => {
+              resolve(NodeModel.createFromJSON(ch));
+            });
+          });
+        };
+      } else {
+        children = node.children ? NodeModel.createFromJSON(node.children) : null;
+      }
+      models.push(new NodeModel(node.title, children));
+    });
+    return models;
+  }
+
   constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
     this.title = title;
     // if (typeof children === 'function') {
@@ -58,7 +104,7 @@ export class NodeModel {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
           this.children = children;
-          
+
         });
       } else {
         promise = Promise.resolve();
