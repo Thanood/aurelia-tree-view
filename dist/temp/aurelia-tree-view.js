@@ -146,21 +146,38 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
       } else {
         children = node.children ? NodeModel.createFromJSON(node.children) : null;
       }
-      models.push(new NodeModel(node.title, children));
+      var payload = node.payload;
+      if (!payload) {
+        payload = {};
+        var keys = Object.keys(node);
+        keys.forEach(function (key) {
+          switch (key) {
+            case 'children':
+            case 'title':
+              break;
+            default:
+              payload[key] = node[key];
+              break;
+          }
+        });
+      }
+      models.push(new NodeModel(node.title, children, payload));
     });
     return models;
   };
 
-  function NodeModel(title, children) {
+  function NodeModel(title, children, payload) {
     _classCallCheck(this, NodeModel);
 
     this.title = '';
+    this.payload = null;
     this.visible = true;
     this.expanded = false;
     this.selected = false;
     this.loading = false;
 
     this.title = title;
+    this.payload = payload;
     if (typeof children === 'function') {
       this.childrenGetter = children;
     } else {

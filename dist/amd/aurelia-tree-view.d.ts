@@ -45,6 +45,7 @@ declare module 'aurelia-tree-view' {
   export function fireTreeViewEvent(element: Element, name: string, data?: any): any;
   export class NodeModel {
     title: any;
+    payload: any;
     children: NodeModel[];
     childrenGetter: {};
     visible: any;
@@ -52,7 +53,7 @@ declare module 'aurelia-tree-view' {
     selected: any;
     loading: any;
     static createFromJSON(nodes: any[]): any;
-    constructor(title: string, children?: NodeModel[] | {});
+    constructor(title: string, children?: NodeModel[] | {}, payload?: any);
     hasChildren: any;
     expandNode(force?: any): any;
     collapseNode(force?: any): any;

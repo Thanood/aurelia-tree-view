@@ -2,6 +2,7 @@ import {computedFrom} from 'aurelia-binding';
 
 export class NodeModel {
   title = '';
+  payload = null;
   children: NodeModel[];
   childrenGetter: {():Promise<NodeModel[]>};
   visible = true;
@@ -25,13 +26,29 @@ export class NodeModel {
       } else {
         children = node.children ? NodeModel.createFromJSON(node.children) : null;
       }
-      models.push(new NodeModel(node.title, children));
+      let payload = node.payload;
+      if (!payload) {
+        payload = {};
+        let keys = Object.keys(node);
+        keys.forEach(key => {
+          switch (key) {
+            case 'children':
+            case 'title':
+              break;
+            default:
+              payload[key] = node[key];
+              break;
+          }
+        });
+      }
+      models.push(new NodeModel(node.title, children, payload));
     });
     return models;
   }
 
-  constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
+  constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}, payload?: any) {
     this.title = title;
+    this.payload = payload;
     if (typeof children === 'function') {
       this.childrenGetter = children;
     } else {

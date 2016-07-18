@@ -2,7 +2,7 @@ import {computedFrom} from 'aurelia-binding';
 
 export class NodeModel {
   title = '';
-  payload: null;
+  payload = null;
   children: NodeModel[];
   childrenGetter: {():Promise<NodeModel[]>};
   visible = true;
@@ -48,7 +48,7 @@ export class NodeModel {
 
   constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}, payload?: any) {
     this.title = title;
-    this.payload = payload || null;
+    this.payload = payload;
     if (typeof children === 'function') {
       this.childrenGetter = children;
     } else {
