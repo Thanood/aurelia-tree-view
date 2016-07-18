@@ -1,7 +1,7 @@
 'use strict';
 
 exports.__esModule = true;
-exports.TreeView = exports.TreeNode = exports.NodeModel = exports.DragAndDrop = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
+exports.TreeView = exports.TreeNode = exports.NodeModel = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -20,8 +20,6 @@ var _aureliaTemplating = require('aurelia-templating');
 var _aureliaFramework = require('aurelia-framework');
 
 var _aureliaBinding = require('aurelia-binding');
-
-require('dragula/dist/dragula.css!');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -137,48 +135,6 @@ function fireTreeViewEvent(element, name) {
 
   return fireEvent(element, '' + constants.eventPrefix + name, data);
 }
-
-var DragAndDrop = exports.DragAndDrop = function () {
-  function DragAndDrop() {
-    _classCallCheck(this, DragAndDrop);
-  }
-
-  DragAndDrop.prototype.activate = function activate(viewModel) {
-    var dragApi = (0, _dragula2.default)({
-      isContainer: function isContainer(el) {
-        if (!el) {
-          return false;
-        }
-
-        return el.tagName === 'TREE-NODE' || el === viewModel.element;
-      },
-      revertOnSpill: true
-    });
-    dragApi._viewModel = viewModel;
-    this.trackDrop(dragApi);
-    this.trackOver(dragApi);
-  };
-
-  DragAndDrop.prototype.trackDrop = function trackDrop(dragApi) {
-    dragApi.on('drop', function (el, container, source) {
-      console.log(container);
-      dragApi.cancel();
-
-      dragApi._viewModel.moveNode(source.au['tree-node'].viewModel, (container.au['tree-node'] || container.au['tree-view']).viewModel);
-    });
-  };
-
-  DragAndDrop.prototype.trackOver = function trackOver(dragApi) {
-    dragApi.on('over', function (el, container, source) {
-      container.classList.add('drag-over');
-    });
-    dragApi.on('out', function (el, container, source) {
-      container.classList.remove('drag-over');
-    });
-  };
-
-  return DragAndDrop;
-}();
 
 var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('children'), (_class4 = function () {
   NodeModel.createFromJSON = function createFromJSON(nodes) {
