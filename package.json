@@ -15,6 +15,7 @@
   "license": "MIT",
   "author": "aurelia-ui-toolkits",
   "main": "dist/commonjs/index.js",
+  "typings": "dist/aurelia-tree-view.d.ts",
   "directories": {
     "lib": "dist/system"
   },
