@@ -9,31 +9,6 @@ export class NodeModel {
   selected = false;
   loading = false;
 
-  // static createFromJSON(node: any) {
-  //   if (!node.title) {
-  //     throw new Error('node must have at least a title');
-  //   }
-  //
-  //   let children = node.children;
-  //   if (typeof children === 'function') {
-  //     // create promise wrapper so children are of type NodeModel
-  //     children = () => {
-  //       return new Promise((resolve, reject) => {
-  //         node.children().then(ch => {
-  //           resolve(NodeModel.createFromJSON(ch));
-  //         });
-  //       });
-  //     };
-  //   } else {
-  //     if (node.children) {
-  //       children = node.children.map(child => {
-  //         return NodeModel.createFromJSON(child);
-  //       });
-  //     }
-  //   }
-  //   return new NodeModel(node.title, children);
-  // }
-
   static createFromJSON(nodes: any[]) {
     let models = [];
     nodes.forEach(node => {
@@ -57,17 +32,6 @@ export class NodeModel {
 
   constructor(title: string, children?: NodeModel[] | {():Promise<NodeModel[]>}) {
     this.title = title;
-    // if (typeof children === 'function') {
-    //   children().then(ch => this.children = ch);
-    //   if (this.hasChildren()) {
-    //     this.collapseNode(true);
-    //   }
-    // } else {
-    //   this.children = children || [];
-    //   if (this.hasChildren()) {
-    //     this.collapseNode(true);
-    //   }
-    // }
     if (typeof children === 'function') {
       this.childrenGetter = children;
     } else {
@@ -88,14 +52,6 @@ export class NodeModel {
     }
     return result;
   }
-
-  // toggleNode() {
-  //   if (this.expanded) {
-  //     this.collapseNode();
-  //   } else {
-  //     this.expandNode();
-  //   }
-  // }
 
   expandNode(force = false) {
     if (!this.expanded || force) {
