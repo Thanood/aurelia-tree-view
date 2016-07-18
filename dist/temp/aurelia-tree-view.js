@@ -11,17 +11,11 @@ exports.configure = configure;
 exports.fireEvent = fireEvent;
 exports.fireTreeViewEvent = fireTreeViewEvent;
 
-var _dragula = require('dragula');
-
-var _dragula2 = _interopRequireDefault(_dragula);
-
 var _aureliaTemplating = require('aurelia-templating');
 
 var _aureliaFramework = require('aurelia-framework');
 
 var _aureliaBinding = require('aurelia-binding');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
