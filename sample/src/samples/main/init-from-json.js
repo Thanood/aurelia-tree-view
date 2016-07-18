@@ -13,10 +13,13 @@ export class InitFromJson {
     return [{
       title: 'Texas',
       children: [{
-        title: 'Austin'
+        title: 'Austin',
+        rnd: Math.floor(Math.random() * 1000)
       }, {
-        title: 'Houston'
-      }]
+        title: 'Houston',
+        rnd: Math.floor(Math.random() * 1000)
+      }],
+      rnd: Math.floor(Math.random() * 1000)
     }, {
       title: 'New York',
       children: [{
@@ -34,19 +37,22 @@ export class InitFromJson {
         }]
       }, {
         title: 'Buffalo'
-      }]
+      }],
+      rnd: Math.floor(Math.random() * 1000)
     }, {
       title: 'Oregon',
       children: [{
         title: 'Portland'
-      }]
+      }],
+      rnd: Math.floor(Math.random() * 1000)
     }, {
       title: 'California',
       children: [{
         title: 'Los Angeles'
       }, {
         title: 'San Francisco'
-      }]
+      }],
+      rnd: Math.floor(Math.random() * 1000)
     }];
   }
 }

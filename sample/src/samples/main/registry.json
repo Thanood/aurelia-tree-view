@@ -19,6 +19,9 @@
     },
     "lazy-load": {
       "files": ["html", "js"]
+    },
+    "payload": {
+      "files": ["html", "js"]
     }
   }
 }
