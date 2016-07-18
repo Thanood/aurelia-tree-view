@@ -1,0 +1,1 @@
+{"version":3,"sources":["common/constants.js"],"names":[],"mappings":";;;;;;;;;2BAAa,S,GAAY;AACvB,wBAAgB,KADO;AAEvB,yBAAiB,KAFM;AAGvB,uBAAe,KAHQ;AAIvB,qBAAa;AAJU,O","file":"common/constants.js","sourceRoot":"/source/","sourcesContent":["export const constants = {\n  bindablePrefix: 'au-',\n  attributePrefix: 'au-',\n  elementPrefix: 'au-',\n  eventPrefix: 'tree-view-'\n};\n"]}
