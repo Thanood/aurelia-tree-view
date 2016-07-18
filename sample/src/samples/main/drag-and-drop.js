@@ -4,6 +4,7 @@ import 'dragula/dist/dragula.css!';
 
 export class DragAndDrop {
   nodes = [];
+  dragApi = null;
 
   attached() {
     let texas = new NodeModel('Texas', [
@@ -32,8 +33,12 @@ export class DragAndDrop {
     this.activateDnd(this.tree);
   }
 
+  detached() {
+    this.deactivateDnd();
+  }
+
   activateDnd(viewModel) {
-    let dragApi = dragula({
+    this.dragApi = dragula({
       isContainer: el => {
         if (!el) {
           return false;
@@ -46,9 +51,14 @@ export class DragAndDrop {
       },
       revertOnSpill: true
     });
-    dragApi._viewModel = viewModel;
-    this.trackDrop(dragApi);
-    this.trackOver(dragApi);
+    this.dragApi._viewModel = viewModel;
+    this.trackDrop(this.dragApi);
+    this.trackOver(this.dragApi);
+  }
+
+  deactivateDnd() {
+    this.dragApi.destroy();
+    this.dragApi = null;
   }
 
   trackDrop(dragApi) {
