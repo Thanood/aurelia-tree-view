@@ -23,6 +23,7 @@ tree-node {
         display: flex;
         line-height: 31px;
         padding: 5px;
+        width: fit-content;
 
         span {
           &.tree-node-border-icon {
@@ -50,7 +51,7 @@ tree-node {
             // -ms-animation-duration: 400ms;
             // -ms-animation-iteration-count: infinite;
             // -ms-animation-timing-function: linear;
-            
+
             animation-name: spin;
             animation-duration: 400ms;
             animation-iteration-count: infinite;
