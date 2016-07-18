@@ -28,7 +28,6 @@ System.config({
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
     "core-js": "npm:core-js@2.4.0",
-    "dragula": "npm:dragula@3.7.1",
     "jquery": "github:components/jquery@2.2.4",
     "jquery.min": "github:components/jquery@2.2.4",
     "polymer/mutationobservers": "github:polymer/mutationobservers@0.4.2",
@@ -115,27 +114,11 @@ System.config({
       "isarray": "npm:isarray@1.0.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
-    "npm:contra@1.9.4": {
-      "atoa": "npm:atoa@1.0.0",
-      "ticky": "npm:ticky@1.0.1"
-    },
     "npm:core-js@2.4.0": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
-    },
-    "npm:crossvent@1.5.4": {
-      "child_process": "github:jspm/nodelibs-child_process@0.1.0",
-      "custom-event": "npm:custom-event@1.0.0",
-      "fs": "github:jspm/nodelibs-fs@0.1.2",
-      "path": "github:jspm/nodelibs-path@0.1.0",
-      "process": "github:jspm/nodelibs-process@0.1.2",
-      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
-    },
-    "npm:dragula@3.7.1": {
-      "contra": "npm:contra@1.9.4",
-      "crossvent": "npm:crossvent@1.5.4"
     },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
@@ -145,9 +128,6 @@ System.config({
     },
     "npm:process@0.11.3": {
       "assert": "github:jspm/nodelibs-assert@0.1.0"
-    },
-    "npm:ticky@1.0.1": {
-      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
