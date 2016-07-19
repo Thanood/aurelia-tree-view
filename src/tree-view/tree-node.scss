@@ -59,7 +59,16 @@ tree-node {
           }
           &.tree-node-title {
             cursor: pointer;
+            display: inline-block;
             flex-grow: 1;
+
+            &__pad-left {
+              padding-left: 24px;
+            }
+
+            &__pad-right {
+              padding-right: 24px;
+            }
           }
         }
       }
