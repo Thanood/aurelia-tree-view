@@ -16,6 +16,7 @@ module.exports = {
   sampleSrc: './sample/src/**/*.js',
   sampleStyle: './sample/styles/**/*.css',
   sampleHtml: './sample/src/**/*.html',
+  sampleJson: './sample/src/**/*.json',
   doc: './doc',
   tests: 'test/unit/**/*.js',
   e2eSpecsSrc: 'test/e2e/src/*.js',
