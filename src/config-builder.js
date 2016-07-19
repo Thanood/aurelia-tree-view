@@ -11,6 +11,7 @@ export class ConfigBuilder {
 
   useClickCounter(): ConfigBuilder {
     this.globalResources.push('./tree-view/tree-view');
+    this.globalResources.push('./tree-view/tree-node-template');
     return this;
   }
 }

@@ -9,6 +9,7 @@ export class NodeModel {
   expanded = false;
   selected = false;
   loading = false;
+  _template = null;
 
   static createFromJSON(nodes: any[]) {
     let models = [];
@@ -76,8 +77,12 @@ export class NodeModel {
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
+          if (this._template) {
+            children.forEach(child => {
+              child._template = this._template;
+            });
+          }
           this.children = children;
-
         });
       } else {
         promise = Promise.resolve();
