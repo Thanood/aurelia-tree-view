@@ -1,0 +1,14 @@
+<template>
+  <div style="width: 300px; position: relative;">
+    <tree-view nodes.bind="nodes">
+      <tree-node-template>
+        <div>
+          ${model.title}
+        </div>
+        <div style="padding: 5px 15px;">
+          <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>
+        </div>
+      </tree-node-template>
+    </tree-view>
+  </div>
+</template>

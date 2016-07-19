@@ -22,6 +22,9 @@
     },
     "payload": {
       "files": ["html", "js"]
+    },
+    "node-template": {
+      "files": ["html", "js"]
     }
   }
 }
