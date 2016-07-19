@@ -1,4 +1,6 @@
-import {bindable, inject, LogManager} from 'aurelia-framework';
+import {bindable} from 'aurelia-templating';
+import {inject} from 'aurelia-dependency-injection';
+import {LogManager} from 'aurelia-logging';
 import {NodeModel} from './node-model';
 import {fireEvent} from '../common/events';
 

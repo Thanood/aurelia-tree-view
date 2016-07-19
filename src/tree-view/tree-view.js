@@ -1,4 +1,6 @@
-import {bindable, bindingMode, inject} from 'aurelia-framework';
+import {bindable} from 'aurelia-templating';
+import {inject} from 'aurelia-dependency-injection';
+import {bindingMode} from 'aurelia-binding';
 import {NodeModel} from './node-model';
 import {TreeNode} from './tree-node';
 import {fireEvent} from '../common/events';
