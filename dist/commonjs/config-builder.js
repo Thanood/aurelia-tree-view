@@ -19,6 +19,7 @@ var ConfigBuilder = exports.ConfigBuilder = function () {
 
   ConfigBuilder.prototype.useClickCounter = function useClickCounter() {
     this.globalResources.push('./tree-view/tree-view');
+    this.globalResources.push('./tree-view/tree-node-template');
     return this;
   };
 

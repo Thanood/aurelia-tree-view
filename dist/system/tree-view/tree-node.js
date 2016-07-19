@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-framework', './node-model', '../common/events'], function (_export, _context) {
+System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', './node-model', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, inject, LogManager, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
+  var bindable, ViewCompiler, ViewResources, ViewSlot, Container, inject, getLogger, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -55,28 +55,59 @@ System.register(['aurelia-framework', './node-model', '../common/events'], funct
   }
 
   return {
-    setters: [function (_aureliaFramework) {
-      bindable = _aureliaFramework.bindable;
-      inject = _aureliaFramework.inject;
-      LogManager = _aureliaFramework.LogManager;
+    setters: [function (_aureliaTemplating) {
+      bindable = _aureliaTemplating.bindable;
+      ViewCompiler = _aureliaTemplating.ViewCompiler;
+      ViewResources = _aureliaTemplating.ViewResources;
+      ViewSlot = _aureliaTemplating.ViewSlot;
+    }, function (_aureliaDependencyInjection) {
+      Container = _aureliaDependencyInjection.Container;
+      inject = _aureliaDependencyInjection.inject;
+    }, function (_aureliaLogging) {
+      getLogger = _aureliaLogging.getLogger;
     }, function (_nodeModel) {
       NodeModel = _nodeModel.NodeModel;
     }, function (_commonEvents) {
       fireEvent = _commonEvents.fireEvent;
     }],
     execute: function () {
-      _export('TreeNode', TreeNode = (_dec = inject(Element, LogManager), _dec2 = bindable(), _dec(_class = (_class2 = function () {
-        function TreeNode(element, logManager) {
+      _export('TreeNode', TreeNode = (_dec = inject(Element, ViewCompiler, ViewResources, Container), _dec2 = bindable(), _dec(_class = (_class2 = function () {
+        function TreeNode(element, viewCompiler, viewResources, container) {
           _classCallCheck(this, TreeNode);
 
           _initDefineProp(this, 'model', _descriptor, this);
 
           this.element = element;
-          this.log = logManager.getLogger('tree-node');
+          this.viewCompiler = viewCompiler;
+          this.viewResources = viewResources;
+          this.container = container;
+          this.log = getLogger('tree-node');
         }
+
+        TreeNode.prototype.attached = function attached() {
+          if (this.model && this.model._template && this.templateTarget) {
+            this.useTemplate();
+          }
+        };
 
         TreeNode.prototype.insertChild = function insertChild(child, before) {
           this.model.children.push(child);
+        };
+
+        TreeNode.prototype.useTemplate = function useTemplate() {
+          var template = this.model._template;
+          var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
+          var view = viewFactory.create(this.container);
+          var viewSlot = new ViewSlot(this.templateTarget, true);
+          viewSlot.add(view);
+          viewSlot.bind(this);
+          viewSlot.attached();
+        };
+
+        TreeNode.prototype.modelChanged = function modelChanged(newValue) {
+          if (newValue && newValue._template && this.templateTarget) {
+            this.useTemplate();
+          }
         };
 
         TreeNode.prototype.removeChild = function removeChild(child) {

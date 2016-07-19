@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-framework', './node-model', './tree-node', '../common/events'], function (_export, _context) {
+System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', 'aurelia-binding', './node-model', './tree-node', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, bindingMode, inject, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, TreeView;
+  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, TreeView;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -55,10 +55,14 @@ System.register(['aurelia-framework', './node-model', './tree-node', '../common/
   }
 
   return {
-    setters: [function (_aureliaFramework) {
-      bindable = _aureliaFramework.bindable;
-      bindingMode = _aureliaFramework.bindingMode;
-      inject = _aureliaFramework.inject;
+    setters: [function (_aureliaTemplating) {
+      bindable = _aureliaTemplating.bindable;
+    }, function (_aureliaDependencyInjection) {
+      inject = _aureliaDependencyInjection.inject;
+    }, function (_aureliaLogging) {
+      getLogger = _aureliaLogging.getLogger;
+    }, function (_aureliaBinding) {
+      bindingMode = _aureliaBinding.bindingMode;
     }, function (_nodeModel) {
       NodeModel = _nodeModel.NodeModel;
     }, function (_treeNode) {
@@ -80,7 +84,41 @@ System.register(['aurelia-framework', './node-model', './tree-node', '../common/
           _initDefineProp(this, 'selected', _descriptor3, this);
 
           this.element = element;
+          this.log = getLogger('tree-view');
+
+          var templateElement = this.element.querySelector('tree-node-template');
+          if (templateElement) {
+            this.templateElement = templateElement;
+          } else {}
         }
+
+        TreeView.prototype.created = function created() {
+          if (this.templateElement) {
+            if (this.templateElement.au) {
+              var viewModel = this.templateElement.au.controller.viewModel;
+              this.log.debug('viewModel', viewModel);
+            } else {
+              this.log.warn('no viewmodel found for template', this.templateElement);
+            }
+          } else {}
+        };
+
+        TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
+          if (newValue && this.templateElement) {
+            this.enhanceNodes(newValue);
+          }
+        };
+
+        TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
+          var _this = this;
+
+          nodes.forEach(function (node) {
+            if (node.children && typeof node.children !== 'function') {
+              _this.enhanceNodes(node.children);
+            }
+            node._template = _this.templateElement.au.controller.viewModel.template;
+          });
+        };
 
         TreeView.prototype.onSelected = function onSelected(e) {
           if (this.selected && this.selected !== e.detail.node) {

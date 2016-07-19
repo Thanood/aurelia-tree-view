@@ -1,11 +1,11 @@
 'use strict';
 
 exports.__esModule = true;
-exports.TreeView = exports.TreeNode = exports.NodeModel = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
+exports.TreeView = exports.TreeNode = exports.TreeViewTemplate = exports.NodeModel = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _dec, _class, _dec2, _desc, _value, _class4, _dec3, _dec4, _class6, _desc2, _value2, _class7, _descriptor, _dec5, _dec6, _dec7, _dec8, _class9, _desc3, _value3, _class10, _descriptor2, _descriptor3, _descriptor4;
+var _dec, _class, _dec2, _desc, _value, _class4, _dec3, _dec4, _dec5, _dec6, _class6, _dec7, _dec8, _class8, _desc2, _value2, _class9, _descriptor, _dec9, _dec10, _dec11, _dec12, _class11, _desc3, _value3, _class12, _descriptor2, _descriptor3, _descriptor4;
 
 exports.configure = configure;
 exports.fireEvent = fireEvent;
@@ -16,6 +16,10 @@ var _aureliaTemplating = require('aurelia-templating');
 var _aureliaFramework = require('aurelia-framework');
 
 var _aureliaBinding = require('aurelia-binding');
+
+var _aureliaDependencyInjection = require('aurelia-dependency-injection');
+
+var _aureliaLogging = require('aurelia-logging');
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -89,6 +93,7 @@ var ConfigBuilder = exports.ConfigBuilder = function () {
 
   ConfigBuilder.prototype.useClickCounter = function useClickCounter() {
     this.globalResources.push('./tree-view/tree-view');
+    this.globalResources.push('./tree-view/tree-node-template');
     return this;
   };
 
@@ -175,6 +180,7 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
     this.expanded = false;
     this.selected = false;
     this.loading = false;
+    this._template = null;
 
     this.title = title;
     this.payload = payload;
@@ -198,6 +204,11 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(function (children) {
+          if (_this._template) {
+            children.forEach(function (child) {
+              child._template = _this._template;
+            });
+          }
           _this.children = children;
         });
       } else {
@@ -255,18 +266,57 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
 
   return NodeModel;
 }(), (_applyDecoratedDescriptor(_class4.prototype, 'hasChildren', [_dec2], Object.getOwnPropertyDescriptor(_class4.prototype, 'hasChildren'), _class4.prototype)), _class4));
-var TreeNode = exports.TreeNode = (_dec3 = (0, _aureliaFramework.inject)(Element, _aureliaFramework.LogManager), _dec4 = (0, _aureliaFramework.bindable)(), _dec3(_class6 = (_class7 = function () {
-  function TreeNode(element, logManager) {
+var TreeViewTemplate = exports.TreeViewTemplate = (_dec3 = (0, _aureliaTemplating.customElement)('tree-node-template'), _dec4 = (0, _aureliaTemplating.noView)(), _dec5 = (0, _aureliaTemplating.processContent)(function (compiler, resources, element, instruction) {
+  var html = element.innerHTML;
+  if (html !== '') {
+    instruction.template = html;
+  }
+  element.innerHTML = '';
+}), _dec6 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.TargetInstruction), _dec3(_class6 = _dec4(_class6 = _dec5(_class6 = _dec6(_class6 = function TreeViewTemplate(targetInstruction) {
+  _classCallCheck(this, TreeViewTemplate);
+
+  this.log = (0, _aureliaLogging.getLogger)('tree-node-template');
+
+  this.template = targetInstruction.elementInstruction.template;
+  this.log.debug(targetInstruction);
+}) || _class6) || _class6) || _class6) || _class6);
+var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container), _dec8 = (0, _aureliaTemplating.bindable)(), _dec7(_class8 = (_class9 = function () {
+  function TreeNode(element, viewCompiler, viewResources, container) {
     _classCallCheck(this, TreeNode);
 
     _initDefineProp(this, 'model', _descriptor, this);
 
     this.element = element;
-    this.log = logManager.getLogger('tree-node');
+    this.viewCompiler = viewCompiler;
+    this.viewResources = viewResources;
+    this.container = container;
+    this.log = (0, _aureliaLogging.getLogger)('tree-node');
   }
+
+  TreeNode.prototype.attached = function attached() {
+    if (this.model && this.model._template && this.templateTarget) {
+      this.useTemplate();
+    }
+  };
 
   TreeNode.prototype.insertChild = function insertChild(child, before) {
     this.model.children.push(child);
+  };
+
+  TreeNode.prototype.useTemplate = function useTemplate() {
+    var template = this.model._template;
+    var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
+    var view = viewFactory.create(this.container);
+    var viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
+    viewSlot.add(view);
+    viewSlot.bind(this);
+    viewSlot.attached();
+  };
+
+  TreeNode.prototype.modelChanged = function modelChanged(newValue) {
+    if (newValue && newValue._template && this.templateTarget) {
+      this.useTemplate();
+    }
   };
 
   TreeNode.prototype.removeChild = function removeChild(child) {
@@ -294,15 +344,15 @@ var TreeNode = exports.TreeNode = (_dec3 = (0, _aureliaFramework.inject)(Element
   };
 
   return TreeNode;
-}(), (_descriptor = _applyDecoratedDescriptor(_class7.prototype, 'model', [_dec4], {
+}(), (_descriptor = _applyDecoratedDescriptor(_class9.prototype, 'model', [_dec8], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-})), _class7)) || _class6);
-var TreeView = exports.TreeView = (_dec5 = (0, _aureliaFramework.inject)(Element), _dec6 = (0, _aureliaFramework.bindable)(), _dec7 = (0, _aureliaFramework.bindable)(), _dec8 = (0, _aureliaFramework.bindable)({
-  defaultBindingMode: _aureliaFramework.bindingMode.twoWay
-}), _dec5(_class9 = (_class10 = function () {
+})), _class9)) || _class8);
+var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.inject)(Element), _dec10 = (0, _aureliaTemplating.bindable)(), _dec11 = (0, _aureliaTemplating.bindable)(), _dec12 = (0, _aureliaTemplating.bindable)({
+  defaultBindingMode: _aureliaBinding.bindingMode.twoWay
+}), _dec9(_class11 = (_class12 = function () {
   function TreeView(element) {
     _classCallCheck(this, TreeView);
 
@@ -313,7 +363,41 @@ var TreeView = exports.TreeView = (_dec5 = (0, _aureliaFramework.inject)(Element
     _initDefineProp(this, 'selected', _descriptor4, this);
 
     this.element = element;
+    this.log = (0, _aureliaLogging.getLogger)('tree-view');
+
+    var templateElement = this.element.querySelector('tree-node-template');
+    if (templateElement) {
+      this.templateElement = templateElement;
+    } else {}
   }
+
+  TreeView.prototype.created = function created() {
+    if (this.templateElement) {
+      if (this.templateElement.au) {
+        var viewModel = this.templateElement.au.controller.viewModel;
+        this.log.debug('viewModel', viewModel);
+      } else {
+        this.log.warn('no viewmodel found for template', this.templateElement);
+      }
+    } else {}
+  };
+
+  TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
+    if (newValue && this.templateElement) {
+      this.enhanceNodes(newValue);
+    }
+  };
+
+  TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
+    var _this2 = this;
+
+    nodes.forEach(function (node) {
+      if (node.children && typeof node.children !== 'function') {
+        _this2.enhanceNodes(node.children);
+      }
+      node._template = _this2.templateElement.au.controller.viewModel.template;
+    });
+  };
 
   TreeView.prototype.onSelected = function onSelected(e) {
     if (this.selected && this.selected !== e.detail.node) {
@@ -353,17 +437,17 @@ var TreeView = exports.TreeView = (_dec5 = (0, _aureliaFramework.inject)(Element
   };
 
   return TreeView;
-}(), (_descriptor2 = _applyDecoratedDescriptor(_class10.prototype, 'expandOnSelect', [_dec6], {
+}(), (_descriptor2 = _applyDecoratedDescriptor(_class12.prototype, 'expandOnSelect', [_dec10], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class10.prototype, 'nodes', [_dec7], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class12.prototype, 'nodes', [_dec11], {
   enumerable: true,
   initializer: null
-}), _descriptor4 = _applyDecoratedDescriptor(_class10.prototype, 'selected', [_dec8], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class12.prototype, 'selected', [_dec12], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-})), _class10)) || _class9);
+})), _class12)) || _class11);

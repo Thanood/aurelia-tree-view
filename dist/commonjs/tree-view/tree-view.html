@@ -2,5 +2,6 @@
   <require from="./tree-view.css"></require>
   <require from='./tree-node'></require>
 
+  <slot></slot>
   <tree-node selected.delegate="onSelected($event)" repeat.for="node of nodes" model.bind="node"></tree-node>
 </template>

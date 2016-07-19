@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-framework', './node-model', './tree-node', '../common/events'], function (exports, _aureliaFramework, _nodeModel, _treeNode, _events) {
+define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', 'aurelia-binding', './node-model', './tree-node', '../common/events'], function (exports, _aureliaTemplating, _aureliaDependencyInjection, _aureliaLogging, _aureliaBinding, _nodeModel, _treeNode, _events) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -57,8 +57,8 @@ define(['exports', 'aurelia-framework', './node-model', './tree-node', '../commo
 
   var _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
 
-  var TreeView = exports.TreeView = (_dec = (0, _aureliaFramework.inject)(Element), _dec2 = (0, _aureliaFramework.bindable)(), _dec3 = (0, _aureliaFramework.bindable)(), _dec4 = (0, _aureliaFramework.bindable)({
-    defaultBindingMode: _aureliaFramework.bindingMode.twoWay
+  var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject)(Element), _dec2 = (0, _aureliaTemplating.bindable)(), _dec3 = (0, _aureliaTemplating.bindable)(), _dec4 = (0, _aureliaTemplating.bindable)({
+    defaultBindingMode: _aureliaBinding.bindingMode.twoWay
   }), _dec(_class = (_class2 = function () {
     function TreeView(element) {
       _classCallCheck(this, TreeView);
@@ -70,7 +70,41 @@ define(['exports', 'aurelia-framework', './node-model', './tree-node', '../commo
       _initDefineProp(this, 'selected', _descriptor3, this);
 
       this.element = element;
+      this.log = (0, _aureliaLogging.getLogger)('tree-view');
+
+      var templateElement = this.element.querySelector('tree-node-template');
+      if (templateElement) {
+        this.templateElement = templateElement;
+      } else {}
     }
+
+    TreeView.prototype.created = function created() {
+      if (this.templateElement) {
+        if (this.templateElement.au) {
+          var viewModel = this.templateElement.au.controller.viewModel;
+          this.log.debug('viewModel', viewModel);
+        } else {
+          this.log.warn('no viewmodel found for template', this.templateElement);
+        }
+      } else {}
+    };
+
+    TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
+      if (newValue && this.templateElement) {
+        this.enhanceNodes(newValue);
+      }
+    };
+
+    TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
+      var _this = this;
+
+      nodes.forEach(function (node) {
+        if (node.children && typeof node.children !== 'function') {
+          _this.enhanceNodes(node.children);
+        }
+        node._template = _this.templateElement.au.controller.viewModel.template;
+      });
+    };
 
     TreeView.prototype.onSelected = function onSelected(e) {
       if (this.selected && this.selected !== e.detail.node) {

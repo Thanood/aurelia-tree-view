@@ -1,4 +1,7 @@
-import {bindable, bindingMode, inject} from 'aurelia-framework';
+import {bindable} from 'aurelia-templating';
+import {inject} from 'aurelia-dependency-injection';
+import {getLogger} from 'aurelia-logging';
+import {bindingMode} from 'aurelia-binding';
 import {NodeModel} from './node-model';
 import {TreeNode} from './tree-node';
 import {fireEvent} from '../common/events';
@@ -13,6 +16,45 @@ export class TreeView {
 
   constructor(element) {
     this.element = element;
+    this.log = getLogger('tree-view');
+
+    let templateElement = this.element.querySelector('tree-node-template');
+    if (templateElement) {
+      this.templateElement = templateElement;
+    } else {
+      // this.log.warn('ctor - no template element');
+    }
+  }
+
+  created() {
+    if (this.templateElement) {
+      if (this.templateElement.au) {
+        let viewModel = this.templateElement.au.controller.viewModel;
+        this.log.debug('viewModel', viewModel);
+      } else {
+        this.log.warn('no viewmodel found for template', this.templateElement);
+      }
+    } else {
+      // this.log.warn('created - no template element');
+    }
+  }
+
+  nodesChanged(newValue, oldValue) {
+    if (newValue && this.templateElement) {
+      // newValue.forEach(node => {
+      //   node._template = this.templateElement.au.controller.viewModel.template;
+      // });
+      this.enhanceNodes(newValue);
+    }
+  }
+
+  enhanceNodes(nodes: NodeModel[]) {
+    nodes.forEach(node => {
+      if (node.children && typeof node.children !== 'function') {
+        this.enhanceNodes(node.children);
+      }
+      node._template = this.templateElement.au.controller.viewModel.template;
+    });
   }
 
   onSelected(e) {

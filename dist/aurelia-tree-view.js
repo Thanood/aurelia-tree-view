@@ -1,6 +1,8 @@
-import {customElement} from 'aurelia-templating';
-import {Aurelia,bindable,inject,LogManager,bindingMode} from 'aurelia-framework';
-import {computedFrom} from 'aurelia-binding';
+import {customElement,bindable,noView,processContent,TargetInstruction,ViewCompiler,ViewResources,ViewSlot} from 'aurelia-templating';
+import {Aurelia} from 'aurelia-framework';
+import {computedFrom,bindingMode} from 'aurelia-binding';
+import {inject,Container} from 'aurelia-dependency-injection';
+import {getLogger} from 'aurelia-logging';
 
 @customElement(`${constants.elementPrefix}click-counter`)
 export class ClickCounter {
@@ -24,6 +26,7 @@ export class ConfigBuilder {
 
   useClickCounter(): ConfigBuilder {
     this.globalResources.push('./tree-view/tree-view');
+    this.globalResources.push('./tree-view/tree-node-template');
     return this;
   }
 }
@@ -82,6 +85,7 @@ export class NodeModel {
   expanded = false;
   selected = false;
   loading = false;
+  _template = null;
 
   static createFromJSON(nodes: any[]) {
     let models = [];
@@ -149,8 +153,12 @@ export class NodeModel {
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
+          if (this._template) {
+            children.forEach(child => {
+              child._template = this._template;
+            });
+          }
           this.children = children;
-
         });
       } else {
         promise = Promise.resolve();
@@ -191,19 +199,64 @@ export class NodeModel {
   }
 }
 
-@inject(Element, LogManager)
+@customElement('tree-node-template')
+@noView()
+@processContent((compiler, resources, element, instruction) => {
+  let html = element.innerHTML;
+  if (html !== '') {
+    instruction.template = html;
+  }
+  element.innerHTML = '';
+})
+@inject(TargetInstruction)
+export class TreeViewTemplate {
+  log = getLogger('tree-node-template');
+
+  constructor(targetInstruction) {
+    this.template = targetInstruction.elementInstruction.template;
+    this.log.debug(targetInstruction);
+  }
+}
+
+@inject(Element, ViewCompiler, ViewResources, Container)
 export class TreeNode {
   @bindable() model: NodeModel = null;
 
-  constructor(element: Element, logManager) {
+  constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container) {
     this.element = element;
-    this.log = logManager.getLogger('tree-node');
+    this.viewCompiler = viewCompiler;
+    this.viewResources = viewResources;
+    this.container = container;
+    this.log = getLogger('tree-node');
+  }
+
+  attached() {
+    if (this.model && this.model._template && this.templateTarget) {
+      this.useTemplate();
+    }
   }
 
   insertChild(child: NodeModel, before: NodeModel) {
     // TODO: insert at position
     // let pos = this.model.children.indexOf(before);
     this.model.children.push(child);
+  }
+
+  useTemplate() {
+    let template = this.model._template;
+    let viewFactory = this.viewCompiler.compile(`<template>${template}</template>`, this.viewResources);
+    let view = viewFactory.create(this.container);
+    let viewSlot = new ViewSlot(this.templateTarget, true);
+    viewSlot.add(view);
+    viewSlot.bind(this);
+    viewSlot.attached();
+  }
+
+  modelChanged(newValue) {
+    // this.log.debug('modelChanged', newValue, this.templateTarget);
+    if (newValue && newValue._template && this.templateTarget) {
+      this.useTemplate();
+    }
   }
 
   // removeNode(node: TreeNode) { }
@@ -242,6 +295,45 @@ export class TreeView {
 
   constructor(element) {
     this.element = element;
+    this.log = getLogger('tree-view');
+
+    let templateElement = this.element.querySelector('tree-node-template');
+    if (templateElement) {
+      this.templateElement = templateElement;
+    } else {
+      // this.log.warn('ctor - no template element');
+    }
+  }
+
+  created() {
+    if (this.templateElement) {
+      if (this.templateElement.au) {
+        let viewModel = this.templateElement.au.controller.viewModel;
+        this.log.debug('viewModel', viewModel);
+      } else {
+        this.log.warn('no viewmodel found for template', this.templateElement);
+      }
+    } else {
+      // this.log.warn('created - no template element');
+    }
+  }
+
+  nodesChanged(newValue, oldValue) {
+    if (newValue && this.templateElement) {
+      // newValue.forEach(node => {
+      //   node._template = this.templateElement.au.controller.viewModel.template;
+      // });
+      this.enhanceNodes(newValue);
+    }
+  }
+
+  enhanceNodes(nodes: NodeModel[]) {
+    nodes.forEach(node => {
+      if (node.children && typeof node.children !== 'function') {
+        this.enhanceNodes(node.children);
+      }
+      node._template = this.templateElement.au.controller.viewModel.template;
+    });
   }
 
   onSelected(e) {

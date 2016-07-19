@@ -7,7 +7,11 @@ exports.TreeNode = undefined;
 
 var _dec, _dec2, _class, _desc, _value, _class2, _descriptor;
 
-var _aureliaFramework = require('aurelia-framework');
+var _aureliaTemplating = require('aurelia-templating');
+
+var _aureliaDependencyInjection = require('aurelia-dependency-injection');
+
+var _aureliaLogging = require('aurelia-logging');
 
 var _nodeModel = require('./node-model');
 
@@ -58,18 +62,43 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-var TreeNode = exports.TreeNode = (_dec = (0, _aureliaFramework.inject)(Element, _aureliaFramework.LogManager), _dec2 = (0, _aureliaFramework.bindable)(), _dec(_class = (_class2 = function () {
-  function TreeNode(element, logManager) {
+var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container), _dec2 = (0, _aureliaTemplating.bindable)(), _dec(_class = (_class2 = function () {
+  function TreeNode(element, viewCompiler, viewResources, container) {
     _classCallCheck(this, TreeNode);
 
     _initDefineProp(this, 'model', _descriptor, this);
 
     this.element = element;
-    this.log = logManager.getLogger('tree-node');
+    this.viewCompiler = viewCompiler;
+    this.viewResources = viewResources;
+    this.container = container;
+    this.log = (0, _aureliaLogging.getLogger)('tree-node');
   }
+
+  TreeNode.prototype.attached = function attached() {
+    if (this.model && this.model._template && this.templateTarget) {
+      this.useTemplate();
+    }
+  };
 
   TreeNode.prototype.insertChild = function insertChild(child, before) {
     this.model.children.push(child);
+  };
+
+  TreeNode.prototype.useTemplate = function useTemplate() {
+    var template = this.model._template;
+    var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
+    var view = viewFactory.create(this.container);
+    var viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
+    viewSlot.add(view);
+    viewSlot.bind(this);
+    viewSlot.attached();
+  };
+
+  TreeNode.prototype.modelChanged = function modelChanged(newValue) {
+    if (newValue && newValue._template && this.templateTarget) {
+      this.useTemplate();
+    }
   };
 
   TreeNode.prototype.removeChild = function removeChild(child) {

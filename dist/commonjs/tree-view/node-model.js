@@ -87,6 +87,7 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.computedFrom)('c
     this.expanded = false;
     this.selected = false;
     this.loading = false;
+    this._template = null;
 
     this.title = title;
     this.payload = payload;
@@ -110,6 +111,11 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.computedFrom)('c
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(function (children) {
+          if (_this._template) {
+            children.forEach(function (child) {
+              child._template = _this._template;
+            });
+          }
           _this.children = children;
         });
       } else {

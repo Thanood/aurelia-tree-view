@@ -7,7 +7,13 @@ exports.TreeView = undefined;
 
 var _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
 
-var _aureliaFramework = require('aurelia-framework');
+var _aureliaTemplating = require('aurelia-templating');
+
+var _aureliaDependencyInjection = require('aurelia-dependency-injection');
+
+var _aureliaLogging = require('aurelia-logging');
+
+var _aureliaBinding = require('aurelia-binding');
 
 var _nodeModel = require('./node-model');
 
@@ -60,8 +66,8 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-var TreeView = exports.TreeView = (_dec = (0, _aureliaFramework.inject)(Element), _dec2 = (0, _aureliaFramework.bindable)(), _dec3 = (0, _aureliaFramework.bindable)(), _dec4 = (0, _aureliaFramework.bindable)({
-  defaultBindingMode: _aureliaFramework.bindingMode.twoWay
+var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject)(Element), _dec2 = (0, _aureliaTemplating.bindable)(), _dec3 = (0, _aureliaTemplating.bindable)(), _dec4 = (0, _aureliaTemplating.bindable)({
+  defaultBindingMode: _aureliaBinding.bindingMode.twoWay
 }), _dec(_class = (_class2 = function () {
   function TreeView(element) {
     _classCallCheck(this, TreeView);
@@ -73,7 +79,41 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaFramework.inject)(Element)
     _initDefineProp(this, 'selected', _descriptor3, this);
 
     this.element = element;
+    this.log = (0, _aureliaLogging.getLogger)('tree-view');
+
+    var templateElement = this.element.querySelector('tree-node-template');
+    if (templateElement) {
+      this.templateElement = templateElement;
+    } else {}
   }
+
+  TreeView.prototype.created = function created() {
+    if (this.templateElement) {
+      if (this.templateElement.au) {
+        var viewModel = this.templateElement.au.controller.viewModel;
+        this.log.debug('viewModel', viewModel);
+      } else {
+        this.log.warn('no viewmodel found for template', this.templateElement);
+      }
+    } else {}
+  };
+
+  TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
+    if (newValue && this.templateElement) {
+      this.enhanceNodes(newValue);
+    }
+  };
+
+  TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
+    var _this = this;
+
+    nodes.forEach(function (node) {
+      if (node.children && typeof node.children !== 'function') {
+        _this.enhanceNodes(node.children);
+      }
+      node._template = _this.templateElement.au.controller.viewModel.template;
+    });
+  };
 
   TreeView.prototype.onSelected = function onSelected(e) {
     if (this.selected && this.selected !== e.detail.node) {

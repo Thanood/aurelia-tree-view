@@ -1,17 +1,28 @@
 declare module 'aurelia-tree-view' {
   import {
-    customElement
+    customElement,
+    bindable,
+    noView,
+    processContent,
+    TargetInstruction,
+    ViewCompiler,
+    ViewResources,
+    ViewSlot
   } from 'aurelia-templating';
   import {
-    Aurelia,
-    bindable,
-    inject,
-    LogManager,
-    bindingMode
+    Aurelia
   } from 'aurelia-framework';
   import {
-    computedFrom
+    computedFrom,
+    bindingMode
   } from 'aurelia-binding';
+  import {
+    inject,
+    Container
+  } from 'aurelia-dependency-injection';
+  import {
+    getLogger
+  } from 'aurelia-logging';
   export class ClickCounter {
     count: any;
     increment(): any;
@@ -62,10 +73,17 @@ declare module 'aurelia-tree-view' {
     isSelected(): any;
     toggleSelected(): any;
   }
+  export class TreeViewTemplate {
+    log: any;
+    constructor(targetInstruction?: any);
+  }
   export class TreeNode {
     model: NodeModel;
-    constructor(element: Element, logManager?: any);
+    constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container);
+    attached(): any;
     insertChild(child: NodeModel, before: NodeModel): any;
+    useTemplate(): any;
+    modelChanged(newValue?: any): any;
     
     // removeNode(node: TreeNode) { }
     removeChild(child: NodeModel): any;
@@ -77,6 +95,13 @@ declare module 'aurelia-tree-view' {
     nodes: NodeModel[];
     selected: NodeModel;
     constructor(element?: any);
+    
+    // this.log.warn('ctor - no template element');
+    created(): any;
+    
+    // this.log.warn('created - no template element');
+    nodesChanged(newValue?: any, oldValue?: any): any;
+    enhanceNodes(nodes: NodeModel[]): any;
     onSelected(e?: any): any;
     expandOnSelectChanged(newValue?: any): any;
     
