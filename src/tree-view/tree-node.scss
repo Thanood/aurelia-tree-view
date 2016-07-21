@@ -1,7 +1,7 @@
 tree-node {
   display: block;
 
-  &.tree-node--selected {
+  &.tree-node--focused {
     & > div {
       & > ul {
         & > li {

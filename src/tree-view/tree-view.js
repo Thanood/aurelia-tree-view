@@ -8,11 +8,19 @@ import {fireEvent} from '../common/events';
 
 @inject(Element)
 export class TreeView {
-  @bindable() expandOnSelect: boolean = false;
+  @bindable() expandOnFocus: boolean = false;
   @bindable() nodes: NodeModel[];
+  @bindable() multiSelect: boolean = false;
   @bindable({
     defaultBindingMode: bindingMode.twoWay
-  }) selected: NodeModel = null;
+  }) focused: NodeModel = null;
+  @bindable({
+    defaultBindingMode: bindingMode.twoWay
+  }) selected: NodeModel[] = [];
+
+  bind() {
+    this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
+  }
 
   constructor(element) {
     this.element = element;
@@ -40,10 +48,8 @@ export class TreeView {
   }
 
   nodesChanged(newValue, oldValue) {
-    if (newValue && this.templateElement) {
-      // newValue.forEach(node => {
-      //   node._template = this.templateElement.au.controller.viewModel.template;
-      // });
+    if (newValue) {
+      // && this.templateElement
       this.enhanceNodes(newValue);
     }
   }
@@ -53,23 +59,41 @@ export class TreeView {
       if (node.children && typeof node.children !== 'function') {
         this.enhanceNodes(node.children);
       }
-      node._template = this.templateElement.au.controller.viewModel.template;
+      if (this.templateElement) {
+        node._template = this.templateElement.au.controller.viewModel.template;
+      }
+      node._tree = this;
     });
   }
 
-  onSelected(e) {
-    if (this.selected && this.selected !== e.detail.node) {
-      this.selected.deselectNode();
+  onFocused(e) {
+    if (this.focused && this.focused !== e.detail.node) {
+      this.focused.unfocusNode();
     }
-    this.selected = e.detail.node;
-    if (this.expandOnSelect) {
-      this.selected.expandNode();
+    this.focused = e.detail.node;
+    if (this.expandOnFocus) {
+      this.focused.expandNode();
     }
-    fireEvent(this.element, 'selected', e.detail);
+    fireEvent(this.element, 'focused', e.detail);
   }
 
-  expandOnSelectChanged(newValue) {
-    this.expandOnSelect = (newValue === true || newValue === 'true');
+  onSelected(e) {
+    if (e.detail.node.selected) {
+      this.selected.push(e.detail.node);
+      fireEvent(this.element, 'selected', e.detail);
+    } else {
+      let index = this.selected.indexOf(e.detail.node);
+      if (index === -1) {
+        this.log.error('node not found in selected', e.detail.node);
+      } else {
+        this.selected.splice(index, 1);
+        fireEvent(this.element, 'deselected', e.detail);
+      }
+    }
+  }
+
+  expandOnFocusChanged(newValue) {
+    this.expandOnFocus = (newValue === true || newValue === 'true');
   }
 
   // moveNode(node: TreeNode, target: TreeNode | TreeView) {

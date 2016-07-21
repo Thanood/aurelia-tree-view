@@ -7,9 +7,11 @@ export class NodeModel {
   childrenGetter: {():Promise<NodeModel[]>};
   visible = true;
   expanded = false;
+  focused = false;
   selected = false;
   loading = false;
   _template = null;
+  _tree = null;
 
   static createFromJSON(nodes: any[]) {
     let models = [];
@@ -115,8 +117,20 @@ export class NodeModel {
     this.selected = false;
   }
 
+  focusNode() {
+    this.focused = true;
+  }
+
+  unfocusNode() {
+    this.focused = false;
+  }
+
   isSelected() {
     return this.selected;
+  }
+
+  toggleHighlighted() {
+    this.highlighted = !this.highlighted;
   }
 
   toggleSelected() {

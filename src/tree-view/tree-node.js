@@ -1,18 +1,20 @@
 import {bindable, ViewCompiler, ViewResources, ViewSlot} from 'aurelia-templating';
 import {Container, inject} from 'aurelia-dependency-injection';
+import {TaskQueue} from 'aurelia-task-queue';
 import {getLogger} from 'aurelia-logging';
 import {NodeModel} from './node-model';
 import {fireEvent} from '../common/events';
 
-@inject(Element, ViewCompiler, ViewResources, Container)
+@inject(Element, ViewCompiler, ViewResources, Container, TaskQueue)
 export class TreeNode {
   @bindable() model: NodeModel = null;
 
-  constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container) {
+  constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container, taskQueue: TaskQueue) {
     this.element = element;
     this.viewCompiler = viewCompiler;
     this.viewResources = viewResources;
     this.container = container;
+    this.taskQueue = taskQueue;
     this.log = getLogger('tree-node');
   }
 
@@ -55,9 +57,22 @@ export class TreeNode {
     }
   }
 
-  selectNode() {
-    this.model.selectNode();
-    fireEvent(this.element, 'selected', { node: this.model });
+  focusNode() {
+    this.model.focusNode();
+    fireEvent(this.element, 'focused', { node: this.model });
+  }
+  selectNode(e) {
+    this.log.debug('multi-select', this.model.selected, e);
+    // this.model.multiSelectNode();
+    let self = this;
+    this.taskQueue.queueTask(() => {
+      fireEvent(self.element, 'selected', { node: self.model });
+    });
+    // fireEvent(this.element, 'selected', { node: this.model });
+    // this.selectNode();
+
+    // permit bubbles
+    return true;
   }
 
   toggleNode() {
