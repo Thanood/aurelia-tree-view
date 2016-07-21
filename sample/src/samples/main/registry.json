@@ -5,10 +5,14 @@
       "default" : true,
       "files": ["html", "js"]
     },
+    "multi-select": {
+      "default" : true,
+      "files": ["html", "js"]
+    },
     "init-from-json": {
       "files": ["html", "js"]
     },
-    "expand-on-select": {
+    "expand-on-focus": {
       "files": ["html", "js"]
     },
     "events": {

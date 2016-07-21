@@ -1,6 +1,6 @@
 import {NodeModel} from 'aurelia-tree-view';
 
-export class ExpandOnSelect {
+export class ExpandOnFocus {
   nodes = [];
 
   attached() {
