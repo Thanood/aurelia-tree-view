@@ -142,7 +142,7 @@ System.register(['aurelia-binding'], function (_export, _context) {
             } else {
               promise = Promise.resolve();
             }
-            promise.then(function () {
+            return promise.then(function () {
               _this.loading = false;
               _this.children.forEach(function (child) {
                 child.visible = true;
@@ -161,6 +161,7 @@ System.register(['aurelia-binding'], function (_export, _context) {
             });
             this.expanded = false;
           }
+          return Promise.resolve();
         };
 
         NodeModel.prototype.selectNode = function selectNode() {

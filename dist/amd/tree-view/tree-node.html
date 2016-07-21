@@ -7,7 +7,9 @@
           <span if.bind="model.hasChildren" click.trigger="toggleNode()" class="material-icons tree-node-arrow ${ model.loading ? 'tree-node-rotate' : '' }">
             ${ model.loading ? 'cached' : (model.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
-          <span click.delegate="selectNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">${model.title}</span>
+          <span click.delegate="selectNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+            ${model.title}
+          </span>
         </div>
 
         <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>

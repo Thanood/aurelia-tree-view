@@ -121,7 +121,7 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.computedFrom)('c
       } else {
         promise = Promise.resolve();
       }
-      promise.then(function () {
+      return promise.then(function () {
         _this.loading = false;
         _this.children.forEach(function (child) {
           child.visible = true;
@@ -140,6 +140,7 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.computedFrom)('c
       });
       this.expanded = false;
     }
+    return Promise.resolve();
   };
 
   NodeModel.prototype.selectNode = function selectNode() {

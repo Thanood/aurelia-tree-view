@@ -140,7 +140,7 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
         } else {
           promise = Promise.resolve();
         }
-        promise.then(function () {
+        return promise.then(function () {
           _this.loading = false;
           _this.children.forEach(function (child) {
             child.visible = true;
@@ -159,6 +159,7 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
         });
         this.expanded = false;
       }
+      return Promise.resolve();
     };
 
     NodeModel.prototype.selectNode = function selectNode() {
