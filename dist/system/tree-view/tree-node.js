@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', './node-model', '../common/events'], function (_export, _context) {
+System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, ViewCompiler, ViewResources, ViewSlot, Container, inject, getLogger, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
+  var bindable, ViewCompiler, ViewResources, ViewSlot, Container, inject, TaskQueue, getLogger, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -63,6 +63,8 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
     }, function (_aureliaDependencyInjection) {
       Container = _aureliaDependencyInjection.Container;
       inject = _aureliaDependencyInjection.inject;
+    }, function (_aureliaTaskQueue) {
+      TaskQueue = _aureliaTaskQueue.TaskQueue;
     }, function (_aureliaLogging) {
       getLogger = _aureliaLogging.getLogger;
     }, function (_nodeModel) {
@@ -71,8 +73,8 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
       fireEvent = _commonEvents.fireEvent;
     }],
     execute: function () {
-      _export('TreeNode', TreeNode = (_dec = inject(Element, ViewCompiler, ViewResources, Container), _dec2 = bindable(), _dec(_class = (_class2 = function () {
-        function TreeNode(element, viewCompiler, viewResources, container) {
+      _export('TreeNode', TreeNode = (_dec = inject(Element, ViewCompiler, ViewResources, Container, TaskQueue), _dec2 = bindable(), _dec(_class = (_class2 = function () {
+        function TreeNode(element, viewCompiler, viewResources, container, taskQueue) {
           _classCallCheck(this, TreeNode);
 
           _initDefineProp(this, 'model', _descriptor, this);
@@ -81,6 +83,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           this.viewCompiler = viewCompiler;
           this.viewResources = viewResources;
           this.container = container;
+          this.taskQueue = taskQueue;
           this.log = getLogger('tree-node');
         }
 
@@ -119,9 +122,20 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           }
         };
 
-        TreeNode.prototype.selectNode = function selectNode() {
-          this.model.selectNode();
-          fireEvent(this.element, 'selected', { node: this.model });
+        TreeNode.prototype.focusNode = function focusNode() {
+          this.model.focusNode();
+          fireEvent(this.element, 'focused', { node: this.model });
+        };
+
+        TreeNode.prototype.selectNode = function selectNode(e) {
+          this.log.debug('multi-select', this.model.selected, e);
+
+          var self = this;
+          this.taskQueue.queueTask(function () {
+            fireEvent(self.element, 'selected', { node: self.model });
+          });
+
+          return true;
         };
 
         TreeNode.prototype.toggleNode = function toggleNode() {

@@ -1,4 +1,4 @@
-<template class="${model.hasChildren ? 'tree-node--node' : 'tree-node--leaf'} ${model.selected ? 'tree-node--selected' : ''}">
+<template class="${model.hasChildren ? 'tree-node--node' : 'tree-node--leaf'} ${model.focused ? 'tree-node--focused' : ''}">
   <require from="./tree-node.css"></require>
   <div if.bind="!model._template">
     <ul show.bind="model.visible" class="tree-node__wrapper">
@@ -7,8 +7,9 @@
           <span if.bind="model.hasChildren" click.trigger="toggleNode()" class="material-icons tree-node-arrow ${ model.loading ? 'tree-node-rotate' : '' }">
             ${ model.loading ? 'cached' : (model.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
-          <span click.delegate="selectNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
-            ${model.title}
+          <span click.delegate="focusNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+            <!-- <label if.bind="model._tree.multiSelect"><input type="checkbox" click.delegate="multiSelectNode($event)" /></label> ${model.title} -->
+            <label if.bind="model._tree.multiSelect"><input type="checkbox" checked.bind="model.selected" click.delegate="selectNode($event)" /></label> ${model.title}
           </span>
         </div>
 

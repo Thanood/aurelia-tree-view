@@ -104,9 +104,11 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
       this.payload = null;
       this.visible = true;
       this.expanded = false;
+      this.focused = false;
       this.selected = false;
       this.loading = false;
       this._template = null;
+      this._tree = null;
 
       this.title = title;
       this.payload = payload;
@@ -170,8 +172,20 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
       this.selected = false;
     };
 
+    NodeModel.prototype.focusNode = function focusNode() {
+      this.focused = true;
+    };
+
+    NodeModel.prototype.unfocusNode = function unfocusNode() {
+      this.focused = false;
+    };
+
     NodeModel.prototype.isSelected = function isSelected() {
       return this.selected;
+    };
+
+    NodeModel.prototype.toggleHighlighted = function toggleHighlighted() {
+      this.highlighted = !this.highlighted;
     };
 
     NodeModel.prototype.toggleSelected = function toggleSelected() {

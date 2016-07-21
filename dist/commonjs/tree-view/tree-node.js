@@ -11,6 +11,8 @@ var _aureliaTemplating = require('aurelia-templating');
 
 var _aureliaDependencyInjection = require('aurelia-dependency-injection');
 
+var _aureliaTaskQueue = require('aurelia-task-queue');
+
 var _aureliaLogging = require('aurelia-logging');
 
 var _nodeModel = require('./node-model');
@@ -62,8 +64,8 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container), _dec2 = (0, _aureliaTemplating.bindable)(), _dec(_class = (_class2 = function () {
-  function TreeNode(element, viewCompiler, viewResources, container) {
+var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec2 = (0, _aureliaTemplating.bindable)(), _dec(_class = (_class2 = function () {
+  function TreeNode(element, viewCompiler, viewResources, container, taskQueue) {
     _classCallCheck(this, TreeNode);
 
     _initDefineProp(this, 'model', _descriptor, this);
@@ -72,6 +74,7 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
     this.viewCompiler = viewCompiler;
     this.viewResources = viewResources;
     this.container = container;
+    this.taskQueue = taskQueue;
     this.log = (0, _aureliaLogging.getLogger)('tree-node');
   }
 
@@ -110,9 +113,20 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
     }
   };
 
-  TreeNode.prototype.selectNode = function selectNode() {
-    this.model.selectNode();
-    (0, _events.fireEvent)(this.element, 'selected', { node: this.model });
+  TreeNode.prototype.focusNode = function focusNode() {
+    this.model.focusNode();
+    (0, _events.fireEvent)(this.element, 'focused', { node: this.model });
+  };
+
+  TreeNode.prototype.selectNode = function selectNode(e) {
+    this.log.debug('multi-select', this.model.selected, e);
+
+    var self = this;
+    this.taskQueue.queueTask(function () {
+      (0, _events.fireEvent)(self.element, 'selected', { node: self.model });
+    });
+
+    return true;
   };
 
   TreeNode.prototype.toggleNode = function toggleNode() {

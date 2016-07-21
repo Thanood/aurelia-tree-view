@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', './node-model', '../common/events'], function (exports, _aureliaTemplating, _aureliaDependencyInjection, _aureliaLogging, _nodeModel, _events) {
+define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (exports, _aureliaTemplating, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaLogging, _nodeModel, _events) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -57,8 +57,8 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
 
   var _dec, _dec2, _class, _desc, _value, _class2, _descriptor;
 
-  var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container), _dec2 = (0, _aureliaTemplating.bindable)(), _dec(_class = (_class2 = function () {
-    function TreeNode(element, viewCompiler, viewResources, container) {
+  var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec2 = (0, _aureliaTemplating.bindable)(), _dec(_class = (_class2 = function () {
+    function TreeNode(element, viewCompiler, viewResources, container, taskQueue) {
       _classCallCheck(this, TreeNode);
 
       _initDefineProp(this, 'model', _descriptor, this);
@@ -67,6 +67,7 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       this.viewCompiler = viewCompiler;
       this.viewResources = viewResources;
       this.container = container;
+      this.taskQueue = taskQueue;
       this.log = (0, _aureliaLogging.getLogger)('tree-node');
     }
 
@@ -105,9 +106,20 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       }
     };
 
-    TreeNode.prototype.selectNode = function selectNode() {
-      this.model.selectNode();
-      (0, _events.fireEvent)(this.element, 'selected', { node: this.model });
+    TreeNode.prototype.focusNode = function focusNode() {
+      this.model.focusNode();
+      (0, _events.fireEvent)(this.element, 'focused', { node: this.model });
+    };
+
+    TreeNode.prototype.selectNode = function selectNode(e) {
+      this.log.debug('multi-select', this.model.selected, e);
+
+      var self = this;
+      this.taskQueue.queueTask(function () {
+        (0, _events.fireEvent)(self.element, 'selected', { node: self.model });
+      });
+
+      return true;
     };
 
     TreeNode.prototype.toggleNode = function toggleNode() {

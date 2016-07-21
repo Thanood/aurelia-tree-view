@@ -23,6 +23,9 @@ declare module 'aurelia-tree-view' {
   import {
     getLogger
   } from 'aurelia-logging';
+  import {
+    TaskQueue
+  } from 'aurelia-task-queue';
   export class ClickCounter {
     count: any;
     increment(): any;
@@ -61,6 +64,7 @@ declare module 'aurelia-tree-view' {
     childrenGetter: {};
     visible: any;
     expanded: any;
+    focused: any;
     selected: any;
     loading: any;
     static createFromJSON(nodes: any[]): any;
@@ -70,7 +74,10 @@ declare module 'aurelia-tree-view' {
     collapseNode(force?: any): any;
     selectNode(): any;
     deselectNode(): any;
+    focusNode(): any;
+    unfocusNode(): any;
     isSelected(): any;
+    toggleHighlighted(): any;
     toggleSelected(): any;
   }
   export class TreeViewTemplate {
@@ -79,7 +86,7 @@ declare module 'aurelia-tree-view' {
   }
   export class TreeNode {
     model: NodeModel;
-    constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container);
+    constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container, taskQueue: TaskQueue);
     attached(): any;
     insertChild(child: NodeModel, before: NodeModel): any;
     useTemplate(): any;
@@ -87,13 +94,17 @@ declare module 'aurelia-tree-view' {
     
     // removeNode(node: TreeNode) { }
     removeChild(child: NodeModel): any;
-    selectNode(): any;
+    focusNode(): any;
+    selectNode(e?: any): any;
     toggleNode(): any;
   }
   export class TreeView {
-    expandOnSelect: boolean;
+    expandOnFocus: boolean;
     nodes: NodeModel[];
-    selected: NodeModel;
+    multiSelect: boolean;
+    focused: NodeModel;
+    selected: NodeModel[];
+    bind(): any;
     constructor(element?: any);
     
     // this.log.warn('ctor - no template element');
@@ -102,8 +113,9 @@ declare module 'aurelia-tree-view' {
     // this.log.warn('created - no template element');
     nodesChanged(newValue?: any, oldValue?: any): any;
     enhanceNodes(nodes: NodeModel[]): any;
+    onFocused(e?: any): any;
     onSelected(e?: any): any;
-    expandOnSelectChanged(newValue?: any): any;
+    expandOnFocusChanged(newValue?: any): any;
     
     // moveNode(node: TreeNode, target: TreeNode | TreeView) {
     //   console.log('moveNode', node, target);

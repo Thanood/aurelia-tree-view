@@ -3,7 +3,7 @@
 System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', 'aurelia-binding', './node-model', './tree-node', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, TreeView;
+  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, TreeView;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -71,17 +71,27 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
       fireEvent = _commonEvents.fireEvent;
     }],
     execute: function () {
-      _export('TreeView', TreeView = (_dec = inject(Element), _dec2 = bindable(), _dec3 = bindable(), _dec4 = bindable({
+      _export('TreeView', TreeView = (_dec = inject(Element), _dec2 = bindable(), _dec3 = bindable(), _dec4 = bindable(), _dec5 = bindable({
+        defaultBindingMode: bindingMode.twoWay
+      }), _dec6 = bindable({
         defaultBindingMode: bindingMode.twoWay
       }), _dec(_class = (_class2 = function () {
+        TreeView.prototype.bind = function bind() {
+          this.multiSelect = this.multiSelect === true || this.multiSelect === 'true';
+        };
+
         function TreeView(element) {
           _classCallCheck(this, TreeView);
 
-          _initDefineProp(this, 'expandOnSelect', _descriptor, this);
+          _initDefineProp(this, 'expandOnFocus', _descriptor, this);
 
           _initDefineProp(this, 'nodes', _descriptor2, this);
 
-          _initDefineProp(this, 'selected', _descriptor3, this);
+          _initDefineProp(this, 'multiSelect', _descriptor3, this);
+
+          _initDefineProp(this, 'focused', _descriptor4, this);
+
+          _initDefineProp(this, 'selected', _descriptor5, this);
 
           this.element = element;
           this.log = getLogger('tree-view');
@@ -104,7 +114,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
-          if (newValue && this.templateElement) {
+          if (newValue) {
             this.enhanceNodes(newValue);
           }
         };
@@ -116,23 +126,41 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
             if (node.children && typeof node.children !== 'function') {
               _this.enhanceNodes(node.children);
             }
-            node._template = _this.templateElement.au.controller.viewModel.template;
+            if (_this.templateElement) {
+              node._template = _this.templateElement.au.controller.viewModel.template;
+            }
+            node._tree = _this;
           });
         };
 
-        TreeView.prototype.onSelected = function onSelected(e) {
-          if (this.selected && this.selected !== e.detail.node) {
-            this.selected.deselectNode();
+        TreeView.prototype.onFocused = function onFocused(e) {
+          if (this.focused && this.focused !== e.detail.node) {
+            this.focused.unfocusNode();
           }
-          this.selected = e.detail.node;
-          if (this.expandOnSelect) {
-            this.selected.expandNode();
+          this.focused = e.detail.node;
+          if (this.expandOnFocus) {
+            this.focused.expandNode();
           }
-          fireEvent(this.element, 'selected', e.detail);
+          fireEvent(this.element, 'focused', e.detail);
         };
 
-        TreeView.prototype.expandOnSelectChanged = function expandOnSelectChanged(newValue) {
-          this.expandOnSelect = newValue === true || newValue === 'true';
+        TreeView.prototype.onSelected = function onSelected(e) {
+          if (e.detail.node.selected) {
+            this.selected.push(e.detail.node);
+            fireEvent(this.element, 'selected', e.detail);
+          } else {
+            var index = this.selected.indexOf(e.detail.node);
+            if (index === -1) {
+              this.log.error('node not found in selected', e.detail.node);
+            } else {
+              this.selected.splice(index, 1);
+              fireEvent(this.element, 'deselected', e.detail);
+            }
+          }
+        };
+
+        TreeView.prototype.expandOnFocusChanged = function expandOnFocusChanged(newValue) {
+          this.expandOnFocus = newValue === true || newValue === 'true';
         };
 
         TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
@@ -158,7 +186,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         return TreeView;
-      }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'expandOnSelect', [_dec2], {
+      }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'expandOnFocus', [_dec2], {
         enumerable: true,
         initializer: function initializer() {
           return false;
@@ -166,10 +194,20 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
       }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'nodes', [_dec3], {
         enumerable: true,
         initializer: null
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'selected', [_dec4], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'multiSelect', [_dec4], {
+        enumerable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'focused', [_dec5], {
         enumerable: true,
         initializer: function initializer() {
           return null;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'selected', [_dec6], {
+        enumerable: true,
+        initializer: function initializer() {
+          return [];
         }
       })), _class2)) || _class));
 
