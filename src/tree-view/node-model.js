@@ -87,7 +87,7 @@ export class NodeModel {
       } else {
         promise = Promise.resolve();
       }
-      promise.then(() => {
+      return promise.then(() => {
         this.loading = false;
         this.children.forEach(child => {
           child.visible = true;
@@ -104,6 +104,7 @@ export class NodeModel {
       });
       this.expanded = false;
     }
+    return Promise.resolve();
   }
 
   selectNode() {
