@@ -1,0 +1,9 @@
+<template>
+  <require from="./multi-select.css"></require>
+  <div style="width: 300px; position: relative;">
+    <tree-view multi-select="true" selected.bind="selected" nodes.bind="nodes" selected.delegate="onSelect($event)" deselected.delegate="onSelect($event)" view-model.ref="tree"></tree-view>
+  </div>
+  <div>
+    Selected: ${selectedNodes}
+  </div>
+</template>

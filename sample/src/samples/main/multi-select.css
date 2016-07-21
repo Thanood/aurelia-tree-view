@@ -1,0 +1,10 @@
+/* compensate for Bootstrap layout */
+tree-node .tree-node-title label {
+  margin: 0;
+}
+
+tree-node .tree-node-title label input[type="checkbox"] {
+  margin: 0;
+  position: relative;
+  top: 2px;
+}

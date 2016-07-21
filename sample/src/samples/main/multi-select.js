@@ -1,7 +1,9 @@
+import {computedFrom} from 'aurelia-framework';
 import {NodeModel} from 'aurelia-tree-view';
 
-export class Events {
+export class MultiSelect {
   nodes = [];
+  selected = [];
 
   attached() {
     let texas = new NodeModel('Texas', [
@@ -28,19 +30,14 @@ export class Events {
     this.nodes = [texas, newYork, oregon, california];
   }
 
-  onCollapsed(e) {
-    this.logger.log(`node collapsed: ${e.detail.node.title}`);
-  }
-
-  onExpanded(e) {
-    this.logger.log(`node expanded: ${e.detail.node.title}`);
-  }
-
-  onFocus(e) {
-    this.logger.log(`node focused: ${e.detail.node.title}`);
-  }
-
+  // @computedFrom('selected')
+  // get selectedNodes() {
+  //   return this.selected.map(node => node.title).join(', ');
+  // }
+  selectedNodes = '';
   onSelect(e) {
-    this.logger.log(`node selected: ${e.detail.node.title}`);
+    // this.selected = this.tree.selected;
+    console.log(this.selected);
+    this.selectedNodes = this.selected.map(node => node.title).join(', ');
   }
 }
