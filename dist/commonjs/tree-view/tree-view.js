@@ -179,7 +179,7 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
   };
 
   TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
-    console.log('moveNode', node, target, sibling);
+    this.log.debug('moveNode', node, target, sibling);
 
     if (target instanceof _treeNode.TreeNode) {
       target.insertChild(node, sibling);

@@ -156,11 +156,12 @@ export class NodeModel {
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
-          if (this._template) {
-            children.forEach(child => {
+          children.forEach(child => {
+            if (this._template) {
               child._template = this._template;
-            });
-          }
+            }
+            child._tree = this._tree;
+          });
           this.children = children;
         });
       } else {
@@ -488,7 +489,7 @@ export class TreeView {
   // }
 
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
-    console.log('moveNode', node, target, sibling);
+    this.log.debug('moveNode', node, target, sibling);
 
     if (target instanceof TreeNode) {
       // target.model.children.push(node.model);

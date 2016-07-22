@@ -152,11 +152,12 @@ System.register(['aurelia-binding'], function (_export, _context) {
             if (this.childrenGetter) {
               this.loading = true;
               promise = this.childrenGetter().then(function (children) {
-                if (_this._template) {
-                  children.forEach(function (child) {
+                children.forEach(function (child) {
+                  if (_this._template) {
                     child._template = _this._template;
-                  });
-                }
+                  }
+                  child._tree = _this._tree;
+                });
                 _this.children = children;
               });
             } else {

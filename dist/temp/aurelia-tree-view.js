@@ -211,11 +211,12 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), 
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(function (children) {
-          if (_this._template) {
-            children.forEach(function (child) {
+          children.forEach(function (child) {
+            if (_this._template) {
               child._template = _this._template;
-            });
-          }
+            }
+            child._tree = _this._tree;
+          });
           _this.children = children;
         });
       } else {
@@ -557,7 +558,7 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   };
 
   TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
-    console.log('moveNode', node, target, sibling);
+    this.log.debug('moveNode', node, target, sibling);
 
     if (target instanceof TreeNode) {
       target.insertChild(node, sibling);
