@@ -79,11 +79,12 @@ export class NodeModel {
       if (this.childrenGetter) {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
-          if (this._template) {
-            children.forEach(child => {
+          children.forEach(child => {
+            if (this._template) {
               child._template = this._template;
-            });
-          }
+            }
+            child._tree = this._tree;
+          });
           this.children = children;
         });
       } else {
