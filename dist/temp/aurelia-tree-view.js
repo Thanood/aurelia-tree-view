@@ -351,15 +351,14 @@ var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.injec
     fireEvent(this.element, 'focused', { node: this.model });
   };
 
-  TreeNode.prototype.selectNode = function selectNode(e) {
-    this.log.debug('multi-select', this.model.selected, e);
-
+  TreeNode.prototype.selectNode = function selectNode(e, permitBubbles) {
+    this.model.toggleSelected();
     var self = this;
     this.taskQueue.queueTask(function () {
       fireEvent(self.element, 'selected', { node: self.model });
     });
 
-    return true;
+    return permitBubbles;
   };
 
   TreeNode.prototype.toggleNode = function toggleNode() {

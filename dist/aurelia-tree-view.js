@@ -289,19 +289,17 @@ export class TreeNode {
   focusNode() {
     this.model.focusNode();
     fireEvent(this.element, 'focused', { node: this.model });
+    // return true;
   }
-  selectNode(e) {
-    this.log.debug('multi-select', this.model.selected, e);
-    // this.model.multiSelectNode();
+  selectNode(e, permitBubbles) {
+    this.model.toggleSelected();
     let self = this;
     this.taskQueue.queueTask(() => {
       fireEvent(self.element, 'selected', { node: self.model });
     });
-    // fireEvent(this.element, 'selected', { node: this.model });
-    // this.selectNode();
 
     // permit bubbles
-    return true;
+    return permitBubbles;
   }
 
   toggleNode() {

@@ -95,7 +95,9 @@ declare module 'aurelia-tree-view' {
     // removeNode(node: TreeNode) { }
     removeChild(child: NodeModel): any;
     focusNode(): any;
-    selectNode(e?: any): any;
+    
+    // return true;
+    selectNode(e?: any, permitBubbles?: any): any;
     toggleNode(): any;
   }
   export class TreeView {

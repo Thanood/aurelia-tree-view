@@ -8,9 +8,16 @@
             ${ model.loading ? 'cached' : (model.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
           <span click.delegate="focusNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
-            <!-- <label if.bind="model._tree.multiSelect"><input type="checkbox" click.delegate="multiSelectNode($event)" /></label> ${model.title} -->
-            <label if.bind="model._tree.multiSelect"><input type="checkbox" checked.bind="model.selected" click.delegate="selectNode($event)" /></label> ${model.title}
+            <label if.bind="model._tree.multiSelect">
+              <input type="checkbox" checked.bind="model.selected" click.delegate="selectNode($event, true)" />
+            </label> ${model.title}
           </span>
+          <!-- <label if.bind="model._tree.multiSelect">
+            <input type="checkbox" checked.bind="model.selected" click.delegate="selectNode($event)" />
+          </label>
+          <span click.delegate="focusNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+            ${model.title}
+          </span> -->
         </div>
 
         <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>

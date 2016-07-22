@@ -111,15 +111,14 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       (0, _events.fireEvent)(this.element, 'focused', { node: this.model });
     };
 
-    TreeNode.prototype.selectNode = function selectNode(e) {
-      this.log.debug('multi-select', this.model.selected, e);
-
+    TreeNode.prototype.selectNode = function selectNode(e, permitBubbles) {
+      this.model.toggleSelected();
       var self = this;
       this.taskQueue.queueTask(function () {
         (0, _events.fireEvent)(self.element, 'selected', { node: self.model });
       });
 
-      return true;
+      return permitBubbles;
     };
 
     TreeNode.prototype.toggleNode = function toggleNode() {
