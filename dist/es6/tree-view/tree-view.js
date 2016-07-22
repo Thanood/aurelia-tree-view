@@ -87,6 +87,9 @@ export class TreeView {
       }
       this.focused = node;
       fireEvent(this.element, 'focused', { node });
+      if (this.expandOnFocus) {
+        node.expandNode();
+      }
       if (!this.multiSelect) {
         this.selected.splice(0);
         this.selectNode(node);

@@ -141,6 +141,9 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
         }
         this.focused = node;
         (0, _events.fireEvent)(this.element, 'focused', { node: node });
+        if (this.expandOnFocus) {
+          node.expandNode();
+        }
         if (!this.multiSelect) {
           this.selected.splice(0);
           this.selectNode(node);

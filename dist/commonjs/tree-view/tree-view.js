@@ -150,6 +150,9 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
       }
       this.focused = node;
       (0, _events.fireEvent)(this.element, 'focused', { node: node });
+      if (this.expandOnFocus) {
+        node.expandNode();
+      }
       if (!this.multiSelect) {
         this.selected.splice(0);
         this.selectNode(node);
