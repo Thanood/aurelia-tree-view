@@ -444,7 +444,7 @@ export class TreeView {
 
   _suspendUpdate = false;
   focusNode(node: NodeModel) {
-    if (!this._suspendUpdate) {
+    if (!this._suspendUpdate && node !== this.focused) {
       if (this.focused) {
         this._suspendUpdate = true;
         this.focused.focused = false;

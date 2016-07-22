@@ -147,7 +147,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         TreeView.prototype.focusNode = function focusNode(node) {
-          if (!this._suspendUpdate) {
+          if (!this._suspendUpdate && node !== this.focused) {
             if (this.focused) {
               this._suspendUpdate = true;
               this.focused.focused = false;

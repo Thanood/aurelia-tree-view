@@ -142,7 +142,7 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
   };
 
   TreeView.prototype.focusNode = function focusNode(node) {
-    if (!this._suspendUpdate) {
+    if (!this._suspendUpdate && node !== this.focused) {
       if (this.focused) {
         this._suspendUpdate = true;
         this.focused.focused = false;
