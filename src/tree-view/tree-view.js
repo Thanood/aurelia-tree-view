@@ -136,7 +136,7 @@ export class TreeView {
   // }
 
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
-    console.log('moveNode', node, target, sibling);
+    this.log.debug('moveNode', node, target, sibling);
 
     if (target instanceof TreeNode) {
       // target.model.children.push(node.model);
