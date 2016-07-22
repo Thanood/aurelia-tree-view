@@ -225,7 +225,7 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _
       _this3.children.forEach(function (child) {
         child.selected = false;
         if (recursive) {
-          childPromises.push(child.deselectChildren());
+          childPromises.push(child.deselectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

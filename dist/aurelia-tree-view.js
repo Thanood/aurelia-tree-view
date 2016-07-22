@@ -239,7 +239,7 @@ export class NodeModel {
       this.children.forEach(child => {
         child.selected = false;
         if (recursive) {
-          childPromises.push(child.deselectChildren());
+          childPromises.push(child.deselectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

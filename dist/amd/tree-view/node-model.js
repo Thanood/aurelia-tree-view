@@ -242,7 +242,7 @@ define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _au
         _this3.children.forEach(function (child) {
           child.selected = false;
           if (recursive) {
-            childPromises.push(child.deselectChildren());
+            childPromises.push(child.deselectChildren(recursive));
           }
         });
         return Promise.all(childPromises);
