@@ -41,6 +41,8 @@ export class Events {
   }
 
   onSelect(e) {
-    this.logger.log(`node selected: ${e.detail.node.title}`);
+    console.log('[sample] events - ]', e);
+    let titles = e.detail.nodes.map(node => node.title).join(', ');
+    this.logger.log(`node selected: ${titles}`);
   }
 }

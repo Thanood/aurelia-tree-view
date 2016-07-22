@@ -30,14 +30,8 @@ export class MultiSelect {
     this.nodes = [texas, newYork, oregon, california];
   }
 
-  // @computedFrom('selected')
-  // get selectedNodes() {
-  //   return this.selected.map(node => node.title).join(', ');
-  // }
   selectedNodes = '';
   onSelect(e) {
-    // this.selected = this.tree.selected;
-    console.log(this.selected);
     this.selectedNodes = this.selected.map(node => node.title).join(', ');
   }
 }

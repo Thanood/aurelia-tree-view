@@ -3,7 +3,7 @@
     <tree-view
       nodes.bind="nodes"
       focused.delegate="onFocus($event)"
-      selected.delegate="onSelect($event)"
+      selection-changed.delegate="onSelect($event)"
       collapsed.delegate="onCollapsed($event)"
       expanded.delegate="onExpanded($event)"
     ></tree-view>

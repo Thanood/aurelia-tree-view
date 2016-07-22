@@ -1,4 +1,4 @@
-import {computedFrom} from 'aurelia-binding';
+import {computedFrom, observable} from 'aurelia-binding';
 
 export class NodeModel {
   title = '';
@@ -7,8 +7,8 @@ export class NodeModel {
   childrenGetter: {():Promise<NodeModel[]>};
   visible = true;
   expanded = false;
-  focused = false;
-  selected = false;
+  @observable() focused = false;
+  @observable() selected = false;
   loading = false;
   _template = null;
   _tree = null;
@@ -109,28 +109,60 @@ export class NodeModel {
     return Promise.resolve();
   }
 
-  selectNode() {
-    this.selected = true;
+  focusedChanged(newValue) {
+    this._tree.focusNode(this);
   }
 
-  deselectNode() {
-    this.selected = false;
+  toggleFocus() {
+    this.focused = !this.focused;
   }
 
-  focusNode() {
-    this.focused = true;
+  selectedChanged(newValue, oldValue) {
+    if (newValue !== oldValue) {
+      if (newValue) {
+        this._tree.selectNode(this);
+      } else if (newValue === false) {
+        this._tree.deselectNode(this);
+      }
+    }
   }
 
-  unfocusNode() {
-    this.focused = false;
+  selectChildren(recursive = false) {
+    let promise;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(() => {
+      let childPromises = [];
+      this.children.forEach(child => {
+        child.selected = true;
+        if (recursive) {
+          childPromises.push(child.selectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   }
 
-  isSelected() {
-    return this.selected;
-  }
-
-  toggleHighlighted() {
-    this.highlighted = !this.highlighted;
+  deselectChildren(recursive = false) {
+    let promise;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(() => {
+      let childPromises = [];
+      this.children.forEach(child => {
+        child.selected = false;
+        if (recursive) {
+          childPromises.push(child.deselectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   }
 
   toggleSelected() {
