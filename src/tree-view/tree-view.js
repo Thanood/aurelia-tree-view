@@ -23,8 +23,7 @@ export class TreeView {
     this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
   }
 
-  constructor(bindingEngine, element) {
-    this.bindingEngine = bindingEngine;
+  constructor(element) {
     this.element = element;
     this.log = getLogger('tree-view');
 
