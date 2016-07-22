@@ -9,7 +9,7 @@
           </span>
           <span click.delegate="focusNode()" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
             <label if.bind="model._tree.multiSelect">
-              <input type="checkbox" checked.bind="model.selected" click.delegate="selectNode($event, true)" />
+              <input type="checkbox" checked.bind="model.selected" click.delegate="toggleSelected($event, true)" />
             </label> ${model.title}
           </span>
           <!-- <label if.bind="model._tree.multiSelect">

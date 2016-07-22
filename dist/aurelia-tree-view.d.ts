@@ -14,6 +14,7 @@ declare module 'aurelia-tree-view' {
   } from 'aurelia-framework';
   import {
     computedFrom,
+    observable,
     bindingMode
   } from 'aurelia-binding';
   import {
@@ -72,12 +73,11 @@ declare module 'aurelia-tree-view' {
     hasChildren: any;
     expandNode(force?: any): any;
     collapseNode(force?: any): any;
-    selectNode(): any;
-    deselectNode(): any;
-    focusNode(): any;
-    unfocusNode(): any;
-    isSelected(): any;
-    toggleHighlighted(): any;
+    focusedChanged(newValue?: any): any;
+    toggleFocus(): any;
+    selectedChanged(newValue?: any, oldValue?: any): any;
+    selectChildren(recursive?: any): any;
+    deselectChildren(recursive?: any): any;
     toggleSelected(): any;
   }
   export class TreeViewTemplate {
@@ -88,16 +88,16 @@ declare module 'aurelia-tree-view' {
     model: NodeModel;
     constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container, taskQueue: TaskQueue);
     attached(): any;
+    detached(): any;
     insertChild(child: NodeModel, before: NodeModel): any;
     useTemplate(): any;
+    unbindTemplate(): any;
     modelChanged(newValue?: any): any;
     
     // removeNode(node: TreeNode) { }
     removeChild(child: NodeModel): any;
     focusNode(): any;
-    
-    // return true;
-    selectNode(e?: any, permitBubbles?: any): any;
+    toggleSelected(e?: any, permitBubbles?: any): any;
     toggleNode(): any;
   }
   export class TreeView {
@@ -106,17 +106,21 @@ declare module 'aurelia-tree-view' {
     multiSelect: boolean;
     focused: NodeModel;
     selected: NodeModel[];
+    subscriptions: any;
     bind(): any;
     constructor(element?: any);
     
     // this.log.warn('ctor - no template element');
+    attached(): any;
+    detached(): any;
     created(): any;
     
     // this.log.warn('created - no template element');
     nodesChanged(newValue?: any, oldValue?: any): any;
     enhanceNodes(nodes: NodeModel[]): any;
-    onFocused(e?: any): any;
-    onSelected(e?: any): any;
+    focusNode(node: NodeModel): any;
+    selectNode(node: NodeModel): any;
+    deselectNode(node: NodeModel): any;
     expandOnFocusChanged(newValue?: any): any;
     
     // moveNode(node: TreeNode, target: TreeNode | TreeView) {

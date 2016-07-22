@@ -24,6 +24,12 @@ export class TreeNode {
     }
   }
 
+  detached() {
+    if (this.viewSlot) {
+      this.unbindTemplate();
+    }
+  }
+
   insertChild(child: NodeModel, before: NodeModel) {
     // TODO: insert at position
     // let pos = this.model.children.indexOf(before);
@@ -34,10 +40,17 @@ export class TreeNode {
     let template = this.model._template;
     let viewFactory = this.viewCompiler.compile(`<template>${template}</template>`, this.viewResources);
     let view = viewFactory.create(this.container);
-    let viewSlot = new ViewSlot(this.templateTarget, true);
-    viewSlot.add(view);
-    viewSlot.bind(this);
-    viewSlot.attached();
+    this.viewSlot = new ViewSlot(this.templateTarget, true);
+    this.viewSlot.add(view);
+    this.viewSlot.bind(this);
+    this.viewSlot.attached();
+  }
+
+  unbindTemplate() {
+    // @vegarringdal said, switch detached and unbind
+    this.viewSlot.detached();
+    this.viewSlot.unbind();
+    this.viewSlot.removeAll();
   }
 
   modelChanged(newValue) {
@@ -58,19 +71,19 @@ export class TreeNode {
   }
 
   focusNode() {
-    this.model.focusNode();
-    fireEvent(this.element, 'focused', { node: this.model });
-    // return true;
+    this.model.focused = true;
   }
-  selectNode(e, permitBubbles) {
-    this.model.toggleSelected();
-    let self = this;
-    this.taskQueue.queueTask(() => {
-      fireEvent(self.element, 'selected', { node: self.model });
-    });
 
-    // permit bubbles
-    return permitBubbles;
+  toggleSelected(e, permitBubbles) {
+    if (e.ctrlKey) {
+      let newValue = !this.model.selected;
+      if (newValue) {
+        this.model.selectChildren(e.shiftKey);
+      } else {
+        this.model.deselectChildren(e.shiftKey);
+      }
+    }
+    return permitBubbles || false;
   }
 
   toggleNode() {

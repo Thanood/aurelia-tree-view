@@ -1,6 +1,6 @@
 import {customElement,bindable,noView,processContent,TargetInstruction,ViewCompiler,ViewResources,ViewSlot} from 'aurelia-templating';
 import {Aurelia} from 'aurelia-framework';
-import {computedFrom,bindingMode} from 'aurelia-binding';
+import {computedFrom,observable,bindingMode} from 'aurelia-binding';
 import {inject,Container} from 'aurelia-dependency-injection';
 import {getLogger} from 'aurelia-logging';
 import {TaskQueue} from 'aurelia-task-queue';
@@ -84,8 +84,8 @@ export class NodeModel {
   childrenGetter: {():Promise<NodeModel[]>};
   visible = true;
   expanded = false;
-  focused = false;
-  selected = false;
+  @observable() focused = false;
+  @observable() selected = false;
   loading = false;
   _template = null;
   _tree = null;
@@ -186,28 +186,60 @@ export class NodeModel {
     return Promise.resolve();
   }
 
-  selectNode() {
-    this.selected = true;
+  focusedChanged(newValue) {
+    this._tree.focusNode(this);
   }
 
-  deselectNode() {
-    this.selected = false;
+  toggleFocus() {
+    this.focused = !this.focused;
   }
 
-  focusNode() {
-    this.focused = true;
+  selectedChanged(newValue, oldValue) {
+    if (newValue !== oldValue) {
+      if (newValue) {
+        this._tree.selectNode(this);
+      } else if (newValue === false) {
+        this._tree.deselectNode(this);
+      }
+    }
   }
 
-  unfocusNode() {
-    this.focused = false;
+  selectChildren(recursive = false) {
+    let promise;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(() => {
+      let childPromises = [];
+      this.children.forEach(child => {
+        child.selected = true;
+        if (recursive) {
+          childPromises.push(child.selectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   }
 
-  isSelected() {
-    return this.selected;
-  }
-
-  toggleHighlighted() {
-    this.highlighted = !this.highlighted;
+  deselectChildren(recursive = false) {
+    let promise;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(() => {
+      let childPromises = [];
+      this.children.forEach(child => {
+        child.selected = false;
+        if (recursive) {
+          childPromises.push(child.deselectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   }
 
   toggleSelected() {
@@ -253,6 +285,12 @@ export class TreeNode {
     }
   }
 
+  detached() {
+    if (this.viewSlot) {
+      this.unbindTemplate();
+    }
+  }
+
   insertChild(child: NodeModel, before: NodeModel) {
     // TODO: insert at position
     // let pos = this.model.children.indexOf(before);
@@ -263,10 +301,17 @@ export class TreeNode {
     let template = this.model._template;
     let viewFactory = this.viewCompiler.compile(`<template>${template}</template>`, this.viewResources);
     let view = viewFactory.create(this.container);
-    let viewSlot = new ViewSlot(this.templateTarget, true);
-    viewSlot.add(view);
-    viewSlot.bind(this);
-    viewSlot.attached();
+    this.viewSlot = new ViewSlot(this.templateTarget, true);
+    this.viewSlot.add(view);
+    this.viewSlot.bind(this);
+    this.viewSlot.attached();
+  }
+
+  unbindTemplate() {
+    // @vegarringdal said, switch detached and unbind
+    this.viewSlot.detached();
+    this.viewSlot.unbind();
+    this.viewSlot.removeAll();
   }
 
   modelChanged(newValue) {
@@ -287,19 +332,19 @@ export class TreeNode {
   }
 
   focusNode() {
-    this.model.focusNode();
-    fireEvent(this.element, 'focused', { node: this.model });
-    // return true;
+    this.model.focused = true;
   }
-  selectNode(e, permitBubbles) {
-    this.model.toggleSelected();
-    let self = this;
-    this.taskQueue.queueTask(() => {
-      fireEvent(self.element, 'selected', { node: self.model });
-    });
 
-    // permit bubbles
-    return permitBubbles;
+  toggleSelected(e, permitBubbles) {
+    if (e.ctrlKey) {
+      let newValue = !this.model.selected;
+      if (newValue) {
+        this.model.selectChildren(e.shiftKey);
+      } else {
+        this.model.deselectChildren(e.shiftKey);
+      }
+    }
+    return permitBubbles || false;
   }
 
   toggleNode() {
@@ -324,6 +369,7 @@ export class TreeView {
   @bindable({
     defaultBindingMode: bindingMode.twoWay
   }) selected: NodeModel[] = [];
+  subscriptions = [];
 
   bind() {
     this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
@@ -340,6 +386,10 @@ export class TreeView {
       // this.log.warn('ctor - no template element');
     }
   }
+
+  attached() { }
+
+  detached() { }
 
   created() {
     if (this.templateElement) {
@@ -369,33 +419,47 @@ export class TreeView {
       if (this.templateElement) {
         node._template = this.templateElement.au.controller.viewModel.template;
       }
-      node._tree = this;
+      // node._tree = this;
+      node._tree = {
+        focusNode: this.focusNode.bind(this),
+        selectNode: this.selectNode.bind(this),
+        deselectNode: this.deselectNode.bind(this),
+        multiSelect: this.multiSelect
+      };
     });
   }
 
-  onFocused(e) {
-    if (this.focused && this.focused !== e.detail.node) {
-      this.focused.unfocusNode();
+  _suspendUpdate = false;
+  focusNode(node: NodeModel) {
+    if (!this._suspendUpdate) {
+      if (this.focused) {
+        this._suspendUpdate = true;
+        this.focused.focused = false;
+        this._suspendUpdate = false;
+      }
+      this.focused = node;
+      fireEvent(this.element, 'focused', { node });
+      if (!this.multiSelect) {
+        this.selected.splice(0);
+        this.selectNode(node);
+      }
     }
-    this.focused = e.detail.node;
-    if (this.expandOnFocus) {
-      this.focused.expandNode();
-    }
-    fireEvent(this.element, 'focused', e.detail);
   }
 
-  onSelected(e) {
-    if (e.detail.node.selected) {
-      this.selected.push(e.detail.node);
-      fireEvent(this.element, 'selected', e.detail);
+  selectNode(node: NodeModel) {
+    this.log.debug('selecting node', node);
+    this.selected.push(node);
+    fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+  }
+
+  deselectNode(node: NodeModel) {
+    this.log.debug('deselecting node', node);
+    let index = this.selected.indexOf(node);
+    if (index === -1) {
+      this.log.error('node not found in selected', node);
     } else {
-      let index = this.selected.indexOf(e.detail.node);
-      if (index === -1) {
-        this.log.error('node not found in selected', e.detail.node);
-      } else {
-        this.selected.splice(index, 1);
-        fireEvent(this.element, 'deselected', e.detail);
-      }
+      this.selected.splice(index, 1);
+      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
     }
   }
 

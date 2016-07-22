@@ -3,7 +3,17 @@
 System.register(['aurelia-binding'], function (_export, _context) {
   "use strict";
 
-  var computedFrom, _createClass, _dec, _desc, _value, _class, NodeModel;
+  var computedFrom, observable, _createClass, _dec, _dec2, _dec3, _desc, _value, _class, _descriptor, _descriptor2, NodeModel;
+
+  function _initDefineProp(target, property, descriptor, context) {
+    if (!descriptor) return;
+    Object.defineProperty(target, property, {
+      enumerable: descriptor.enumerable,
+      configurable: descriptor.configurable,
+      writable: descriptor.writable,
+      value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+    });
+  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -40,9 +50,14 @@ System.register(['aurelia-binding'], function (_export, _context) {
     return desc;
   }
 
+  function _initializerWarningHelper(descriptor, context) {
+    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+  }
+
   return {
     setters: [function (_aureliaBinding) {
       computedFrom = _aureliaBinding.computedFrom;
+      observable = _aureliaBinding.observable;
     }],
     execute: function () {
       _createClass = function () {
@@ -63,7 +78,7 @@ System.register(['aurelia-binding'], function (_export, _context) {
         };
       }();
 
-      _export('NodeModel', NodeModel = (_dec = computedFrom('children'), (_class = function () {
+      _export('NodeModel', NodeModel = (_dec = observable(), _dec2 = observable(), _dec3 = computedFrom('children'), (_class = function () {
         NodeModel.createFromJSON = function createFromJSON(nodes) {
           var models = [];
           nodes.forEach(function (node) {
@@ -106,8 +121,11 @@ System.register(['aurelia-binding'], function (_export, _context) {
           this.payload = null;
           this.visible = true;
           this.expanded = false;
-          this.focused = false;
-          this.selected = false;
+
+          _initDefineProp(this, 'focused', _descriptor, this);
+
+          _initDefineProp(this, 'selected', _descriptor2, this);
+
           this.loading = false;
           this._template = null;
           this._tree = null;
@@ -166,28 +184,68 @@ System.register(['aurelia-binding'], function (_export, _context) {
           return Promise.resolve();
         };
 
-        NodeModel.prototype.selectNode = function selectNode() {
-          this.selected = true;
+        NodeModel.prototype.focusedChanged = function focusedChanged(newValue) {
+          this._tree.focusNode(this);
         };
 
-        NodeModel.prototype.deselectNode = function deselectNode() {
-          this.selected = false;
+        NodeModel.prototype.toggleFocus = function toggleFocus() {
+          this.focused = !this.focused;
         };
 
-        NodeModel.prototype.focusNode = function focusNode() {
-          this.focused = true;
+        NodeModel.prototype.selectedChanged = function selectedChanged(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            if (newValue) {
+              this._tree.selectNode(this);
+            } else if (newValue === false) {
+              this._tree.deselectNode(this);
+            }
+          }
         };
 
-        NodeModel.prototype.unfocusNode = function unfocusNode() {
-          this.focused = false;
+        NodeModel.prototype.selectChildren = function selectChildren() {
+          var _this2 = this;
+
+          var recursive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+          var promise = void 0;
+          if (this.expanded) {
+            promise = Promise.resolve();
+          } else {
+            promise = this.expandNode();
+          }
+          return promise.then(function () {
+            var childPromises = [];
+            _this2.children.forEach(function (child) {
+              child.selected = true;
+              if (recursive) {
+                childPromises.push(child.selectChildren());
+              }
+            });
+            return Promise.all(childPromises);
+          });
         };
 
-        NodeModel.prototype.isSelected = function isSelected() {
-          return this.selected;
-        };
+        NodeModel.prototype.deselectChildren = function deselectChildren() {
+          var _this3 = this;
 
-        NodeModel.prototype.toggleHighlighted = function toggleHighlighted() {
-          this.highlighted = !this.highlighted;
+          var recursive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+          var promise = void 0;
+          if (this.expanded) {
+            promise = Promise.resolve();
+          } else {
+            promise = this.expandNode();
+          }
+          return promise.then(function () {
+            var childPromises = [];
+            _this3.children.forEach(function (child) {
+              child.selected = false;
+              if (recursive) {
+                childPromises.push(child.deselectChildren());
+              }
+            });
+            return Promise.all(childPromises);
+          });
         };
 
         NodeModel.prototype.toggleSelected = function toggleSelected() {
@@ -208,7 +266,17 @@ System.register(['aurelia-binding'], function (_export, _context) {
         }]);
 
         return NodeModel;
-      }(), (_applyDecoratedDescriptor(_class.prototype, 'hasChildren', [_dec], Object.getOwnPropertyDescriptor(_class.prototype, 'hasChildren'), _class.prototype)), _class)));
+      }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'focused', [_dec], {
+        enumerable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'selected', [_dec2], {
+        enumerable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _applyDecoratedDescriptor(_class.prototype, 'hasChildren', [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, 'hasChildren'), _class.prototype)), _class)));
 
       _export('NodeModel', NodeModel);
     }

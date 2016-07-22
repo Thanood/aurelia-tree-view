@@ -88,6 +88,9 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
 
     _initDefineProp(this, 'selected', _descriptor5, this);
 
+    this.subscriptions = [];
+    this._suspendUpdate = false;
+
     this.element = element;
     this.log = (0, _aureliaLogging.getLogger)('tree-view');
 
@@ -96,6 +99,10 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
       this.templateElement = templateElement;
     } else {}
   }
+
+  TreeView.prototype.attached = function attached() {};
+
+  TreeView.prototype.detached = function detached() {};
 
   TreeView.prototype.created = function created() {
     if (this.templateElement) {
@@ -124,33 +131,46 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
       if (_this.templateElement) {
         node._template = _this.templateElement.au.controller.viewModel.template;
       }
-      node._tree = _this;
+
+      node._tree = {
+        focusNode: _this.focusNode.bind(_this),
+        selectNode: _this.selectNode.bind(_this),
+        deselectNode: _this.deselectNode.bind(_this),
+        multiSelect: _this.multiSelect
+      };
     });
   };
 
-  TreeView.prototype.onFocused = function onFocused(e) {
-    if (this.focused && this.focused !== e.detail.node) {
-      this.focused.unfocusNode();
+  TreeView.prototype.focusNode = function focusNode(node) {
+    if (!this._suspendUpdate) {
+      if (this.focused) {
+        this._suspendUpdate = true;
+        this.focused.focused = false;
+        this._suspendUpdate = false;
+      }
+      this.focused = node;
+      (0, _events.fireEvent)(this.element, 'focused', { node: node });
+      if (!this.multiSelect) {
+        this.selected.splice(0);
+        this.selectNode(node);
+      }
     }
-    this.focused = e.detail.node;
-    if (this.expandOnFocus) {
-      this.focused.expandNode();
-    }
-    (0, _events.fireEvent)(this.element, 'focused', e.detail);
   };
 
-  TreeView.prototype.onSelected = function onSelected(e) {
-    if (e.detail.node.selected) {
-      this.selected.push(e.detail.node);
-      (0, _events.fireEvent)(this.element, 'selected', e.detail);
+  TreeView.prototype.selectNode = function selectNode(node) {
+    this.log.debug('selecting node', node);
+    this.selected.push(node);
+    (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
+  };
+
+  TreeView.prototype.deselectNode = function deselectNode(node) {
+    this.log.debug('deselecting node', node);
+    var index = this.selected.indexOf(node);
+    if (index === -1) {
+      this.log.error('node not found in selected', node);
     } else {
-      var index = this.selected.indexOf(e.detail.node);
-      if (index === -1) {
-        this.log.error('node not found in selected', e.detail.node);
-      } else {
-        this.selected.splice(index, 1);
-        (0, _events.fireEvent)(this.element, 'deselected', e.detail);
-      }
+      this.selected.splice(index, 1);
+      (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
     }
   };
 

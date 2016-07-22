@@ -93,6 +93,12 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           }
         };
 
+        TreeNode.prototype.detached = function detached() {
+          if (this.viewSlot) {
+            this.unbindTemplate();
+          }
+        };
+
         TreeNode.prototype.insertChild = function insertChild(child, before) {
           this.model.children.push(child);
         };
@@ -101,10 +107,16 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           var template = this.model._template;
           var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
           var view = viewFactory.create(this.container);
-          var viewSlot = new ViewSlot(this.templateTarget, true);
-          viewSlot.add(view);
-          viewSlot.bind(this);
-          viewSlot.attached();
+          this.viewSlot = new ViewSlot(this.templateTarget, true);
+          this.viewSlot.add(view);
+          this.viewSlot.bind(this);
+          this.viewSlot.attached();
+        };
+
+        TreeNode.prototype.unbindTemplate = function unbindTemplate() {
+          this.viewSlot.detached();
+          this.viewSlot.unbind();
+          this.viewSlot.removeAll();
         };
 
         TreeNode.prototype.modelChanged = function modelChanged(newValue) {
@@ -123,18 +135,19 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         TreeNode.prototype.focusNode = function focusNode() {
-          this.model.focusNode();
-          fireEvent(this.element, 'focused', { node: this.model });
+          this.model.focused = true;
         };
 
-        TreeNode.prototype.selectNode = function selectNode(e, permitBubbles) {
-          this.model.toggleSelected();
-          var self = this;
-          this.taskQueue.queueTask(function () {
-            fireEvent(self.element, 'selected', { node: self.model });
-          });
-
-          return permitBubbles;
+        TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {
+          if (e.ctrlKey) {
+            var newValue = !this.model.selected;
+            if (newValue) {
+              this.model.selectChildren(e.shiftKey);
+            } else {
+              this.model.deselectChildren(e.shiftKey);
+            }
+          }
+          return permitBubbles || false;
         };
 
         TreeNode.prototype.toggleNode = function toggleNode() {

@@ -17,6 +17,7 @@ export class TreeView {
   @bindable({
     defaultBindingMode: bindingMode.twoWay
   }) selected: NodeModel[] = [];
+  subscriptions = [];
 
   bind() {
     this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
@@ -33,6 +34,10 @@ export class TreeView {
       // this.log.warn('ctor - no template element');
     }
   }
+
+  attached() { }
+
+  detached() { }
 
   created() {
     if (this.templateElement) {
@@ -62,33 +67,47 @@ export class TreeView {
       if (this.templateElement) {
         node._template = this.templateElement.au.controller.viewModel.template;
       }
-      node._tree = this;
+      // node._tree = this;
+      node._tree = {
+        focusNode: this.focusNode.bind(this),
+        selectNode: this.selectNode.bind(this),
+        deselectNode: this.deselectNode.bind(this),
+        multiSelect: this.multiSelect
+      };
     });
   }
 
-  onFocused(e) {
-    if (this.focused && this.focused !== e.detail.node) {
-      this.focused.unfocusNode();
+  _suspendUpdate = false;
+  focusNode(node: NodeModel) {
+    if (!this._suspendUpdate) {
+      if (this.focused) {
+        this._suspendUpdate = true;
+        this.focused.focused = false;
+        this._suspendUpdate = false;
+      }
+      this.focused = node;
+      fireEvent(this.element, 'focused', { node });
+      if (!this.multiSelect) {
+        this.selected.splice(0);
+        this.selectNode(node);
+      }
     }
-    this.focused = e.detail.node;
-    if (this.expandOnFocus) {
-      this.focused.expandNode();
-    }
-    fireEvent(this.element, 'focused', e.detail);
   }
 
-  onSelected(e) {
-    if (e.detail.node.selected) {
-      this.selected.push(e.detail.node);
-      fireEvent(this.element, 'selected', e.detail);
+  selectNode(node: NodeModel) {
+    this.log.debug('selecting node', node);
+    this.selected.push(node);
+    fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+  }
+
+  deselectNode(node: NodeModel) {
+    this.log.debug('deselecting node', node);
+    let index = this.selected.indexOf(node);
+    if (index === -1) {
+      this.log.error('node not found in selected', node);
     } else {
-      let index = this.selected.indexOf(e.detail.node);
-      if (index === -1) {
-        this.log.error('node not found in selected', e.detail.node);
-      } else {
-        this.selected.splice(index, 1);
-        fireEvent(this.element, 'deselected', e.detail);
-      }
+      this.selected.splice(index, 1);
+      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
     }
   }
 

@@ -5,7 +5,7 @@ exports.TreeView = exports.TreeNode = exports.TreeViewTemplate = exports.NodeMod
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _dec, _class, _dec2, _desc, _value, _class4, _dec3, _dec4, _dec5, _dec6, _class6, _dec7, _dec8, _class8, _desc2, _value2, _class9, _descriptor, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class11, _desc3, _value3, _class12, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
+var _dec, _class, _dec2, _dec3, _dec4, _desc, _value, _class4, _descriptor, _descriptor2, _dec5, _dec6, _dec7, _dec8, _class6, _dec9, _dec10, _class8, _desc2, _value2, _class9, _descriptor3, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class11, _desc3, _value3, _class12, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
 
 exports.configure = configure;
 exports.fireEvent = fireEvent;
@@ -31,10 +31,6 @@ function _initDefineProp(target, property, descriptor, context) {
     writable: descriptor.writable,
     value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
   });
-}
-
-function _initializerWarningHelper(descriptor, context) {
-  throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
@@ -64,6 +60,10 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   }
 
   return desc;
+}
+
+function _initializerWarningHelper(descriptor, context) {
+  throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -137,7 +137,7 @@ function fireTreeViewEvent(element, name) {
   return fireEvent(element, '' + constants.eventPrefix + name, data);
 }
 
-var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('children'), (_class4 = function () {
+var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), _dec3 = (0, _aureliaBinding.observable)(), _dec4 = (0, _aureliaBinding.computedFrom)('children'), (_class4 = function () {
   NodeModel.createFromJSON = function createFromJSON(nodes) {
     var models = [];
     nodes.forEach(function (node) {
@@ -180,8 +180,11 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
     this.payload = null;
     this.visible = true;
     this.expanded = false;
-    this.focused = false;
-    this.selected = false;
+
+    _initDefineProp(this, 'focused', _descriptor, this);
+
+    _initDefineProp(this, 'selected', _descriptor2, this);
+
     this.loading = false;
     this._template = null;
     this._tree = null;
@@ -240,28 +243,68 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
     return Promise.resolve();
   };
 
-  NodeModel.prototype.selectNode = function selectNode() {
-    this.selected = true;
+  NodeModel.prototype.focusedChanged = function focusedChanged(newValue) {
+    this._tree.focusNode(this);
   };
 
-  NodeModel.prototype.deselectNode = function deselectNode() {
-    this.selected = false;
+  NodeModel.prototype.toggleFocus = function toggleFocus() {
+    this.focused = !this.focused;
   };
 
-  NodeModel.prototype.focusNode = function focusNode() {
-    this.focused = true;
+  NodeModel.prototype.selectedChanged = function selectedChanged(newValue, oldValue) {
+    if (newValue !== oldValue) {
+      if (newValue) {
+        this._tree.selectNode(this);
+      } else if (newValue === false) {
+        this._tree.deselectNode(this);
+      }
+    }
   };
 
-  NodeModel.prototype.unfocusNode = function unfocusNode() {
-    this.focused = false;
+  NodeModel.prototype.selectChildren = function selectChildren() {
+    var _this2 = this;
+
+    var recursive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+    var promise = void 0;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(function () {
+      var childPromises = [];
+      _this2.children.forEach(function (child) {
+        child.selected = true;
+        if (recursive) {
+          childPromises.push(child.selectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   };
 
-  NodeModel.prototype.isSelected = function isSelected() {
-    return this.selected;
-  };
+  NodeModel.prototype.deselectChildren = function deselectChildren() {
+    var _this3 = this;
 
-  NodeModel.prototype.toggleHighlighted = function toggleHighlighted() {
-    this.highlighted = !this.highlighted;
+    var recursive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+    var promise = void 0;
+    if (this.expanded) {
+      promise = Promise.resolve();
+    } else {
+      promise = this.expandNode();
+    }
+    return promise.then(function () {
+      var childPromises = [];
+      _this3.children.forEach(function (child) {
+        child.selected = false;
+        if (recursive) {
+          childPromises.push(child.deselectChildren());
+        }
+      });
+      return Promise.all(childPromises);
+    });
   };
 
   NodeModel.prototype.toggleSelected = function toggleSelected() {
@@ -282,14 +325,24 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.computedFrom)('
   }]);
 
   return NodeModel;
-}(), (_applyDecoratedDescriptor(_class4.prototype, 'hasChildren', [_dec2], Object.getOwnPropertyDescriptor(_class4.prototype, 'hasChildren'), _class4.prototype)), _class4));
-var TreeViewTemplate = exports.TreeViewTemplate = (_dec3 = (0, _aureliaTemplating.customElement)('tree-node-template'), _dec4 = (0, _aureliaTemplating.noView)(), _dec5 = (0, _aureliaTemplating.processContent)(function (compiler, resources, element, instruction) {
+}(), (_descriptor = _applyDecoratedDescriptor(_class4.prototype, 'focused', [_dec2], {
+  enumerable: true,
+  initializer: function initializer() {
+    return false;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class4.prototype, 'selected', [_dec3], {
+  enumerable: true,
+  initializer: function initializer() {
+    return false;
+  }
+}), _applyDecoratedDescriptor(_class4.prototype, 'hasChildren', [_dec4], Object.getOwnPropertyDescriptor(_class4.prototype, 'hasChildren'), _class4.prototype)), _class4));
+var TreeViewTemplate = exports.TreeViewTemplate = (_dec5 = (0, _aureliaTemplating.customElement)('tree-node-template'), _dec6 = (0, _aureliaTemplating.noView)(), _dec7 = (0, _aureliaTemplating.processContent)(function (compiler, resources, element, instruction) {
   var html = element.innerHTML;
   if (html !== '') {
     instruction.template = html;
   }
   element.innerHTML = '';
-}), _dec6 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.TargetInstruction), _dec3(_class6 = _dec4(_class6 = _dec5(_class6 = _dec6(_class6 = function TreeViewTemplate(targetInstruction) {
+}), _dec8 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.TargetInstruction), _dec5(_class6 = _dec6(_class6 = _dec7(_class6 = _dec8(_class6 = function TreeViewTemplate(targetInstruction) {
   _classCallCheck(this, TreeViewTemplate);
 
   this.log = (0, _aureliaLogging.getLogger)('tree-node-template');
@@ -297,11 +350,11 @@ var TreeViewTemplate = exports.TreeViewTemplate = (_dec3 = (0, _aureliaTemplatin
   this.template = targetInstruction.elementInstruction.template;
   this.log.debug(targetInstruction);
 }) || _class6) || _class6) || _class6) || _class6);
-var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec8 = (0, _aureliaTemplating.bindable)(), _dec7(_class8 = (_class9 = function () {
+var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec10 = (0, _aureliaTemplating.bindable)(), _dec9(_class8 = (_class9 = function () {
   function TreeNode(element, viewCompiler, viewResources, container, taskQueue) {
     _classCallCheck(this, TreeNode);
 
-    _initDefineProp(this, 'model', _descriptor, this);
+    _initDefineProp(this, 'model', _descriptor3, this);
 
     this.element = element;
     this.viewCompiler = viewCompiler;
@@ -317,6 +370,12 @@ var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.injec
     }
   };
 
+  TreeNode.prototype.detached = function detached() {
+    if (this.viewSlot) {
+      this.unbindTemplate();
+    }
+  };
+
   TreeNode.prototype.insertChild = function insertChild(child, before) {
     this.model.children.push(child);
   };
@@ -325,10 +384,16 @@ var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.injec
     var template = this.model._template;
     var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
     var view = viewFactory.create(this.container);
-    var viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
-    viewSlot.add(view);
-    viewSlot.bind(this);
-    viewSlot.attached();
+    this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
+    this.viewSlot.add(view);
+    this.viewSlot.bind(this);
+    this.viewSlot.attached();
+  };
+
+  TreeNode.prototype.unbindTemplate = function unbindTemplate() {
+    this.viewSlot.detached();
+    this.viewSlot.unbind();
+    this.viewSlot.removeAll();
   };
 
   TreeNode.prototype.modelChanged = function modelChanged(newValue) {
@@ -347,18 +412,19 @@ var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.injec
   };
 
   TreeNode.prototype.focusNode = function focusNode() {
-    this.model.focusNode();
-    fireEvent(this.element, 'focused', { node: this.model });
+    this.model.focused = true;
   };
 
-  TreeNode.prototype.selectNode = function selectNode(e, permitBubbles) {
-    this.model.toggleSelected();
-    var self = this;
-    this.taskQueue.queueTask(function () {
-      fireEvent(self.element, 'selected', { node: self.model });
-    });
-
-    return permitBubbles;
+  TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {
+    if (e.ctrlKey) {
+      var newValue = !this.model.selected;
+      if (newValue) {
+        this.model.selectChildren(e.shiftKey);
+      } else {
+        this.model.deselectChildren(e.shiftKey);
+      }
+    }
+    return permitBubbles || false;
   };
 
   TreeNode.prototype.toggleNode = function toggleNode() {
@@ -372,17 +438,17 @@ var TreeNode = exports.TreeNode = (_dec7 = (0, _aureliaDependencyInjection.injec
   };
 
   return TreeNode;
-}(), (_descriptor = _applyDecoratedDescriptor(_class9.prototype, 'model', [_dec8], {
+}(), (_descriptor3 = _applyDecoratedDescriptor(_class9.prototype, 'model', [_dec10], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
 })), _class9)) || _class8);
-var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.inject)(Element), _dec10 = (0, _aureliaTemplating.bindable)(), _dec11 = (0, _aureliaTemplating.bindable)(), _dec12 = (0, _aureliaTemplating.bindable)(), _dec13 = (0, _aureliaTemplating.bindable)({
+var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inject)(Element), _dec12 = (0, _aureliaTemplating.bindable)(), _dec13 = (0, _aureliaTemplating.bindable)(), _dec14 = (0, _aureliaTemplating.bindable)(), _dec15 = (0, _aureliaTemplating.bindable)({
   defaultBindingMode: _aureliaBinding.bindingMode.twoWay
-}), _dec14 = (0, _aureliaTemplating.bindable)({
+}), _dec16 = (0, _aureliaTemplating.bindable)({
   defaultBindingMode: _aureliaBinding.bindingMode.twoWay
-}), _dec9(_class11 = (_class12 = function () {
+}), _dec11(_class11 = (_class12 = function () {
   TreeView.prototype.bind = function bind() {
     this.multiSelect = this.multiSelect === true || this.multiSelect === 'true';
   };
@@ -390,15 +456,18 @@ var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.injec
   function TreeView(element) {
     _classCallCheck(this, TreeView);
 
-    _initDefineProp(this, 'expandOnFocus', _descriptor2, this);
+    _initDefineProp(this, 'expandOnFocus', _descriptor4, this);
 
-    _initDefineProp(this, 'nodes', _descriptor3, this);
+    _initDefineProp(this, 'nodes', _descriptor5, this);
 
-    _initDefineProp(this, 'multiSelect', _descriptor4, this);
+    _initDefineProp(this, 'multiSelect', _descriptor6, this);
 
-    _initDefineProp(this, 'focused', _descriptor5, this);
+    _initDefineProp(this, 'focused', _descriptor7, this);
 
-    _initDefineProp(this, 'selected', _descriptor6, this);
+    _initDefineProp(this, 'selected', _descriptor8, this);
+
+    this.subscriptions = [];
+    this._suspendUpdate = false;
 
     this.element = element;
     this.log = (0, _aureliaLogging.getLogger)('tree-view');
@@ -408,6 +477,10 @@ var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.injec
       this.templateElement = templateElement;
     } else {}
   }
+
+  TreeView.prototype.attached = function attached() {};
+
+  TreeView.prototype.detached = function detached() {};
 
   TreeView.prototype.created = function created() {
     if (this.templateElement) {
@@ -427,42 +500,55 @@ var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.injec
   };
 
   TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
-    var _this2 = this;
+    var _this4 = this;
 
     nodes.forEach(function (node) {
       if (node.children && typeof node.children !== 'function') {
-        _this2.enhanceNodes(node.children);
+        _this4.enhanceNodes(node.children);
       }
-      if (_this2.templateElement) {
-        node._template = _this2.templateElement.au.controller.viewModel.template;
+      if (_this4.templateElement) {
+        node._template = _this4.templateElement.au.controller.viewModel.template;
       }
-      node._tree = _this2;
+
+      node._tree = {
+        focusNode: _this4.focusNode.bind(_this4),
+        selectNode: _this4.selectNode.bind(_this4),
+        deselectNode: _this4.deselectNode.bind(_this4),
+        multiSelect: _this4.multiSelect
+      };
     });
   };
 
-  TreeView.prototype.onFocused = function onFocused(e) {
-    if (this.focused && this.focused !== e.detail.node) {
-      this.focused.unfocusNode();
+  TreeView.prototype.focusNode = function focusNode(node) {
+    if (!this._suspendUpdate) {
+      if (this.focused) {
+        this._suspendUpdate = true;
+        this.focused.focused = false;
+        this._suspendUpdate = false;
+      }
+      this.focused = node;
+      fireEvent(this.element, 'focused', { node: node });
+      if (!this.multiSelect) {
+        this.selected.splice(0);
+        this.selectNode(node);
+      }
     }
-    this.focused = e.detail.node;
-    if (this.expandOnFocus) {
-      this.focused.expandNode();
-    }
-    fireEvent(this.element, 'focused', e.detail);
   };
 
-  TreeView.prototype.onSelected = function onSelected(e) {
-    if (e.detail.node.selected) {
-      this.selected.push(e.detail.node);
-      fireEvent(this.element, 'selected', e.detail);
+  TreeView.prototype.selectNode = function selectNode(node) {
+    this.log.debug('selecting node', node);
+    this.selected.push(node);
+    fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+  };
+
+  TreeView.prototype.deselectNode = function deselectNode(node) {
+    this.log.debug('deselecting node', node);
+    var index = this.selected.indexOf(node);
+    if (index === -1) {
+      this.log.error('node not found in selected', node);
     } else {
-      var index = this.selected.indexOf(e.detail.node);
-      if (index === -1) {
-        this.log.error('node not found in selected', e.detail.node);
-      } else {
-        this.selected.splice(index, 1);
-        fireEvent(this.element, 'deselected', e.detail);
-      }
+      this.selected.splice(index, 1);
+      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
     }
   };
 
@@ -493,25 +579,25 @@ var TreeView = exports.TreeView = (_dec9 = (0, _aureliaDependencyInjection.injec
   };
 
   return TreeView;
-}(), (_descriptor2 = _applyDecoratedDescriptor(_class12.prototype, 'expandOnFocus', [_dec10], {
+}(), (_descriptor4 = _applyDecoratedDescriptor(_class12.prototype, 'expandOnFocus', [_dec12], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class12.prototype, 'nodes', [_dec11], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class12.prototype, 'nodes', [_dec13], {
   enumerable: true,
   initializer: null
-}), _descriptor4 = _applyDecoratedDescriptor(_class12.prototype, 'multiSelect', [_dec12], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class12.prototype, 'multiSelect', [_dec14], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class12.prototype, 'focused', [_dec13], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class12.prototype, 'focused', [_dec15], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class12.prototype, 'selected', [_dec14], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class12.prototype, 'selected', [_dec16], {
   enumerable: true,
   initializer: function initializer() {
     return [];
