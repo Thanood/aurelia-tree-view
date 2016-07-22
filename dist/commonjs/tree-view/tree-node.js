@@ -70,6 +70,8 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
 
     _initDefineProp(this, 'model', _descriptor, this);
 
+    this._toggleCalled = false;
+
     this.element = element;
     this.viewCompiler = viewCompiler;
     this.viewResources = viewResources;
@@ -130,12 +132,21 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
   };
 
   TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {
+    var _this = this;
+
     if (e.ctrlKey) {
-      var newValue = !this.model.selected;
-      if (newValue) {
-        this.model.selectChildren(e.shiftKey);
-      } else {
-        this.model.deselectChildren(e.shiftKey);
+      if (!this._toggleCalled) {
+        this._toggleCalled = true;
+        var promise = void 0;
+        var newValue = !this.model.selected;
+        if (newValue) {
+          promise = this.model.selectChildren(e.shiftKey);
+        } else {
+          promise = this.model.deselectChildren(e.shiftKey);
+        }
+        promise.then(function () {
+          _this._toggleCalled = false;
+        });
       }
     }
     return permitBubbles || false;

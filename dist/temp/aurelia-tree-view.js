@@ -360,6 +360,8 @@ var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.injec
 
     _initDefineProp(this, 'model', _descriptor3, this);
 
+    this._toggleCalled = false;
+
     this.element = element;
     this.viewCompiler = viewCompiler;
     this.viewResources = viewResources;
@@ -420,12 +422,21 @@ var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.injec
   };
 
   TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {
+    var _this4 = this;
+
     if (e.ctrlKey) {
-      var newValue = !this.model.selected;
-      if (newValue) {
-        this.model.selectChildren(e.shiftKey);
-      } else {
-        this.model.deselectChildren(e.shiftKey);
+      if (!this._toggleCalled) {
+        this._toggleCalled = true;
+        var promise = void 0;
+        var newValue = !this.model.selected;
+        if (newValue) {
+          promise = this.model.selectChildren(e.shiftKey);
+        } else {
+          promise = this.model.deselectChildren(e.shiftKey);
+        }
+        promise.then(function () {
+          _this4._toggleCalled = false;
+        });
       }
     }
     return permitBubbles || false;
@@ -504,21 +515,21 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   };
 
   TreeView.prototype.enhanceNodes = function enhanceNodes(nodes) {
-    var _this4 = this;
+    var _this5 = this;
 
     nodes.forEach(function (node) {
       if (node.children && typeof node.children !== 'function') {
-        _this4.enhanceNodes(node.children);
+        _this5.enhanceNodes(node.children);
       }
-      if (_this4.templateElement) {
-        node._template = _this4.templateElement.au.controller.viewModel.template;
+      if (_this5.templateElement) {
+        node._template = _this5.templateElement.au.controller.viewModel.template;
       }
 
       node._tree = {
-        focusNode: _this4.focusNode.bind(_this4),
-        selectNode: _this4.selectNode.bind(_this4),
-        deselectNode: _this4.deselectNode.bind(_this4),
-        multiSelect: _this4.multiSelect
+        focusNode: _this5.focusNode.bind(_this5),
+        selectNode: _this5.selectNode.bind(_this5),
+        deselectNode: _this5.deselectNode.bind(_this5),
+        multiSelect: _this5.multiSelect
       };
     });
   };

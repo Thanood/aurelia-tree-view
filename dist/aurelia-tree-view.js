@@ -339,13 +339,22 @@ export class TreeNode {
     this.model.focused = true;
   }
 
+  _toggleCalled = false;
   toggleSelected(e, permitBubbles) {
     if (e.ctrlKey) {
-      let newValue = !this.model.selected;
-      if (newValue) {
-        this.model.selectChildren(e.shiftKey);
-      } else {
-        this.model.deselectChildren(e.shiftKey);
+      // make sure this is not called twice for checkboxes with child elements (f.i. MDL, Materialize)
+      if (!this._toggleCalled) {
+        this._toggleCalled = true;
+        let promise;
+        let newValue = !this.model.selected;
+        if (newValue) {
+          promise = this.model.selectChildren(e.shiftKey);
+        } else {
+          promise = this.model.deselectChildren(e.shiftKey);
+        }
+        promise.then(() => {
+          this._toggleCalled = false;
+        })
       }
     }
     return permitBubbles || false;
