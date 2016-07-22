@@ -33,7 +33,26 @@ export class MultiSelect {
       new NodeModel('Los Angeles'),
       new NodeModel('San Francisco')
     ]);
-    this.nodes = [texas, newYork, oregon, california];
+
+    let fourLevels = new NodeModel('Four Levels (level 1)', [
+      new NodeModel('Level 2', [
+        new NodeModel('Level 3', [
+          new NodeModel('Level 4')
+        ])
+      ])
+    ]);
+
+    let fiveLevels = new NodeModel('Five Levels (level 1)', [
+      new NodeModel('Level 2', [
+        new NodeModel('Level 3', [
+          new NodeModel('Level 4', [
+            new NodeModel('Level 5')
+          ])
+        ])
+      ])
+    ]);
+
+    this.nodes = [texas, newYork, oregon, california, fourLevels, fiveLevels];
   }
 
   selectedNodes = '';
