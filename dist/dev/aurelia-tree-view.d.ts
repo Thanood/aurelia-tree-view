@@ -18,12 +18,12 @@ declare module 'aurelia-tree-view' {
     bindingMode
   } from 'aurelia-binding';
   import {
+    getLogger
+  } from 'aurelia-logging';
+  import {
     inject,
     Container
   } from 'aurelia-dependency-injection';
-  import {
-    getLogger
-  } from 'aurelia-logging';
   import {
     TaskQueue
   } from 'aurelia-task-queue';

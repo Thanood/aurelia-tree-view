@@ -1,8 +1,8 @@
 import {customElement,bindable,noView,processContent,TargetInstruction,ViewCompiler,ViewResources,ViewSlot} from 'aurelia-templating';
 import {Aurelia} from 'aurelia-framework';
 import {computedFrom,observable,bindingMode} from 'aurelia-binding';
-import {inject,Container} from 'aurelia-dependency-injection';
 import {getLogger} from 'aurelia-logging';
+import {inject,Container} from 'aurelia-dependency-injection';
 import {TaskQueue} from 'aurelia-task-queue';
 
 @customElement(`${constants.elementPrefix}click-counter`)
@@ -76,6 +76,8 @@ export function fireEvent(element: Element, name: string, data? = {}) {
 export function fireTreeViewEvent(element: Element, name: string, data? = {}) {
   return fireEvent(element, `${constants.eventPrefix}${name}`, data);
 }
+
+const log = getLogger('node-model');
 
 export class NodeModel {
   title = '';
@@ -217,7 +219,8 @@ export class NodeModel {
       this.children.forEach(child => {
         child.selected = true;
         if (recursive) {
-          childPromises.push(child.selectChildren());
+          log.debug('selecting children recursively', this);
+          childPromises.push(child.selectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

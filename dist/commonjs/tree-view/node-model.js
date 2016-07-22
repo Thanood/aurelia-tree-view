@@ -11,6 +11,8 @@ var _dec, _dec2, _dec3, _desc, _value, _class, _descriptor, _descriptor2;
 
 var _aureliaBinding = require('aurelia-binding');
 
+var _aureliaLogging = require('aurelia-logging');
+
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
   Object.defineProperty(target, property, {
@@ -55,6 +57,8 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
+
+var log = (0, _aureliaLogging.getLogger)('node-model');
 
 var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _dec2 = (0, _aureliaBinding.observable)(), _dec3 = (0, _aureliaBinding.computedFrom)('children'), (_class = function () {
   NodeModel.createFromJSON = function createFromJSON(nodes) {
@@ -197,7 +201,8 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _
       _this2.children.forEach(function (child) {
         child.selected = true;
         if (recursive) {
-          childPromises.push(child.selectChildren());
+          log.debug('selecting children recursively', _this2);
+          childPromises.push(child.selectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

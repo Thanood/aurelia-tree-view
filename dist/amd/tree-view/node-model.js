@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _aureliaBinding, _aureliaLogging) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -74,6 +74,8 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
   }
 
   var _dec, _dec2, _dec3, _desc, _value, _class, _descriptor, _descriptor2;
+
+  var log = (0, _aureliaLogging.getLogger)('node-model');
 
   var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _dec2 = (0, _aureliaBinding.observable)(), _dec3 = (0, _aureliaBinding.computedFrom)('children'), (_class = function () {
     NodeModel.createFromJSON = function createFromJSON(nodes) {
@@ -216,7 +218,8 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
         _this2.children.forEach(function (child) {
           child.selected = true;
           if (recursive) {
-            childPromises.push(child.selectChildren());
+            log.debug('selecting children recursively', _this2);
+            childPromises.push(child.selectChildren(recursive));
           }
         });
         return Promise.all(childPromises);

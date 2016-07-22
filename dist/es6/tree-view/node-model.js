@@ -1,4 +1,7 @@
 import {computedFrom, observable} from 'aurelia-binding';
+import {getLogger} from 'aurelia-logging';
+
+const log = getLogger('node-model');
 
 export class NodeModel {
   title = '';
@@ -140,7 +143,8 @@ export class NodeModel {
       this.children.forEach(child => {
         child.selected = true;
         if (recursive) {
-          childPromises.push(child.selectChildren());
+          log.debug('selecting children recursively', this);
+          childPromises.push(child.selectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

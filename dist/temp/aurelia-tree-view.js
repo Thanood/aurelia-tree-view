@@ -17,9 +17,9 @@ var _aureliaFramework = require('aurelia-framework');
 
 var _aureliaBinding = require('aurelia-binding');
 
-var _aureliaDependencyInjection = require('aurelia-dependency-injection');
-
 var _aureliaLogging = require('aurelia-logging');
+
+var _aureliaDependencyInjection = require('aurelia-dependency-injection');
 
 var _aureliaTaskQueue = require('aurelia-task-queue');
 
@@ -136,6 +136,8 @@ function fireTreeViewEvent(element, name) {
 
   return fireEvent(element, '' + constants.eventPrefix + name, data);
 }
+
+var log = (0, _aureliaLogging.getLogger)('node-model');
 
 var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), _dec3 = (0, _aureliaBinding.observable)(), _dec4 = (0, _aureliaBinding.computedFrom)('children'), (_class4 = function () {
   NodeModel.createFromJSON = function createFromJSON(nodes) {
@@ -278,7 +280,8 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), 
       _this2.children.forEach(function (child) {
         child.selected = true;
         if (recursive) {
-          childPromises.push(child.selectChildren());
+          log.debug('selecting children recursively', _this2);
+          childPromises.push(child.selectChildren(recursive));
         }
       });
       return Promise.all(childPromises);

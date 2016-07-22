@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-binding'], function (_export, _context) {
+System.register(['aurelia-binding', 'aurelia-logging'], function (_export, _context) {
   "use strict";
 
-  var computedFrom, observable, _createClass, _dec, _dec2, _dec3, _desc, _value, _class, _descriptor, _descriptor2, NodeModel;
+  var computedFrom, observable, getLogger, _createClass, _dec, _dec2, _dec3, _desc, _value, _class, _descriptor, _descriptor2, log, NodeModel;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -58,6 +58,8 @@ System.register(['aurelia-binding'], function (_export, _context) {
     setters: [function (_aureliaBinding) {
       computedFrom = _aureliaBinding.computedFrom;
       observable = _aureliaBinding.observable;
+    }, function (_aureliaLogging) {
+      getLogger = _aureliaLogging.getLogger;
     }],
     execute: function () {
       _createClass = function () {
@@ -77,6 +79,8 @@ System.register(['aurelia-binding'], function (_export, _context) {
           return Constructor;
         };
       }();
+
+      log = getLogger('node-model');
 
       _export('NodeModel', NodeModel = (_dec = observable(), _dec2 = observable(), _dec3 = computedFrom('children'), (_class = function () {
         NodeModel.createFromJSON = function createFromJSON(nodes) {
@@ -219,7 +223,8 @@ System.register(['aurelia-binding'], function (_export, _context) {
             _this2.children.forEach(function (child) {
               child.selected = true;
               if (recursive) {
-                childPromises.push(child.selectChildren());
+                log.debug('selecting children recursively', _this2);
+                childPromises.push(child.selectChildren(recursive));
               }
             });
             return Promise.all(childPromises);
