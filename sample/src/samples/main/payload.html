@@ -2,7 +2,7 @@
   <div style="width: 300px">
     <tree-view
       nodes.bind="nodes"
-      selected.delegate="onSelect($event)"
+      selection-changed.delegate="onSelect($event)"
       collapsed.delegate="onCollapsed($event)"
       expanded.delegate="onExpanded($event)"
     ></tree-view>

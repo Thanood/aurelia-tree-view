@@ -37,6 +37,6 @@ export class Payload {
   }
 
   onSelect(e) {
-    this.logger.log(`node selected: ${e.detail.node.title}, ${JSON.stringify(e.detail.node.payload)}`);
+    this.logger.log(`node selected: ${e.detail.nodes[0].title}, ${JSON.stringify(e.detail.nodes[0].payload)}`);
   }
 }
