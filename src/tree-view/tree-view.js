@@ -74,6 +74,10 @@ export class TreeView {
         deselectNode: this.deselectNode.bind(this),
         multiSelect: this.multiSelect
       };
+      if (this.selected.indexOf(node) > -1) {
+        node.selected = true;
+        node.expandNode();
+      }
     });
   }
 
