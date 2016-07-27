@@ -576,18 +576,25 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   };
 
   TreeView.prototype.selectNode = function selectNode(node) {
-    this.log.debug('selecting node', node);
-    this.selected.push(node);
-    fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+    var _this7 = this;
+
+    var existing = this.selected.findIndex(function (n) {
+      return _this7.compareEquality({ a: node, b: n });
+    });
+    if (!existing) {
+      this.log.debug('selecting node', node);
+      this.selected.push(node);
+      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+    }
   };
 
   TreeView.prototype.deselectNode = function deselectNode(node) {
-    var _this7 = this;
+    var _this8 = this;
 
     this.log.debug('deselecting node', node);
 
     var index = this.selected.findIndex(function (n) {
-      return _this7.compareEquality({ a: node, b: n });
+      return _this8.compareEquality({ a: node, b: n });
     });
     if (index === -1) {
       this.log.error('node not found in selected', node);

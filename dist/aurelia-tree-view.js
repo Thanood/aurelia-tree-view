@@ -479,9 +479,12 @@ export class TreeView {
   }
 
   selectNode(node: NodeModel) {
-    this.log.debug('selecting node', node);
-    this.selected.push(node);
-    fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+    let existing = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
+      if (!existing) {
+      this.log.debug('selecting node', node);
+      this.selected.push(node);
+      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+    }
   }
 
   deselectNode(node: NodeModel) {
