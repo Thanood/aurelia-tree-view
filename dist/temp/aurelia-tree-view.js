@@ -517,6 +517,7 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   TreeView.prototype.nodesChanged = function nodesChanged(newValue, oldValue) {
     if (newValue) {
       this.enhanceNodes(newValue);
+      this.preselectNodes(newValue);
     }
   };
 
@@ -537,12 +538,20 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
         deselectNode: _this5.deselectNode.bind(_this5),
         multiSelect: _this5.multiSelect
       };
+    });
+  };
 
-      if (_this5.selected.find(function (n) {
-        return _this5.compareEquality({ a: node, b: n });
+  TreeView.prototype.preselectNodes = function preselectNodes(nodes) {
+    var _this6 = this;
+
+    nodes.forEach(function (node) {
+      if (_this6.selected.find(function (n) {
+        return _this6.compareEquality({ a: node, b: n });
       })) {
         node.selected = true;
-        node.expandNode();
+        node.expandNode().then(function () {
+          _this6.preselectNodes(node.children);
+        });
       }
     });
   };
@@ -573,12 +582,12 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   };
 
   TreeView.prototype.deselectNode = function deselectNode(node) {
-    var _this6 = this;
+    var _this7 = this;
 
     this.log.debug('deselecting node', node);
 
     var index = this.selected.findIndex(function (n) {
-      return _this6.compareEquality({ a: node, b: n });
+      return _this7.compareEquality({ a: node, b: n });
     });
     if (index === -1) {
       this.log.error('node not found in selected', node);

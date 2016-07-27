@@ -425,6 +425,7 @@ export class TreeView {
     if (newValue) {
       // && this.templateElement
       this.enhanceNodes(newValue);
+      this.preselectNodes(newValue);
     }
   }
 
@@ -443,13 +444,16 @@ export class TreeView {
         deselectNode: this.deselectNode.bind(this),
         multiSelect: this.multiSelect
       };
-      // if (this.selected.indexOf(node) > -1) {
-      //   node.selected = true;
-      //   node.expandNode();
-      // }
+    });
+  }
+
+  preselectNodes(nodes: NodeModel[]) {
+    nodes.forEach(node => {
       if (this.selected.find(n => this.compareEquality({a: node, b: n}))) {
         node.selected = true;
-        node.expandNode();
+        node.expandNode().then(() => {
+          this.preselectNodes(node.children);
+        });
       }
     });
   }

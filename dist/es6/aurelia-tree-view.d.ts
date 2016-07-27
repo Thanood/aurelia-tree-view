@@ -119,6 +119,7 @@ declare module 'aurelia-tree-view' {
     // this.log.warn('created - no template element');
     nodesChanged(newValue?: any, oldValue?: any): any;
     enhanceNodes(nodes: NodeModel[]): any;
+    preselectNodes(nodes: NodeModel[]): any;
     focusNode(node: NodeModel): any;
     selectNode(node: NodeModel): any;
     deselectNode(node: NodeModel): any;
