@@ -29,6 +29,9 @@
     },
     "node-template": {
       "files": ["html", "js"]
+    },
+    "preselect": {
+      "files": ["html", "js"]
     }
   }
 }
