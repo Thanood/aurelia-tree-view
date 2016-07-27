@@ -531,6 +531,10 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
         deselectNode: _this5.deselectNode.bind(_this5),
         multiSelect: _this5.multiSelect
       };
+      if (_this5.selected.indexOf(node) > -1) {
+        node.selected = true;
+        node.expandNode();
+      }
     });
   };
 

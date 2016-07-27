@@ -138,6 +138,10 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
         deselectNode: _this.deselectNode.bind(_this),
         multiSelect: _this.multiSelect
       };
+      if (_this.selected.indexOf(node) > -1) {
+        node.selected = true;
+        node.expandNode();
+      }
     });
   };
 
