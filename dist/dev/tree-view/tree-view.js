@@ -193,7 +193,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           var existing = this.selected.findIndex(function (n) {
             return _this3.compareEquality({ a: node, b: n });
           });
-          if (!existing) {
+          if (existing === -1) {
             this.log.debug('selecting node', node);
             this.selected.push(node);
             fireEvent(this.element, 'selection-changed', { nodes: this.selected });

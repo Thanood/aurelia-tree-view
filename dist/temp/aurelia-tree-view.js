@@ -581,7 +581,7 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
     var existing = this.selected.findIndex(function (n) {
       return _this7.compareEquality({ a: node, b: n });
     });
-    if (!existing) {
+    if (existing === -1) {
       this.log.debug('selecting node', node);
       this.selected.push(node);
       fireEvent(this.element, 'selection-changed', { nodes: this.selected });
