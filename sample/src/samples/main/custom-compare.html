@@ -1,0 +1,11 @@
+<template>
+  <require from="./multi-select.css"></require>
+  <div style="width: 300px; position: relative;">
+    <tree-view
+      nodes.bind="nodes"
+      multi-select="true"
+      compare-equality.call="compareNode(a, b)"
+      selected.bind="selected"
+    ></tree-view>
+  </div>
+</template>

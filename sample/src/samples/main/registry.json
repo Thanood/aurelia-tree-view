@@ -32,6 +32,9 @@
     },
     "preselect": {
       "files": ["html", "js"]
+    },
+    "custom-compare": {
+      "files": ["html", "js"]
     }
   }
 }
