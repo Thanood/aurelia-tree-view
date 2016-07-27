@@ -1,5 +1,10 @@
 <template>
   <require from="./multi-select.css"></require>
+  <div>
+    Oregon and its sub nodes should be selected.<br />
+    New York, New York City and its sub nodes should be selected.<br />
+    New York City (New York's first child) is lazy loaded.
+  </div>
   <div style="width: 300px; position: relative;">
     <tree-view
       nodes.bind="nodes"
