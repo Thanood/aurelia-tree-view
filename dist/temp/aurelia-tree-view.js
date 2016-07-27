@@ -577,10 +577,10 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
 
     this.log.debug('deselecting node', node);
 
-    var index = this.selected.find(function (n) {
+    var index = this.selected.findIndex(function (n) {
       return _this6.compareEquality({ a: node, b: n });
     });
-    if (!index) {
+    if (index === -1) {
       this.log.error('node not found in selected', node);
     } else {
       this.selected.splice(index, 1);

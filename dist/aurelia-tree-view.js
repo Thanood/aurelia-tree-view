@@ -483,8 +483,8 @@ export class TreeView {
   deselectNode(node: NodeModel) {
     this.log.debug('deselecting node', node);
     // let index = this.selected.indexOf(node);
-    let index = this.selected.find(n => this.compareEquality({a: node, b: n}));
-    if (!index) {
+    let index = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
+    if (index === -1) {
       this.log.error('node not found in selected', node);
     } else {
       this.selected.splice(index, 1);
