@@ -107,6 +107,7 @@ declare module 'aurelia-tree-view' {
     focused: NodeModel;
     selected: NodeModel[];
     subscriptions: any;
+    compareEquality: any;
     bind(): any;
     constructor(element?: any);
     

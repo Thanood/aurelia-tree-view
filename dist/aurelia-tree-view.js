@@ -384,6 +384,9 @@ export class TreeView {
   }) selected: NodeModel[] = [];
   subscriptions = [];
 
+  // comparers
+  @bindable() compareEquality = null;
+
   bind() {
     this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
   }
@@ -391,6 +394,7 @@ export class TreeView {
   constructor(element) {
     this.element = element;
     this.log = getLogger('tree-view');
+    this.compareEquality = (args) => { return args.a === args.b; };
 
     let templateElement = this.element.querySelector('tree-node-template');
     if (templateElement) {
@@ -439,7 +443,11 @@ export class TreeView {
         deselectNode: this.deselectNode.bind(this),
         multiSelect: this.multiSelect
       };
-      if (this.selected.indexOf(node) > -1) {
+      // if (this.selected.indexOf(node) > -1) {
+      //   node.selected = true;
+      //   node.expandNode();
+      // }
+      if (this.selected.find(n => this.compareEquality({a: node, b: n}))) {
         node.selected = true;
         node.expandNode();
       }
@@ -474,8 +482,9 @@ export class TreeView {
 
   deselectNode(node: NodeModel) {
     this.log.debug('deselecting node', node);
-    let index = this.selected.indexOf(node);
-    if (index === -1) {
+    // let index = this.selected.indexOf(node);
+    let index = this.selected.find(n => this.compareEquality({a: node, b: n}));
+    if (!index) {
       this.log.error('node not found in selected', node);
     } else {
       this.selected.splice(index, 1);

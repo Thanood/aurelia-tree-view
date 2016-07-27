@@ -3,7 +3,7 @@
 System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', 'aurelia-binding', './node-model', './tree-node', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, TreeView;
+  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, TreeView;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -75,7 +75,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         defaultBindingMode: bindingMode.twoWay
       }), _dec6 = bindable({
         defaultBindingMode: bindingMode.twoWay
-      }), _dec(_class = (_class2 = function () {
+      }), _dec7 = bindable(), _dec(_class = (_class2 = function () {
         TreeView.prototype.bind = function bind() {
           this.multiSelect = this.multiSelect === true || this.multiSelect === 'true';
         };
@@ -94,10 +94,16 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           _initDefineProp(this, 'selected', _descriptor5, this);
 
           this.subscriptions = [];
+
+          _initDefineProp(this, 'compareEquality', _descriptor6, this);
+
           this._suspendUpdate = false;
 
           this.element = element;
           this.log = getLogger('tree-view');
+          this.compareEquality = function (args) {
+            return args.a === args.b;
+          };
 
           var templateElement = this.element.querySelector('tree-node-template');
           if (templateElement) {
@@ -143,7 +149,10 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
               deselectNode: _this.deselectNode.bind(_this),
               multiSelect: _this.multiSelect
             };
-            if (_this.selected.indexOf(node) > -1) {
+
+            if (_this.selected.find(function (n) {
+              return _this.compareEquality({ a: node, b: n });
+            })) {
               node.selected = true;
               node.expandNode();
             }
@@ -176,9 +185,14 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         TreeView.prototype.deselectNode = function deselectNode(node) {
+          var _this2 = this;
+
           this.log.debug('deselecting node', node);
-          var index = this.selected.indexOf(node);
-          if (index === -1) {
+
+          var index = this.selected.find(function (n) {
+            return _this2.compareEquality({ a: node, b: n });
+          });
+          if (!index) {
             this.log.error('node not found in selected', node);
           } else {
             this.selected.splice(index, 1);
@@ -235,6 +249,11 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         enumerable: true,
         initializer: function initializer() {
           return [];
+        }
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'compareEquality', [_dec7], {
+        enumerable: true,
+        initializer: function initializer() {
+          return null;
         }
       })), _class2)) || _class));
 
