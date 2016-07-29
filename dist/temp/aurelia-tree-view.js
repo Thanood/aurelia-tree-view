@@ -417,8 +417,9 @@ var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.injec
     }
   };
 
-  TreeNode.prototype.focusNode = function focusNode(e) {
+  TreeNode.prototype.focusNode = function focusNode(e, permitBubbles) {
     this.model.focused = true;
+    return permitBubbles;
   };
 
   TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {

@@ -120,8 +120,9 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       }
     };
 
-    TreeNode.prototype.focusNode = function focusNode(e) {
+    TreeNode.prototype.focusNode = function focusNode(e, permitBubbles) {
       this.model.focused = true;
+      return permitBubbles;
     };
 
     TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {

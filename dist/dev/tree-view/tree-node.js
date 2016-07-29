@@ -136,8 +136,9 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           }
         };
 
-        TreeNode.prototype.focusNode = function focusNode(e) {
+        TreeNode.prototype.focusNode = function focusNode(e, permitBubbles) {
           this.model.focused = true;
+          return permitBubbles;
         };
 
         TreeNode.prototype.toggleSelected = function toggleSelected(e, permitBubbles) {

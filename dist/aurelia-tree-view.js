@@ -335,8 +335,9 @@ export class TreeNode {
     }
   }
 
-  focusNode(e) {
+  focusNode(e, permitBubbles) {
     this.model.focused = true;
+    return permitBubbles;
   }
 
   _toggleCalled = false;
