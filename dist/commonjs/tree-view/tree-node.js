@@ -127,7 +127,7 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
     }
   };
 
-  TreeNode.prototype.focusNode = function focusNode() {
+  TreeNode.prototype.focusNode = function focusNode(e) {
     this.model.focused = true;
   };
 

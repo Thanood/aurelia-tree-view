@@ -120,7 +120,7 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       }
     };
 
-    TreeNode.prototype.focusNode = function focusNode() {
+    TreeNode.prototype.focusNode = function focusNode(e) {
       this.model.focused = true;
     };
 

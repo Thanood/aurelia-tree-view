@@ -70,7 +70,7 @@ export class TreeNode {
     }
   }
 
-  focusNode() {
+  focusNode(e) {
     this.model.focused = true;
   }
 

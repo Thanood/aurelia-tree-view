@@ -136,7 +136,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           }
         };
 
-        TreeNode.prototype.focusNode = function focusNode() {
+        TreeNode.prototype.focusNode = function focusNode(e) {
           this.model.focused = true;
         };
 

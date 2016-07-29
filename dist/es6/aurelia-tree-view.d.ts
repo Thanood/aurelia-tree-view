@@ -96,12 +96,13 @@ declare module 'aurelia-tree-view' {
     
     // removeNode(node: TreeNode) { }
     removeChild(child: NodeModel): any;
-    focusNode(): any;
+    focusNode(e?: any): any;
     toggleSelected(e?: any, permitBubbles?: any): any;
     toggleNode(): any;
   }
   export class TreeView {
     expandOnFocus: boolean;
+    selectOnFocus: boolean;
     nodes: NodeModel[];
     multiSelect: boolean;
     focused: NodeModel;
@@ -120,7 +121,7 @@ declare module 'aurelia-tree-view' {
     nodesChanged(newValue?: any, oldValue?: any): any;
     enhanceNodes(nodes: NodeModel[]): any;
     preselectNodes(nodes: NodeModel[]): any;
-    focusNode(node: NodeModel): any;
+    focusNode(node: NodeModel, modifiers?: any): any;
     selectNode(node: NodeModel): any;
     deselectNode(node: NodeModel): any;
     expandOnFocusChanged(newValue?: any): any;

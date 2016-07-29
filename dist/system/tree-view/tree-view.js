@@ -3,7 +3,7 @@
 System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-logging', 'aurelia-binding', './node-model', './tree-node', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, TreeView;
+  var bindable, inject, getLogger, bindingMode, NodeModel, TreeNode, fireEvent, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, TreeView;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -71,13 +71,15 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
       fireEvent = _commonEvents.fireEvent;
     }],
     execute: function () {
-      _export('TreeView', TreeView = (_dec = inject(Element), _dec2 = bindable(), _dec3 = bindable(), _dec4 = bindable(), _dec5 = bindable({
+      _export('TreeView', TreeView = (_dec = inject(Element), _dec2 = bindable(), _dec3 = bindable(), _dec4 = bindable(), _dec5 = bindable(), _dec6 = bindable({
         defaultBindingMode: bindingMode.twoWay
-      }), _dec6 = bindable({
+      }), _dec7 = bindable({
         defaultBindingMode: bindingMode.twoWay
-      }), _dec7 = bindable(), _dec(_class = (_class2 = function () {
+      }), _dec8 = bindable(), _dec(_class = (_class2 = function () {
         TreeView.prototype.bind = function bind() {
+          this.expandOnFocus = this.expandOnFocus === true || this.expandOnFocus === 'true';
           this.multiSelect = this.multiSelect === true || this.multiSelect === 'true';
+          this.selectOnFocus = this.selectOnFocus === true || this.selectOnFocus === 'true';
         };
 
         function TreeView(element) {
@@ -85,17 +87,19 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
 
           _initDefineProp(this, 'expandOnFocus', _descriptor, this);
 
-          _initDefineProp(this, 'nodes', _descriptor2, this);
+          _initDefineProp(this, 'selectOnFocus', _descriptor2, this);
 
-          _initDefineProp(this, 'multiSelect', _descriptor3, this);
+          _initDefineProp(this, 'nodes', _descriptor3, this);
 
-          _initDefineProp(this, 'focused', _descriptor4, this);
+          _initDefineProp(this, 'multiSelect', _descriptor4, this);
 
-          _initDefineProp(this, 'selected', _descriptor5, this);
+          _initDefineProp(this, 'focused', _descriptor5, this);
+
+          _initDefineProp(this, 'selected', _descriptor6, this);
 
           this.subscriptions = [];
 
-          _initDefineProp(this, 'compareEquality', _descriptor6, this);
+          _initDefineProp(this, 'compareEquality', _descriptor7, this);
 
           this._suspendUpdate = false;
 
@@ -169,20 +173,32 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         TreeView.prototype.focusNode = function focusNode(node) {
-          if (!this._suspendUpdate && node !== this.focused) {
-            if (this.focused) {
-              this._suspendUpdate = true;
-              this.focused.focused = false;
-              this._suspendUpdate = false;
+          var modifiers = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+          if (!this._suspendUpdate) {
+            if (node !== this.focused) {
+              if (this.focused) {
+                this._suspendUpdate = true;
+                this.focused.focused = false;
+                this._suspendUpdate = false;
+              }
+              this.focused = node;
+              fireEvent(this.element, 'focused', { node: node });
+              if (this.expandOnFocus) {
+                node.expandNode();
+              }
+              if (!this.multiSelect) {
+                this.selected.splice(0);
+
+                node.selected = true;
+              }
             }
-            this.focused = node;
-            fireEvent(this.element, 'focused', { node: node });
-            if (this.expandOnFocus) {
-              node.expandNode();
-            }
-            if (!this.multiSelect) {
-              this.selected.splice(0);
-              this.selectNode(node);
+            if (this.selectOnFocus) {
+              node.selected = !node.selected;
+              if (modifiers['ctrl']) {
+                var recurse = !!modifiers['shift'];
+                node.selectChildren(recurse);
+              }
             }
           }
         };
@@ -248,25 +264,30 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'nodes', [_dec3], {
-        enumerable: true,
-        initializer: null
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'multiSelect', [_dec4], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'selectOnFocus', [_dec3], {
         enumerable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'focused', [_dec5], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'nodes', [_dec4], {
+        enumerable: true,
+        initializer: null
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'multiSelect', [_dec5], {
+        enumerable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'focused', [_dec6], {
         enumerable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'selected', [_dec6], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'selected', [_dec7], {
         enumerable: true,
         initializer: function initializer() {
           return [];
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'compareEquality', [_dec7], {
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, 'compareEquality', [_dec8], {
         enumerable: true,
         initializer: function initializer() {
           return null;
