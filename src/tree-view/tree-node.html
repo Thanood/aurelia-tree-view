@@ -7,7 +7,7 @@
           <span if.bind="model.hasChildren" click.trigger="toggleNode()" class="material-icons tree-node-arrow ${ model.loading ? 'tree-node-rotate' : '' }">
             ${ model.loading ? 'cached' : (model.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
-          <span click.delegate="focusNode($event)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+          <span click.delegate="focusNode($event, true)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
             <label if.bind="model._tree.multiSelect">
               <input type="checkbox" checked.bind="model.selected" click.delegate="toggleSelected($event, true)" />
             </label> ${model.title}
