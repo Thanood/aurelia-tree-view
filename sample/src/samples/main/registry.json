@@ -6,7 +6,9 @@
       "files": ["html", "js"]
     },
     "multi-select": {
-      "default" : true,
+      "files": ["html", "js"]
+    },
+    "select-on-focus": {
       "files": ["html", "js"]
     },
     "init-from-json": {
