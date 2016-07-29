@@ -9,6 +9,7 @@ import {fireEvent} from '../common/events';
 @inject(Element)
 export class TreeView {
   @bindable() expandOnFocus: boolean = false;
+  @bindable() selectOnFocus: boolean = false;
   @bindable() nodes: NodeModel[];
   @bindable() multiSelect: boolean = false;
   @bindable({
@@ -23,7 +24,9 @@ export class TreeView {
   @bindable() compareEquality = null;
 
   bind() {
+    this.expandOnFocus = (this.expandOnFocus === true || this.expandOnFocus === 'true');
     this.multiSelect = (this.multiSelect === true || this.multiSelect === 'true');
+    this.selectOnFocus = (this.selectOnFocus === true || this.selectOnFocus === 'true');
   }
 
   constructor(element) {
@@ -94,21 +97,31 @@ export class TreeView {
   }
 
   _suspendUpdate = false;
-  focusNode(node: NodeModel) {
-    if (!this._suspendUpdate && node !== this.focused) {
-      if (this.focused) {
-        this._suspendUpdate = true;
-        this.focused.focused = false;
-        this._suspendUpdate = false;
+  focusNode(node: NodeModel, modifiers = {}) {
+    if (!this._suspendUpdate) {
+      if (node !== this.focused) {
+        if (this.focused) {
+          this._suspendUpdate = true;
+          this.focused.focused = false;
+          this._suspendUpdate = false;
+        }
+        this.focused = node;
+        fireEvent(this.element, 'focused', { node });
+        if (this.expandOnFocus) {
+          node.expandNode();
+        }
+        if (!this.multiSelect) {
+          this.selected.splice(0);
+          // this.selectNode(node);
+          node.selected = true;
+        }
       }
-      this.focused = node;
-      fireEvent(this.element, 'focused', { node });
-      if (this.expandOnFocus) {
-        node.expandNode();
-      }
-      if (!this.multiSelect) {
-        this.selected.splice(0);
-        this.selectNode(node);
+      if (this.selectOnFocus) {
+        node.selected = !node.selected;
+        if (modifiers['ctrl']) {
+          let recurse = !!modifiers['shift'];
+          node.selectChildren(recurse);
+        }
       }
     }
   }
