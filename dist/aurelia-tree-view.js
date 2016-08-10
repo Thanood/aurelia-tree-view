@@ -462,6 +462,7 @@ export class TreeView {
     });
   }
 
+  _suspendEvents = false;
   _suspendUpdate = false;
   focusNode(node: NodeModel, modifiers = {}) {
     if (!this._suspendUpdate) {
@@ -477,7 +478,10 @@ export class TreeView {
           node.expandNode();
         }
         if (!this.multiSelect) {
-          this.selected.splice(0);
+          this._suspendEvents = true;
+          this.selected.forEach(node => node.selected = false);
+          this._suspendEvents = false;
+          // this.selected.splice(0);
           // this.selectNode(node);
           node.selected = true;
         }
@@ -494,22 +498,25 @@ export class TreeView {
 
   selectNode(node: NodeModel) {
     let existing = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
-      if (existing === -1) {
+    if (existing === -1) {
       this.log.debug('selecting node', node);
       this.selected.push(node);
-      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+      if (!this._suspendEvents) {
+        fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+      }
     }
   }
 
   deselectNode(node: NodeModel) {
-    this.log.debug('deselecting node', node);
-    // let index = this.selected.indexOf(node);
     let index = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
     if (index === -1) {
       this.log.error('node not found in selected', node);
     } else {
+      this.log.debug('deselecting node', node);
       this.selected.splice(index, 1);
-      fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+      if (!this._suspendEvents) {
+        fireEvent(this.element, 'selection-changed', { nodes: this.selected });
+      }
     }
   }
 

@@ -96,6 +96,7 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
 
     _initDefineProp(this, 'compareEquality', _descriptor7, this);
 
+    this._suspendEvents = false;
     this._suspendUpdate = false;
 
     this.element = element;
@@ -183,7 +184,11 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
           node.expandNode();
         }
         if (!this.multiSelect) {
-          this.selected.splice(0);
+          this._suspendEvents = true;
+          this.selected.forEach(function (node) {
+            return node.selected = false;
+          });
+          this._suspendEvents = false;
 
           node.selected = true;
         }
@@ -207,14 +212,14 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
     if (existing === -1) {
       this.log.debug('selecting node', node);
       this.selected.push(node);
-      (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
+      if (!this._suspendEvents) {
+        (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
+      }
     }
   };
 
   TreeView.prototype.deselectNode = function deselectNode(node) {
     var _this4 = this;
-
-    this.log.debug('deselecting node', node);
 
     var index = this.selected.findIndex(function (n) {
       return _this4.compareEquality({ a: node, b: n });
@@ -222,8 +227,11 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
     if (index === -1) {
       this.log.error('node not found in selected', node);
     } else {
+      this.log.debug('deselecting node', node);
       this.selected.splice(index, 1);
-      (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
+      if (!this._suspendEvents) {
+        (0, _events.fireEvent)(this.element, 'selection-changed', { nodes: this.selected });
+      }
     }
   };
 
