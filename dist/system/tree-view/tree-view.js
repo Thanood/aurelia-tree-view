@@ -248,7 +248,9 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           this.selected.forEach(function (node) {
             node.selected = false;
           });
-          this.focused.focused = false;
+          if (this.focused) {
+            this.focused.focused = false;
+          }
         };
 
         TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
