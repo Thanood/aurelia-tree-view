@@ -239,6 +239,13 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
     this.expandOnFocus = newValue === true || newValue === 'true';
   };
 
+  TreeView.prototype.clearSelection = function clearSelection() {
+    this.selected.forEach(function (node) {
+      node.selected = false;
+    });
+    this.focused.focused = false;
+  };
+
   TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
     this.log.debug('moveNode', node, target, sibling);
 

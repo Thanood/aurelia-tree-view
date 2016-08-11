@@ -158,6 +158,13 @@ export class TreeView {
     this.expandOnFocus = (newValue === true || newValue === 'true');
   }
 
+  clearSelection() {
+    this.selected.forEach(node => {
+      node.selected = false;
+    });
+    this.focused.focused = false;
+  }
+
   // moveNode(node: TreeNode, target: TreeNode | TreeView) {
   //   console.log('moveNode', node, target);
   //   if (target instanceof TreeNode) {

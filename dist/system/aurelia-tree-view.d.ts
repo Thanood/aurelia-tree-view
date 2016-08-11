@@ -125,6 +125,7 @@ declare module 'aurelia-tree-view' {
     selectNode(node: NodeModel): any;
     deselectNode(node: NodeModel): any;
     expandOnFocusChanged(newValue?: any): any;
+    clearSelection(): any;
     
     // moveNode(node: TreeNode, target: TreeNode | TreeView) {
     //   console.log('moveNode', node, target);
