@@ -162,7 +162,7 @@ export class TreeView {
     this.selected.forEach(node => {
       node.selected = false;
     });
-    this.focused.focused = false;
+    this.focused && this.focused.focused = false;
   }
 
   // moveNode(node: TreeNode, target: TreeNode | TreeView) {
