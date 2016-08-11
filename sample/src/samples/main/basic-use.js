@@ -27,4 +27,8 @@ export class BasicUse {
     ]);
     this.nodes = [texas, newYork, oregon, california];
   }
+
+  clearSelection() {
+    this.tree.clearSelection();
+  }
 }
