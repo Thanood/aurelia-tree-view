@@ -113,8 +113,11 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
   };
 
   TreeNode.prototype.modelChanged = function modelChanged(newValue) {
-    if (newValue && newValue._template && this.templateTarget) {
-      this.useTemplate();
+    if (newValue) {
+      newValue._element = this;
+      if (newValue._template && this.templateTarget) {
+        this.useTemplate();
+      }
     }
   };
 
