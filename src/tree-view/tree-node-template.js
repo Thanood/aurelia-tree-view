@@ -12,7 +12,7 @@ import {customElement, bindable, noView, processContent, TargetInstruction} from
   element.innerHTML = '';
 })
 @inject(TargetInstruction)
-export class TreeViewTemplate {
+export class TreeNodeTemplate {
   log = getLogger('tree-node-template');
 
   constructor(targetInstruction) {
