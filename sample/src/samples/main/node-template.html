@@ -4,6 +4,10 @@
       Click on a node to trigger a method defined in the calling view model.
     </p>
   </div>
+  <div>
+    <span style="font-weight: bold;">clicked node:</span> <span>${clickedNode.title}</span>
+  </div>
+  <hr />
   <div style="width: 300px; position: relative;">
     <tree-view nodes.bind="nodes">
       <tree-node-template model.bind="nodeInterface">
@@ -15,8 +19,5 @@
         </div>
       </tree-node-template>
     </tree-view>
-  </div>
-  <div>
-    <span style="font-weight: bold;">clicked node:</span> <span>${clickedNode.title}</span>
   </div>
 </template>
