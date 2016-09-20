@@ -110,6 +110,7 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _
 
     this.loading = false;
     this._template = null;
+    this._templateModel = null;
     this._tree = null;
 
     this.title = title;

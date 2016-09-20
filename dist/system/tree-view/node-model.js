@@ -132,6 +132,7 @@ System.register(['aurelia-binding', 'aurelia-logging'], function (_export, _cont
 
           this.loading = false;
           this._template = null;
+          this._templateModel = null;
           this._tree = null;
 
           this.title = title;

@@ -147,6 +147,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
             }
             if (_this.templateElement) {
               node._template = _this.templateElement.au.controller.viewModel.template;
+              node._templateModel = _this.templateElement.au.controller.viewModel.model;
             }
 
             node._tree = {

@@ -98,11 +98,12 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
 
   TreeNode.prototype.useTemplate = function useTemplate() {
     var template = this.model._template;
+    var model = this.model._templateModel;
     var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
     var view = viewFactory.create(this.container);
     this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this);
+    this.viewSlot.bind(this, model);
     this.viewSlot.attached();
   };
 

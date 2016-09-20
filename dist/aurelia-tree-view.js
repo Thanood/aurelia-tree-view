@@ -90,6 +90,7 @@ export class NodeModel {
   @observable() selected = false;
   loading = false;
   _template = null;
+  _templateModel = null;
   _tree = null;
 
   static createFromJSON(nodes: any[]) {
@@ -261,7 +262,8 @@ export class NodeModel {
   element.innerHTML = '';
 })
 @inject(TargetInstruction)
-export class TreeViewTemplate {
+export class TreeNodeTemplate {
+  @bindable() model;
   log = getLogger('tree-node-template');
 
   constructor(targetInstruction) {
@@ -303,11 +305,12 @@ export class TreeNode {
 
   useTemplate() {
     let template = this.model._template;
+    let model = this.model._templateModel;
     let viewFactory = this.viewCompiler.compile(`<template>${template}</template>`, this.viewResources);
     let view = viewFactory.create(this.container);
     this.viewSlot = new ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this);
+    this.viewSlot.bind(this, model);
     this.viewSlot.attached();
   }
 
@@ -443,6 +446,7 @@ export class TreeView {
       }
       if (this.templateElement) {
         node._template = this.templateElement.au.controller.viewModel.template;
+        node._templateModel = this.templateElement.au.controller.viewModel.model;
       }
       // node._tree = this;
       node._tree = {

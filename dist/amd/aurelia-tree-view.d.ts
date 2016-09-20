@@ -80,7 +80,8 @@ declare module 'aurelia-tree-view' {
     deselectChildren(recursive?: any): any;
     toggleSelected(): any;
   }
-  export class TreeViewTemplate {
+  export class TreeNodeTemplate {
+    model: any;
     log: any;
     constructor(targetInstruction?: any);
   }

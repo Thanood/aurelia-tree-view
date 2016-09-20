@@ -142,6 +142,7 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
       }
       if (_this.templateElement) {
         node._template = _this.templateElement.au.controller.viewModel.template;
+        node._templateModel = _this.templateElement.au.controller.viewModel.model;
       }
 
       node._tree = {

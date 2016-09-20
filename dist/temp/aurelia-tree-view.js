@@ -1,11 +1,11 @@
 'use strict';
 
 exports.__esModule = true;
-exports.TreeView = exports.TreeNode = exports.TreeViewTemplate = exports.NodeModel = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
+exports.TreeView = exports.TreeNode = exports.TreeNodeTemplate = exports.NodeModel = exports.constants = exports.ConfigBuilder = exports.ClickCounter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _dec, _class, _dec2, _dec3, _dec4, _desc, _value, _class4, _descriptor, _descriptor2, _dec5, _dec6, _dec7, _dec8, _class6, _dec9, _dec10, _class8, _desc2, _value2, _class9, _descriptor3, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class11, _desc3, _value3, _class12, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10;
+var _dec, _class, _dec2, _dec3, _dec4, _desc, _value, _class4, _descriptor, _descriptor2, _dec5, _dec6, _dec7, _dec8, _dec9, _class6, _desc2, _value2, _class7, _descriptor3, _dec10, _dec11, _class9, _desc3, _value3, _class10, _descriptor4, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class12, _desc4, _value4, _class13, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11;
 
 exports.configure = configure;
 exports.fireEvent = fireEvent;
@@ -189,6 +189,7 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), 
 
     this.loading = false;
     this._template = null;
+    this._templateModel = null;
     this._tree = null;
 
     this.title = title;
@@ -340,25 +341,30 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), 
     return false;
   }
 }), _applyDecoratedDescriptor(_class4.prototype, 'hasChildren', [_dec4], Object.getOwnPropertyDescriptor(_class4.prototype, 'hasChildren'), _class4.prototype)), _class4));
-var TreeViewTemplate = exports.TreeViewTemplate = (_dec5 = (0, _aureliaTemplating.customElement)('tree-node-template'), _dec6 = (0, _aureliaTemplating.noView)(), _dec7 = (0, _aureliaTemplating.processContent)(function (compiler, resources, element, instruction) {
+var TreeNodeTemplate = exports.TreeNodeTemplate = (_dec5 = (0, _aureliaTemplating.customElement)('tree-node-template'), _dec6 = (0, _aureliaTemplating.noView)(), _dec7 = (0, _aureliaTemplating.processContent)(function (compiler, resources, element, instruction) {
   var html = element.innerHTML;
   if (html !== '') {
     instruction.template = html;
   }
   element.innerHTML = '';
-}), _dec8 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.TargetInstruction), _dec5(_class6 = _dec6(_class6 = _dec7(_class6 = _dec8(_class6 = function TreeViewTemplate(targetInstruction) {
-  _classCallCheck(this, TreeViewTemplate);
+}), _dec8 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.TargetInstruction), _dec9 = (0, _aureliaTemplating.bindable)(), _dec5(_class6 = _dec6(_class6 = _dec7(_class6 = _dec8(_class6 = (_class7 = function TreeNodeTemplate(targetInstruction) {
+  _classCallCheck(this, TreeNodeTemplate);
+
+  _initDefineProp(this, 'model', _descriptor3, this);
 
   this.log = (0, _aureliaLogging.getLogger)('tree-node-template');
 
   this.template = targetInstruction.elementInstruction.template;
   this.log.debug(targetInstruction);
-}) || _class6) || _class6) || _class6) || _class6);
-var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec10 = (0, _aureliaTemplating.bindable)(), _dec9(_class8 = (_class9 = function () {
+}, (_descriptor3 = _applyDecoratedDescriptor(_class7.prototype, 'model', [_dec9], {
+  enumerable: true,
+  initializer: null
+})), _class7)) || _class6) || _class6) || _class6) || _class6);
+var TreeNode = exports.TreeNode = (_dec10 = (0, _aureliaDependencyInjection.inject)(Element, _aureliaTemplating.ViewCompiler, _aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container, _aureliaTaskQueue.TaskQueue), _dec11 = (0, _aureliaTemplating.bindable)(), _dec10(_class9 = (_class10 = function () {
   function TreeNode(element, viewCompiler, viewResources, container, taskQueue) {
     _classCallCheck(this, TreeNode);
 
-    _initDefineProp(this, 'model', _descriptor3, this);
+    _initDefineProp(this, 'model', _descriptor4, this);
 
     this._toggleCalled = false;
 
@@ -388,11 +394,12 @@ var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.injec
 
   TreeNode.prototype.useTemplate = function useTemplate() {
     var template = this.model._template;
+    var model = this.model._templateModel;
     var viewFactory = this.viewCompiler.compile('<template>' + template + '</template>', this.viewResources);
     var view = viewFactory.create(this.container);
     this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this);
+    this.viewSlot.bind(this, model);
     this.viewSlot.attached();
   };
 
@@ -457,17 +464,17 @@ var TreeNode = exports.TreeNode = (_dec9 = (0, _aureliaDependencyInjection.injec
   };
 
   return TreeNode;
-}(), (_descriptor3 = _applyDecoratedDescriptor(_class9.prototype, 'model', [_dec10], {
+}(), (_descriptor4 = _applyDecoratedDescriptor(_class10.prototype, 'model', [_dec11], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-})), _class9)) || _class8);
-var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inject)(Element), _dec12 = (0, _aureliaTemplating.bindable)(), _dec13 = (0, _aureliaTemplating.bindable)(), _dec14 = (0, _aureliaTemplating.bindable)(), _dec15 = (0, _aureliaTemplating.bindable)(), _dec16 = (0, _aureliaTemplating.bindable)({
+})), _class10)) || _class9);
+var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inject)(Element), _dec13 = (0, _aureliaTemplating.bindable)(), _dec14 = (0, _aureliaTemplating.bindable)(), _dec15 = (0, _aureliaTemplating.bindable)(), _dec16 = (0, _aureliaTemplating.bindable)(), _dec17 = (0, _aureliaTemplating.bindable)({
   defaultBindingMode: _aureliaBinding.bindingMode.twoWay
-}), _dec17 = (0, _aureliaTemplating.bindable)({
+}), _dec18 = (0, _aureliaTemplating.bindable)({
   defaultBindingMode: _aureliaBinding.bindingMode.twoWay
-}), _dec18 = (0, _aureliaTemplating.bindable)(), _dec11(_class11 = (_class12 = function () {
+}), _dec19 = (0, _aureliaTemplating.bindable)(), _dec12(_class12 = (_class13 = function () {
   TreeView.prototype.bind = function bind() {
     this.expandOnFocus = this.expandOnFocus === true || this.expandOnFocus === 'true';
     this.multiSelect = this.multiSelect === true || this.multiSelect === 'true';
@@ -477,21 +484,21 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   function TreeView(element) {
     _classCallCheck(this, TreeView);
 
-    _initDefineProp(this, 'expandOnFocus', _descriptor4, this);
+    _initDefineProp(this, 'expandOnFocus', _descriptor5, this);
 
-    _initDefineProp(this, 'selectOnFocus', _descriptor5, this);
+    _initDefineProp(this, 'selectOnFocus', _descriptor6, this);
 
-    _initDefineProp(this, 'nodes', _descriptor6, this);
+    _initDefineProp(this, 'nodes', _descriptor7, this);
 
-    _initDefineProp(this, 'multiSelect', _descriptor7, this);
+    _initDefineProp(this, 'multiSelect', _descriptor8, this);
 
-    _initDefineProp(this, 'focused', _descriptor8, this);
+    _initDefineProp(this, 'focused', _descriptor9, this);
 
-    _initDefineProp(this, 'selected', _descriptor9, this);
+    _initDefineProp(this, 'selected', _descriptor10, this);
 
     this.subscriptions = [];
 
-    _initDefineProp(this, 'compareEquality', _descriptor10, this);
+    _initDefineProp(this, 'compareEquality', _descriptor11, this);
 
     this._suspendEvents = false;
     this._suspendUpdate = false;
@@ -539,6 +546,7 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
       }
       if (_this5.templateElement) {
         node._template = _this5.templateElement.au.controller.viewModel.template;
+        node._templateModel = _this5.templateElement.au.controller.viewModel.model;
       }
 
       node._tree = {
@@ -668,37 +676,37 @@ var TreeView = exports.TreeView = (_dec11 = (0, _aureliaDependencyInjection.inje
   };
 
   return TreeView;
-}(), (_descriptor4 = _applyDecoratedDescriptor(_class12.prototype, 'expandOnFocus', [_dec12], {
+}(), (_descriptor5 = _applyDecoratedDescriptor(_class13.prototype, 'expandOnFocus', [_dec13], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class12.prototype, 'selectOnFocus', [_dec13], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class13.prototype, 'selectOnFocus', [_dec14], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class12.prototype, 'nodes', [_dec14], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class13.prototype, 'nodes', [_dec15], {
   enumerable: true,
   initializer: null
-}), _descriptor7 = _applyDecoratedDescriptor(_class12.prototype, 'multiSelect', [_dec15], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class13.prototype, 'multiSelect', [_dec16], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class12.prototype, 'focused', [_dec16], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class13.prototype, 'focused', [_dec17], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class12.prototype, 'selected', [_dec17], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class13.prototype, 'selected', [_dec18], {
   enumerable: true,
   initializer: function initializer() {
     return [];
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class12.prototype, 'compareEquality', [_dec18], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class13.prototype, 'compareEquality', [_dec19], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-})), _class12)) || _class11);
+})), _class13)) || _class12);

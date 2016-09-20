@@ -127,6 +127,7 @@ define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _au
 
       this.loading = false;
       this._template = null;
+      this._templateModel = null;
       this._tree = null;
 
       this.title = title;

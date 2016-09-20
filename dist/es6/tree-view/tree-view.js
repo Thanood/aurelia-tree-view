@@ -74,6 +74,7 @@ export class TreeView {
       }
       if (this.templateElement) {
         node._template = this.templateElement.au.controller.viewModel.template;
+        node._templateModel = this.templateElement.au.controller.viewModel.model;
       }
       // node._tree = this;
       node._tree = {
