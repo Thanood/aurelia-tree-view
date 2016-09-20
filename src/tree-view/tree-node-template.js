@@ -13,6 +13,7 @@ import {customElement, bindable, noView, processContent, TargetInstruction} from
 })
 @inject(TargetInstruction)
 export class TreeNodeTemplate {
+  @bindable() model;
   log = getLogger('tree-node-template');
 
   constructor(targetInstruction) {

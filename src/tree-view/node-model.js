@@ -14,6 +14,7 @@ export class NodeModel {
   @observable() selected = false;
   loading = false;
   _template = null;
+  _templateModel = null;
   _tree = null;
 
   static createFromJSON(nodes: any[]) {
