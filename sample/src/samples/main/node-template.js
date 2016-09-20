@@ -1,7 +1,14 @@
 import {NodeModel} from 'aurelia-tree-view';
 
 export class NodeTemplate {
+  clickedNode = null;
   nodes = [];
+  nodeInterface = {
+    nodeClicked: (node) => {
+      console.log("I'm here", node);
+      this.clickedNode = node;
+    }
+  };
 
   attached() {
     let texas = new NodeModel('Texas', [
