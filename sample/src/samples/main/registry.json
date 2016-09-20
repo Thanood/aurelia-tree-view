@@ -37,6 +37,9 @@
     },
     "custom-compare": {
       "files": ["html", "js"]
+    },
+    "locked-nodes": {
+      "files": ["html", "js"]
     }
   }
 }
