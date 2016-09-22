@@ -9,3 +9,9 @@ Also a means to try [`skeleton-catalog`](https://github.com/aurelia-ui-toolkits/
 Inspired heavily by: https://github.com/thelgevold/aurelia-treeview
 
 Following this blog post: http://www.syntaxsuccess.com/viewarticle/5529813d955de264e1fbbaec
+
+For anyone trying to get it running:
+
+* `npm install && jspm install` in root
+* `jspm install` in sample directory
+* `gulp watch` in root or sample directory
