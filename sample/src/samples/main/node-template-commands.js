@@ -1,9 +1,36 @@
+import {inject} from 'aurelia-framework';
 import {NodeModel} from 'aurelia-tree-view';
 
-export class LockedNodes {
+const stockCommands = [
+  { title: 'HTML' },
+  { title: 'Javascript' },
+  { title: 'CSS' },
+  { title: 'Documentation' }
+];
+
+export class NodeTemplateCommands {
+  commands = [];
   nodes = [];
 
+  nodeInterface = {
+    commands: [],
+    executeCommand: function (cmd, model) {
+      console.log('-- command execute:', arguments);
+      // this.logger.log('-- command execute:', cmd.title);
+    }
+  }
+
+  constructor() {
+    // this.commands = stockCommands;
+    this.nodeInterface.commands = this.commands;
+  }
+
   attached() {
+    // simulate fetching commands from a service
+    window.setTimeout(() => {
+      this.nodeInterface.commands = stockCommands;
+    }, 500);
+
     let texas = new NodeModel('Texas', [
       new NodeModel('Austin'),
       new NodeModel('Houston')

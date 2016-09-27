@@ -32,13 +32,13 @@
     "node-template": {
       "files": ["html", "js"]
     },
+    "node-template-commands": {
+      "files": ["html", "js", "css", "md"]
+    },
     "preselect": {
       "files": ["html", "js"]
     },
     "custom-compare": {
-      "files": ["html", "js"]
-    },
-    "locked-nodes": {
       "files": ["html", "js"]
     }
   }
