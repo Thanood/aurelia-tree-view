@@ -72,7 +72,6 @@ var TreeNodeTemplate = exports.TreeNodeTemplate = (_dec = (0, _aureliaTemplating
   this.log = (0, _aureliaLogging.getLogger)('tree-node-template');
 
   this.template = targetInstruction.elementInstruction.template;
-  this.log.debug(targetInstruction);
 }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'model', [_dec5], {
   enumerable: true,
   initializer: null

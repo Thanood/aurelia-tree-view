@@ -15,6 +15,7 @@ declare module 'aurelia-tree-view' {
   import {
     computedFrom,
     observable,
+    createOverrideContext,
     bindingMode
   } from 'aurelia-binding';
   import {
@@ -85,6 +86,8 @@ declare module 'aurelia-tree-view' {
     log: any;
     constructor(targetInstruction?: any);
   }
+  
+  // this.log.debug(targetInstruction);
   export class TreeNode {
     model: NodeModel;
     constructor(element: Element, viewCompiler: ViewCompiler, viewResources: ViewResources, container: Container, taskQueue: TaskQueue);

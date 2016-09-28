@@ -355,7 +355,6 @@ var TreeNodeTemplate = exports.TreeNodeTemplate = (_dec5 = (0, _aureliaTemplatin
   this.log = (0, _aureliaLogging.getLogger)('tree-node-template');
 
   this.template = targetInstruction.elementInstruction.template;
-  this.log.debug(targetInstruction);
 }, (_descriptor3 = _applyDecoratedDescriptor(_class7.prototype, 'model', [_dec9], {
   enumerable: true,
   initializer: null
@@ -399,7 +398,9 @@ var TreeNode = exports.TreeNode = (_dec10 = (0, _aureliaDependencyInjection.inje
     var view = viewFactory.create(this.container);
     this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this, model);
+
+
+    this.viewSlot.bind(this, (0, _aureliaBinding.createOverrideContext)(this, model));
     this.viewSlot.attached();
   };
 

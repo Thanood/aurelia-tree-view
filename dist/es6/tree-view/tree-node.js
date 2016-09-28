@@ -1,4 +1,5 @@
 import {bindable, ViewCompiler, ViewResources, ViewSlot} from 'aurelia-templating';
+import {createOverrideContext} from 'aurelia-binding';
 import {Container, inject} from 'aurelia-dependency-injection';
 import {TaskQueue} from 'aurelia-task-queue';
 import {getLogger} from 'aurelia-logging';
@@ -43,7 +44,15 @@ export class TreeNode {
     let view = viewFactory.create(this.container);
     this.viewSlot = new ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this, model);
+    // this.log.debug('useTemplate, binding model', model);
+    // this.viewSlot.bind(this, model);
+
+    // this.viewSlot.bind(this, {
+    //   bindingContext: this,
+    //   parentOverrideContext: model
+    // });
+
+    this.viewSlot.bind(this, createOverrideContext(this, model));
     this.viewSlot.attached();
   }
 

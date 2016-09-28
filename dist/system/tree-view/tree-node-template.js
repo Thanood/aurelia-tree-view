@@ -81,7 +81,6 @@ System.register(['aurelia-dependency-injection', 'aurelia-logging', 'aurelia-tem
         this.log = getLogger('tree-node-template');
 
         this.template = targetInstruction.elementInstruction.template;
-        this.log.debug(targetInstruction);
       }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'model', [_dec5], {
         enumerable: true,
         initializer: null

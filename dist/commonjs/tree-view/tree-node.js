@@ -9,6 +9,8 @@ var _dec, _dec2, _class, _desc, _value, _class2, _descriptor;
 
 var _aureliaTemplating = require('aurelia-templating');
 
+var _aureliaBinding = require('aurelia-binding');
+
 var _aureliaDependencyInjection = require('aurelia-dependency-injection');
 
 var _aureliaTaskQueue = require('aurelia-task-queue');
@@ -103,7 +105,9 @@ var TreeNode = exports.TreeNode = (_dec = (0, _aureliaDependencyInjection.inject
     var view = viewFactory.create(this.container);
     this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this, model);
+
+
+    this.viewSlot.bind(this, (0, _aureliaBinding.createOverrideContext)(this, model));
     this.viewSlot.attached();
   };
 

@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (_export, _context) {
+System.register(['aurelia-templating', 'aurelia-binding', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (_export, _context) {
   "use strict";
 
-  var bindable, ViewCompiler, ViewResources, ViewSlot, Container, inject, TaskQueue, getLogger, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
+  var bindable, ViewCompiler, ViewResources, ViewSlot, createOverrideContext, Container, inject, TaskQueue, getLogger, NodeModel, fireEvent, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, TreeNode;
 
   function _initDefineProp(target, property, descriptor, context) {
     if (!descriptor) return;
@@ -60,6 +60,8 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
       ViewCompiler = _aureliaTemplating.ViewCompiler;
       ViewResources = _aureliaTemplating.ViewResources;
       ViewSlot = _aureliaTemplating.ViewSlot;
+    }, function (_aureliaBinding) {
+      createOverrideContext = _aureliaBinding.createOverrideContext;
     }, function (_aureliaDependencyInjection) {
       Container = _aureliaDependencyInjection.Container;
       inject = _aureliaDependencyInjection.inject;
@@ -112,7 +114,9 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           var view = viewFactory.create(this.container);
           this.viewSlot = new ViewSlot(this.templateTarget, true);
           this.viewSlot.add(view);
-          this.viewSlot.bind(this, model);
+
+
+          this.viewSlot.bind(this, createOverrideContext(this, model));
           this.viewSlot.attached();
         };
 

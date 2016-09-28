@@ -18,6 +18,6 @@ export class TreeNodeTemplate {
 
   constructor(targetInstruction) {
     this.template = targetInstruction.elementInstruction.template;
-    this.log.debug(targetInstruction);
+    // this.log.debug(targetInstruction);
   }
 }

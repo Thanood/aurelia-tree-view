@@ -1,6 +1,6 @@
 import {customElement,bindable,noView,processContent,TargetInstruction,ViewCompiler,ViewResources,ViewSlot} from 'aurelia-templating';
 import {Aurelia} from 'aurelia-framework';
-import {computedFrom,observable,bindingMode} from 'aurelia-binding';
+import {computedFrom,observable,createOverrideContext,bindingMode} from 'aurelia-binding';
 import {getLogger} from 'aurelia-logging';
 import {inject,Container} from 'aurelia-dependency-injection';
 import {TaskQueue} from 'aurelia-task-queue';
@@ -268,7 +268,7 @@ export class TreeNodeTemplate {
 
   constructor(targetInstruction) {
     this.template = targetInstruction.elementInstruction.template;
-    this.log.debug(targetInstruction);
+    // this.log.debug(targetInstruction);
   }
 }
 
@@ -310,7 +310,15 @@ export class TreeNode {
     let view = viewFactory.create(this.container);
     this.viewSlot = new ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
-    this.viewSlot.bind(this, model);
+    // this.log.debug('useTemplate, binding model', model);
+    // this.viewSlot.bind(this, model);
+
+    // this.viewSlot.bind(this, {
+    //   bindingContext: this,
+    //   parentOverrideContext: model
+    // });
+
+    this.viewSlot.bind(this, createOverrideContext(this, model));
     this.viewSlot.attached();
   }
 

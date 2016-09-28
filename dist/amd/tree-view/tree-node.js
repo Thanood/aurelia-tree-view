@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (exports, _aureliaTemplating, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaLogging, _nodeModel, _events) {
+define(['exports', 'aurelia-templating', 'aurelia-binding', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-logging', './node-model', '../common/events'], function (exports, _aureliaTemplating, _aureliaBinding, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaLogging, _nodeModel, _events) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -96,7 +96,9 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       var view = viewFactory.create(this.container);
       this.viewSlot = new _aureliaTemplating.ViewSlot(this.templateTarget, true);
       this.viewSlot.add(view);
-      this.viewSlot.bind(this, model);
+
+
+      this.viewSlot.bind(this, (0, _aureliaBinding.createOverrideContext)(this, model));
       this.viewSlot.attached();
     };
 
