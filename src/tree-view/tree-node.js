@@ -44,7 +44,11 @@ export class TreeNode {
     this.viewSlot = new ViewSlot(this.templateTarget, true);
     this.viewSlot.add(view);
     // this.log.debug('useTemplate, binding model', model);
-    this.viewSlot.bind(this, model);
+    // this.viewSlot.bind(this, model);
+    this.viewSlot.bind(this, {
+      bindingContext: this,
+      parentOverrideContext: model
+    });
     this.viewSlot.attached();
   }
 
