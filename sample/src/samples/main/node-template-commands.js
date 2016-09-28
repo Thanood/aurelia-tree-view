@@ -2,10 +2,10 @@ import {inject} from 'aurelia-framework';
 import {NodeModel} from 'aurelia-tree-view';
 
 const stockCommands = [
-  { title: 'HTML' },
-  { title: 'Javascript' },
-  { title: 'CSS' },
-  { title: 'Documentation' }
+  { title: 'edit' },
+  { title: 'delete' },
+  { title: 'export' },
+  { title: 'lock' }
 ];
 
 export class NodeTemplateCommands {
@@ -14,10 +14,11 @@ export class NodeTemplateCommands {
 
   nodeInterface = {
     commands: [],
-    executeCommand: function (cmd, model) {
-      console.log('-- command execute:', arguments);
-      // this.logger.log('-- command execute:', cmd.title);
-    }
+    executeCommand: this.executeCommand.bind(this)
+  }
+
+  executeCommand(cmd, model) {
+    this.logger.log(`command execute: ${cmd.title} ${model.title}`);
   }
 
   constructor() {

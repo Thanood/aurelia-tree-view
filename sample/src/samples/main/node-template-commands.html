@@ -1,7 +1,6 @@
 <template>
   <require from="./node-template-commands.css"></require>
   <div class="node-template-commands-sample">
-    <h2>This is unfinished and doesn't work</h2>
     <tree-view nodes.bind="nodes" view-model.ref="tree">
       <tree-node-template model.bind="nodeInterface">
         <ul show.bind="model.visible" class="tree-node__wrapper">
@@ -22,7 +21,7 @@
                     <i class="material-icons">more_vert</i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li repeat.for="cmd of commands" class="model-not-available-here"><a href="#" click.delegate="executeCommand(cmd, model)">${cmd.title} - ${model.title}</a></li>
+                    <li repeat.for="cmd of commands"><a href="#" click.delegate="executeCommand(cmd, model)">${cmd.title}</a></li>
                   </ul>
                 </div>
               </span>
