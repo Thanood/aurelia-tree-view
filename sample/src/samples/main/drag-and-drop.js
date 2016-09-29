@@ -1,35 +1,12 @@
 import {NodeModel} from 'aurelia-tree-view';
 import dragula from 'dragula';
-import 'dragula/dist/dragula.css!';
 
 export class DragAndDrop {
   nodes = [];
   dragApi = null;
 
   attached() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
-
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    this.nodes = [texas, newYork, oregon, california];
-
+    this.nodes = this.getNodes();
     this.activateDnd(this.tree);
   }
 
@@ -90,5 +67,30 @@ export class DragAndDrop {
     dragApi.on('out', (el, container, source) => {
       container.classList.remove('drag-over');
     });
+  }
+
+  getNodes() {
+    let texas = new NodeModel('Texas', [
+      new NodeModel('Austin'),
+      new NodeModel('Houston')
+    ]);
+
+    let newYork = new NodeModel('New York', [
+      new NodeModel('New York City', [
+        new NodeModel('Manhattan'),
+        new NodeModel('Brooklyn'),
+        new NodeModel('Bronx'),
+        new NodeModel('Queens'),
+        new NodeModel('Staten Island')
+      ]),
+      new NodeModel('Buffalo')]);
+
+    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
+
+    let california = new NodeModel('California', [
+      new NodeModel('Los Angeles'),
+      new NodeModel('San Francisco')
+    ]);
+    return [texas, newYork, oregon, california];
   }
 }
