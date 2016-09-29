@@ -188,26 +188,49 @@ export class TreeView {
   //   children.splice(pos, 1);
   // }
 
+  findParentNode(node: TreeNode): TreeNode {
+    let parent = node.element.parentNode;
+    while (parent !== null && parent.tagName !== 'TREE-NODE') {
+      parent = parent.parentNode;
+    }
+    return parent;
+  }
+
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
     this.log.debug('moveNode', node, target, sibling);
 
+    // if (sibling) { }
     if (target instanceof TreeNode) {
       // target.model.children.push(node.model);
-      target.insertChild(node, sibling);
-      let parent = node.element.parentNode;
-      while (parent !== null && parent.tagName !== 'TREE-NODE') {
-        parent = parent.parentNode;
-      }
+      target.insertChild(node.model, sibling ? sibling.model : null);
+      let parent = this.findParentNode(node);
       if (parent === null) {
         parent = this;
         parent.removeNode(node);
       } else {
         parent.au['tree-node'].viewModel.removeChild(node.model);
       }
+    } else if (target instanceof TreeView) {
+      /*
+      let posChild = this.model.children.indexOf(child);
+      let posBefore = this.model.children.indexOf(before);
+      this.model.children.splice(posBefore, 0, child);
+      this.model.children.splice(posBefore, 1);
+      */
+      let posNode = this.nodes.indexOf(node);
+      let posSibling = this.nodes.indexOf(sibling);
+      if (posNode && posSibling) {
+        this.nodes.splice(posSibling, 0, node);
+        this.nodes.splice(posNode, 1);
+      } else {
+        this.log.warn('node or sibling not found');
+      }
     }
   }
 
   removeNode(node: TreeNode) {
-    console.warn('removeNode not implemented');
+    // console.warn('removeNode not implemented');
+    let pos = this.nodes.indexOf(node);
+    this.nodes.splice(pos, 1);
   }
 }

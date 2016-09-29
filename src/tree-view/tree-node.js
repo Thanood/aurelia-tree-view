@@ -32,9 +32,22 @@ export class TreeNode {
   }
 
   insertChild(child: NodeModel, before: NodeModel) {
+    let posChild = this.model.children.indexOf(child);
+    if (posChild > -1) {
+      let posBefore = this.model.children.indexOf(before);
+      this.model.children.splice(posBefore, 0, child);
+      this.model.children.splice(posChild, 1);
+    } else {
+      this.model.children.push(child);
+    }
     // TODO: insert at position
     // let pos = this.model.children.indexOf(before);
-    this.model.children.push(child);
+    // if (before) {
+    //   let posBefore = this.model.children.indexOf(before);
+    //   let posChild = this.model.children.indexOf(child);
+    // } else {
+    //   this.model.children.push(child);
+    // }
   }
 
   useTemplate() {

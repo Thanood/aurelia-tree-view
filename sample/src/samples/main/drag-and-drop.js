@@ -43,6 +43,7 @@ export class DragAndDrop {
       console.log('dragula drop from', source);
       console.log('dragula drop on', container);
       console.log('dragula drop sibling', sibling);
+      console.log('dragApi viewModel', dragApi._viewModel);
       dragApi.cancel();
       // container.au['tree-node'].viewModel.model.children.push(source.au['tree-node'].viewModel.model);
       let sourceViewModel = source.au['tree-node'].viewModel;
