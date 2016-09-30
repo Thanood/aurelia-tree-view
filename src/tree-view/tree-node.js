@@ -35,8 +35,8 @@ export class TreeNode {
     let posChild = this.model.children.indexOf(child);
     if (posChild > -1) {
       let posBefore = this.model.children.indexOf(before);
-      this.model.children.splice(posBefore, 0, child);
       this.model.children.splice(posChild, 1);
+      this.model.children.splice(posBefore, 0, child);
     } else {
       this.model.children.push(child);
     }

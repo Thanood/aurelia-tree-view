@@ -190,10 +190,18 @@ export class TreeView {
 
   findParentNode(node: TreeNode): TreeNode {
     let parent = node.element.parentNode;
-    while (parent !== null && parent.tagName !== 'TREE-NODE') {
-      parent = parent.parentNode;
+    let parentModel = null;
+    while (parent !== null && parent.tagName.toUpperCase() !== 'TREE-NODE') {
+      if (parent.tagName.toUpperCase() === 'TREE-VIEW') {
+        parent = null;
+      } else {
+        parent = parent.parentNode;
+      }
     }
-    return parent;
+    if (parent) {
+      parentModel = parent.au['tree-node'].viewModel;
+    }
+    return parentModel;
   }
 
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
@@ -201,36 +209,37 @@ export class TreeView {
 
     // if (sibling) { }
     if (target instanceof TreeNode) {
-      // target.model.children.push(node.model);
       target.insertChild(node.model, sibling ? sibling.model : null);
       let parent = this.findParentNode(node);
       if (parent === null) {
         parent = this;
         parent.removeNode(node);
       } else {
-        parent.au['tree-node'].viewModel.removeChild(node.model);
+        parent.removeChild(node.model);
       }
     } else if (target instanceof TreeView) {
-      /*
-      let posChild = this.model.children.indexOf(child);
-      let posBefore = this.model.children.indexOf(before);
-      this.model.children.splice(posBefore, 0, child);
-      this.model.children.splice(posBefore, 1);
-      */
-      let posNode = this.nodes.indexOf(node);
-      let posSibling = this.nodes.indexOf(sibling);
-      if (posNode && posSibling) {
-        this.nodes.splice(posSibling, 0, node);
+      let posNode = this.nodes.indexOf(node.model);
+      let posSibling = sibling
+        ? this.nodes.indexOf(sibling.model)
+        : this.nodes.length - 1;
+      if (posNode > -1 && posSibling > -1) {
         this.nodes.splice(posNode, 1);
+        this.nodes.splice(posSibling, 0, node.model);
+      } else if (posSibling > -1) {
+        // move from node to TreeView
+        let parent = this.findParentNode(node);
+        // parent.removeNode(node);
+        parent.removeChild(node.model);
+        this.nodes.splice(posSibling, 0, node.model);
       } else {
-        this.log.warn('node or sibling not found');
+        this.log.warn('sibling not found');
       }
     }
   }
 
   removeNode(node: TreeNode) {
     // console.warn('removeNode not implemented');
-    let pos = this.nodes.indexOf(node);
+    let pos = this.nodes.indexOf(node.model);
     this.nodes.splice(pos, 1);
   }
 }
