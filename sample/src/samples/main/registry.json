@@ -21,7 +21,7 @@
       "files": ["html", "js"]
     },
     "drag-and-drop": {
-      "files": ["html", "js"]
+      "files": ["html", "js", "css"]
     },
     "lazy-load": {
       "files": ["html", "js"]
