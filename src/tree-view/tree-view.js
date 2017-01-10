@@ -112,17 +112,10 @@ export class TreeView {
         if (this.expandOnFocus) {
           node.expandNode();
         }
-        if (!this.multiSelect) {
-          this._suspendEvents = true;
-          this.selected.forEach(node => node.selected = false);
-          this._suspendEvents = false;
-          // this.selected.splice(0);
-          // this.selectNode(node);
-          node.selected = true;
-        }
       }
       if (this.selectOnFocus) {
-        node.selected = !node.selected;
+        // node.selected = !node.selected;
+        this.selectNode(node);
         if (modifiers['ctrl']) {
           let recurse = !!modifiers['shift'];
           node.selectChildren(recurse);
