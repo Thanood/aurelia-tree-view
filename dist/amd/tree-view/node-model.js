@@ -100,8 +100,6 @@ define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _au
           keys.forEach(function (key) {
             switch (key) {
               case 'children':
-              case 'title':
-                break;
               default:
                 payload[key] = node[key];
                 break;

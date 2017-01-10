@@ -116,8 +116,8 @@ export class NodeModel {
         keys.forEach(key => {
           switch (key) {
             case 'children':
-            case 'title':
-              break;
+            // case 'title':
+            //   break;
             default:
               payload[key] = node[key];
               break;

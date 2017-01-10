@@ -105,8 +105,6 @@ System.register(['aurelia-binding', 'aurelia-logging'], function (_export, _cont
               keys.forEach(function (key) {
                 switch (key) {
                   case 'children':
-                  case 'title':
-                    break;
                   default:
                     payload[key] = node[key];
                     break;

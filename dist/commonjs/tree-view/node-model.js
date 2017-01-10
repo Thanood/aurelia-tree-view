@@ -83,8 +83,6 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _
         keys.forEach(function (key) {
           switch (key) {
             case 'children':
-            case 'title':
-              break;
             default:
               payload[key] = node[key];
               break;
