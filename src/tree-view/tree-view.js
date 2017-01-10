@@ -135,6 +135,11 @@ export class TreeView {
     let existing = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
     if (existing === -1) {
       this.log.debug('selecting node', node);
+      if (!this.multiSelect) {
+        this._suspendEvents = true;
+        this.selected.forEach(n => n.selected = false);
+        this._suspendEvents = false;
+      }
       this.selected.push(node);
       if (!this._suspendEvents) {
         fireEvent(this.element, 'selection-changed', { nodes: this.selected });
