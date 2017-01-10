@@ -1,16 +1,8 @@
-import {BindingEngine} from 'aurelia-binding';
-import {inject} from 'aurelia-dependency-injection';
-
 import {NodeModel} from 'aurelia-tree-view';
 
-@inject(BindingEngine)
 export class PreSelect {
   nodes = [];
   selectedCategories = [];
-
-  constructor(be) {
-    be.collectionObserver(this.selectedCategories).subscribe(this.selectedChanged.bind(this));
-  }
 
   attached() {
     let texas = new NodeModel('Texas', [
@@ -36,9 +28,5 @@ export class PreSelect {
     ]);
     this.nodes = [texas, newYork, oregon, california];
     this.selectedCategories = [oregon];
-  }
-
-  selectedChanged() {
-    console.log('selected', this.selectedCategories);
   }
 }

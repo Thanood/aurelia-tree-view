@@ -4,8 +4,9 @@
     <tree-view nodes.bind="nodes" selected.bind="selectedCategories"></tree-view>
   </div>
   <div>
+    You selected:
     <ul>
-      <li repeat.for="node of selectedCategories"${node|json}></li>
+      <li repeat.for="node of selectedCategories">${node.title}</li>
     </ul>
   </div>
 </template>
