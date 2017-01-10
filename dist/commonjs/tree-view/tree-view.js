@@ -162,6 +162,9 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
         return _this2.compareEquality({ a: node, b: n });
       })) {
         node.selected = true;
+        if (!_this2.multiSelect) {
+          node.focused = true;
+        }
         node.expandNode().then(function () {
           _this2.preselectNodes(node.children);
         });
@@ -184,18 +187,10 @@ var TreeView = exports.TreeView = (_dec = (0, _aureliaDependencyInjection.inject
         if (this.expandOnFocus) {
           node.expandNode();
         }
-        if (!this.multiSelect) {
-          this._suspendEvents = true;
-          this.selected.forEach(function (node) {
-            return node.selected = false;
-          });
-          this._suspendEvents = false;
-
-          node.selected = true;
-        }
       }
       if (this.selectOnFocus) {
-        node.selected = !node.selected;
+        node.selected = true;
+
         if (modifiers['ctrl']) {
           var recurse = !!modifiers['shift'];
           node.selectChildren(recurse);

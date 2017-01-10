@@ -90,6 +90,9 @@ export class TreeView {
     nodes.forEach(node => {
       if (this.selected.find(n => this.compareEquality({a: node, b: n}))) {
         node.selected = true;
+        if (!this.multiSelect) {
+          node.focused = true;
+        }
         node.expandNode().then(() => {
           this.preselectNodes(node.children);
         });
@@ -112,17 +115,11 @@ export class TreeView {
         if (this.expandOnFocus) {
           node.expandNode();
         }
-        if (!this.multiSelect) {
-          this._suspendEvents = true;
-          this.selected.forEach(node => node.selected = false);
-          this._suspendEvents = false;
-          // this.selected.splice(0);
-          // this.selectNode(node);
-          node.selected = true;
-        }
       }
       if (this.selectOnFocus) {
-        node.selected = !node.selected;
+        // node.selected = !node.selected;
+        node.selected = true;
+        // this.selectNode(node);
         if (modifiers['ctrl']) {
           let recurse = !!modifiers['shift'];
           node.selectChildren(recurse);

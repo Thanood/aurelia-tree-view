@@ -574,6 +574,9 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
         return _this6.compareEquality({ a: node, b: n });
       })) {
         node.selected = true;
+        if (!_this6.multiSelect) {
+          node.focused = true;
+        }
         node.expandNode().then(function () {
           _this6.preselectNodes(node.children);
         });
@@ -596,18 +599,10 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
         if (this.expandOnFocus) {
           node.expandNode();
         }
-        if (!this.multiSelect) {
-          this._suspendEvents = true;
-          this.selected.forEach(function (node) {
-            return node.selected = false;
-          });
-          this._suspendEvents = false;
-
-          node.selected = true;
-        }
       }
       if (this.selectOnFocus) {
-        node.selected = !node.selected;
+        node.selected = true;
+
         if (modifiers['ctrl']) {
           var recurse = !!modifiers['shift'];
           node.selectChildren(recurse);
