@@ -94,6 +94,15 @@ declare module 'aurelia-tree-view' {
     attached(): any;
     detached(): any;
     insertChild(child: NodeModel, before: NodeModel): any;
+    
+    // TODO: insert at position
+    // let pos = this.model.children.indexOf(before);
+    // if (before) {
+    //   let posBefore = this.model.children.indexOf(before);
+    //   let posChild = this.model.children.indexOf(child);
+    // } else {
+    //   this.model.children.push(child);
+    // }
     useTemplate(): any;
     unbindTemplate(): any;
     modelChanged(newValue?: any): any;
@@ -150,6 +159,7 @@ declare module 'aurelia-tree-view' {
     //   let pos = children.indexOf(node.model);
     //   children.splice(pos, 1);
     // }
+    findParentNode(node: TreeNode): TreeNode;
     moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode): any;
     removeNode(node: TreeNode): any;
   }

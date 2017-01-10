@@ -388,7 +388,14 @@ var TreeNode = exports.TreeNode = (_dec10 = (0, _aureliaDependencyInjection.inje
   };
 
   TreeNode.prototype.insertChild = function insertChild(child, before) {
-    this.model.children.push(child);
+    var posChild = this.model.children.indexOf(child);
+    if (posChild > -1) {
+      var posBefore = this.model.children.indexOf(before);
+      this.model.children.splice(posChild, 1);
+      this.model.children.splice(posBefore, 0, child);
+    } else {
+      this.model.children.push(child);
+    }
   };
 
   TreeNode.prototype.useTemplate = function useTemplate() {
@@ -617,6 +624,13 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
     });
     if (existing === -1) {
       this.log.debug('selecting node', node);
+      if (!this.multiSelect) {
+        this._suspendEvents = true;
+        this.selected.forEach(function (n) {
+          return n.selected = false;
+        });
+        this._suspendEvents = false;
+      }
       this.selected.push(node);
       if (!this._suspendEvents) {
         fireEvent(this.element, 'selection-changed', { nodes: this.selected });
@@ -654,26 +668,54 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
     }
   };
 
+  TreeView.prototype.findParentNode = function findParentNode(node) {
+    var parent = node.element.parentNode;
+    var parentModel = null;
+    while (parent !== null && parent.tagName.toUpperCase() !== 'TREE-NODE') {
+      if (parent.tagName.toUpperCase() === 'TREE-VIEW') {
+        parent = null;
+      } else {
+        parent = parent.parentNode;
+      }
+    }
+    if (parent) {
+      parentModel = parent.au['tree-node'].viewModel;
+    }
+    return parentModel;
+  };
+
   TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
     this.log.debug('moveNode', node, target, sibling);
 
     if (target instanceof TreeNode) {
-      target.insertChild(node, sibling);
-      var parent = node.element.parentNode;
-      while (parent !== null && parent.tagName !== 'TREE-NODE') {
-        parent = parent.parentNode;
-      }
+      target.insertChild(node.model, sibling ? sibling.model : null);
+      var parent = this.findParentNode(node);
       if (parent === null) {
         parent = this;
         parent.removeNode(node);
       } else {
-        parent.au['tree-node'].viewModel.removeChild(node.model);
+        parent.removeChild(node.model);
+      }
+    } else if (target instanceof TreeView) {
+      var posNode = this.nodes.indexOf(node.model);
+      var posSibling = sibling ? this.nodes.indexOf(sibling.model) : this.nodes.length - 1;
+      if (posNode > -1 && posSibling > -1) {
+        this.nodes.splice(posNode, 1);
+        this.nodes.splice(posSibling, 0, node.model);
+      } else if (posSibling > -1) {
+        var _parent = this.findParentNode(node);
+
+        _parent.removeChild(node.model);
+        this.nodes.splice(posSibling, 0, node.model);
+      } else {
+        this.log.warn('sibling not found');
       }
     }
   };
 
   TreeView.prototype.removeNode = function removeNode(node) {
-    console.warn('removeNode not implemented');
+    var pos = this.nodes.indexOf(node.model);
+    this.nodes.splice(pos, 1);
   };
 
   return TreeView;

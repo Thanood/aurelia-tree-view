@@ -135,6 +135,11 @@ export class TreeView {
     let existing = this.selected.findIndex(n => this.compareEquality({a: node, b: n}));
     if (existing === -1) {
       this.log.debug('selecting node', node);
+      if (!this.multiSelect) {
+        this._suspendEvents = true;
+        this.selected.forEach(n => n.selected = false);
+        this._suspendEvents = false;
+      }
       this.selected.push(node);
       if (!this._suspendEvents) {
         fireEvent(this.element, 'selection-changed', { nodes: this.selected });
@@ -188,26 +193,58 @@ export class TreeView {
   //   children.splice(pos, 1);
   // }
 
+  findParentNode(node: TreeNode): TreeNode {
+    let parent = node.element.parentNode;
+    let parentModel = null;
+    while (parent !== null && parent.tagName.toUpperCase() !== 'TREE-NODE') {
+      if (parent.tagName.toUpperCase() === 'TREE-VIEW') {
+        parent = null;
+      } else {
+        parent = parent.parentNode;
+      }
+    }
+    if (parent) {
+      parentModel = parent.au['tree-node'].viewModel;
+    }
+    return parentModel;
+  }
+
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
     this.log.debug('moveNode', node, target, sibling);
 
+    // if (sibling) { }
     if (target instanceof TreeNode) {
-      // target.model.children.push(node.model);
-      target.insertChild(node, sibling);
-      let parent = node.element.parentNode;
-      while (parent !== null && parent.tagName !== 'TREE-NODE') {
-        parent = parent.parentNode;
-      }
+      target.insertChild(node.model, sibling ? sibling.model : null);
+      let parent = this.findParentNode(node);
       if (parent === null) {
         parent = this;
         parent.removeNode(node);
       } else {
-        parent.au['tree-node'].viewModel.removeChild(node.model);
+        parent.removeChild(node.model);
+      }
+    } else if (target instanceof TreeView) {
+      let posNode = this.nodes.indexOf(node.model);
+      let posSibling = sibling
+        ? this.nodes.indexOf(sibling.model)
+        : this.nodes.length - 1;
+      if (posNode > -1 && posSibling > -1) {
+        this.nodes.splice(posNode, 1);
+        this.nodes.splice(posSibling, 0, node.model);
+      } else if (posSibling > -1) {
+        // move from node to TreeView
+        let parent = this.findParentNode(node);
+        // parent.removeNode(node);
+        parent.removeChild(node.model);
+        this.nodes.splice(posSibling, 0, node.model);
+      } else {
+        this.log.warn('sibling not found');
       }
     }
   }
 
   removeNode(node: TreeNode) {
-    console.warn('removeNode not implemented');
+    // console.warn('removeNode not implemented');
+    let pos = this.nodes.indexOf(node.model);
+    this.nodes.splice(pos, 1);
   }
 }

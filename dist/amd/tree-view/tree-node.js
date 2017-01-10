@@ -86,7 +86,14 @@ define(['exports', 'aurelia-templating', 'aurelia-binding', 'aurelia-dependency-
     };
 
     TreeNode.prototype.insertChild = function insertChild(child, before) {
-      this.model.children.push(child);
+      var posChild = this.model.children.indexOf(child);
+      if (posChild > -1) {
+        var posBefore = this.model.children.indexOf(before);
+        this.model.children.splice(posChild, 1);
+        this.model.children.splice(posBefore, 0, child);
+      } else {
+        this.model.children.push(child);
+      }
     };
 
     TreeNode.prototype.useTemplate = function useTemplate() {
