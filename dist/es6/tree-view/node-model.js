@@ -115,7 +115,9 @@ export class NodeModel {
   }
 
   focusedChanged(newValue) {
-    this._tree.focusNode(this);
+    if (newValue) {
+      this._tree.focusNode(this);
+    }
   }
 
   toggleFocus() {

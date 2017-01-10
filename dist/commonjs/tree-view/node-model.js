@@ -169,7 +169,9 @@ var NodeModel = exports.NodeModel = (_dec = (0, _aureliaBinding.observable)(), _
   };
 
   NodeModel.prototype.focusedChanged = function focusedChanged(newValue) {
-    this._tree.focusNode(this);
+    if (newValue) {
+      this._tree.focusNode(this);
+    }
   };
 
   NodeModel.prototype.toggleFocus = function toggleFocus() {

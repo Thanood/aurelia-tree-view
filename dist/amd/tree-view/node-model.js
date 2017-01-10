@@ -186,7 +186,9 @@ define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _au
     };
 
     NodeModel.prototype.focusedChanged = function focusedChanged(newValue) {
-      this._tree.focusNode(this);
+      if (newValue) {
+        this._tree.focusNode(this);
+      }
     };
 
     NodeModel.prototype.toggleFocus = function toggleFocus() {
