@@ -178,6 +178,7 @@ export class NodeModel {
         this.expanded = true;
       });
     }
+    return Promise.resolve();
   }
 
   collapseNode(force = false) {

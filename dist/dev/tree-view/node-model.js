@@ -174,6 +174,7 @@ System.register(['aurelia-binding', 'aurelia-logging'], function (_export, _cont
               _this.expanded = true;
             });
           }
+          return Promise.resolve();
         };
 
         NodeModel.prototype.collapseNode = function collapseNode() {

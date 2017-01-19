@@ -231,6 +231,7 @@ var NodeModel = exports.NodeModel = (_dec2 = (0, _aureliaBinding.observable)(), 
         _this.expanded = true;
       });
     }
+    return Promise.resolve();
   };
 
   NodeModel.prototype.collapseNode = function collapseNode() {

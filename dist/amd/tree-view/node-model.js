@@ -169,6 +169,7 @@ define(['exports', 'aurelia-binding', 'aurelia-logging'], function (exports, _au
           _this.expanded = true;
         });
       }
+      return Promise.resolve();
     };
 
     NodeModel.prototype.collapseNode = function collapseNode() {
