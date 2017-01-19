@@ -695,12 +695,12 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
     return Promise.all(this.nodes.map(function (node) {
       return _this9.expandNodeAndChildren(node, null, visitor);
     })).then(function (results) {
-      _this9.log.debug('expandNodeAndChildren results:', results);
       var joined = [];
       results.forEach(function (j) {
-        joined = joined.concat(j);
+        if (j !== null) {
+          joined = joined.concat(j);
+        }
       });
-      _this9.log.debug('expandNodeAndChildren joined:', joined);
       return joined;
     });
   };
@@ -750,8 +750,6 @@ var TreeView = exports.TreeView = (_dec12 = (0, _aureliaDependencyInjection.inje
           _this11.log.warn('tree-node not found for', res);
         }
       });
-      _this11.log.debug('expand results:', results);
-      _this11.log.debug('search results:', searchResults);
       return searchResults;
     });
   };

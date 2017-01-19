@@ -274,12 +274,12 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       return Promise.all(this.nodes.map(function (node) {
         return _this5.expandNodeAndChildren(node, null, visitor);
       })).then(function (results) {
-        _this5.log.debug('expandNodeAndChildren results:', results);
         var joined = [];
         results.forEach(function (j) {
-          joined = joined.concat(j);
+          if (j !== null) {
+            joined = joined.concat(j);
+          }
         });
-        _this5.log.debug('expandNodeAndChildren joined:', joined);
         return joined;
       });
     };
@@ -329,8 +329,6 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
             _this7.log.warn('tree-node not found for', res);
           }
         });
-        _this7.log.debug('expand results:', results);
-        _this7.log.debug('search results:', searchResults);
         return searchResults;
       });
     };

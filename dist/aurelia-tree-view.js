@@ -614,12 +614,12 @@ export class TreeView {
   expandAll(visitor: (node: NodeModel, parent: NodeModel) => boolean) {
     return Promise.all(this.nodes.map(node => this.expandNodeAndChildren(node, null, visitor)))
       .then(results => {
-        this.log.debug('expandNodeAndChildren results:', results);
         let joined = [];
         results.forEach(j => {
-          joined = joined.concat(j);
+          if (j !== null) {
+            joined = joined.concat(j);
+          }
         });
-        this.log.debug('expandNodeAndChildren joined:', joined);
         return joined;
       });
   }
@@ -666,8 +666,6 @@ export class TreeView {
           this.log.warn('tree-node not found for', res);
         }
       });
-      this.log.debug('expand results:', results);
-      this.log.debug('search results:', searchResults);
       return searchResults;
     });
   }
