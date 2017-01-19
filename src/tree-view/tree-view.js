@@ -222,7 +222,9 @@ export class TreeView {
         this.log.debug('expandNodeAndChildren results:', results);
         let joined = [];
         results.forEach(j => {
-          joined = joined.concat(j);
+          if (j !== null) {
+            joined = joined.concat(j);
+          }
         });
         this.log.debug('expandNodeAndChildren joined:', joined);
         return joined;
