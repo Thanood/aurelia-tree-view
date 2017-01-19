@@ -43,6 +43,9 @@
     },
     "custom-compare": {
       "files": ["html", "js"]
+    },
+    "search": {
+      "files": ["html", "js", "css"]
     }
   }
 }
