@@ -206,6 +206,77 @@ export class TreeView {
     return parentModel;
   }
 
+  findRootNode(node: TreeNode): TreeNode {
+    let root = null;
+    let parent = this.findParentNode(node);
+    while (parent !== null) {
+      root = parent;
+      parent = this.findParentNode(parent);
+    }
+    return root;
+  }
+
+  expandAll(visitor: (node: NodeModel, parent: NodeModel) => boolean) {
+    return Promise.all(this.nodes.map(node => this.expandNodeAndChildren(node, null, visitor)))
+      .then(results => {
+        this.log.debug('expandNodeAndChildren results:', results);
+        let joined = [];
+        results.forEach(j => {
+          joined = joined.concat(j);
+        });
+        this.log.debug('expandNodeAndChildren joined:', joined);
+        return joined;
+      });
+  }
+
+  expandNodeAndChildren(node: NodeModel, parent: NodeModel, visitor: (node: NodeModel, parent: NodeModel) => boolean) {
+    return Promise.resolve(visitor(node, parent))
+    .then(result => {
+      if (node.hasChildren) {
+        return node.expandNode(true).then(() => {
+          return Promise.all(node.children.map(child => {
+            return this.expandNodeAndChildren(child, node, visitor);
+          }).concat(result ? node : null));
+        })
+        .then((potentials) => {
+          let joined = [];
+          potentials
+            .filter(p => p !== null)
+            .forEach(p => joined = joined.concat(p));
+          return joined;
+        });
+      }
+      return result ? node : null;
+    });
+  }
+
+  search(visitor: (node: NodeModel, parent: NodeModel) => boolean) {
+    return this.expandAll(visitor)
+    .then(results => {
+      let searchResults = [];
+      results.forEach(res => {
+        let treeNode = res._element;
+        if (treeNode) {
+          let root = this.findRootNode(treeNode);
+          if (root) {
+            if (searchResults.indexOf(root.model) === -1) {
+              searchResults.push(root.model);
+            }
+          } else {
+            if (searchResults.indexOf(res) === -1) {
+              searchResults.push(res);
+            }
+          }
+        } else {
+          this.log.warn('tree-node not found for', res);
+        }
+      });
+      this.log.debug('expand results:', results);
+      this.log.debug('search results:', searchResults);
+      return searchResults;
+    });
+  }
+
   moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode) {
     this.log.debug('moveNode', node, target, sibling);
 
