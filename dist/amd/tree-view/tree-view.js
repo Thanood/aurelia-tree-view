@@ -258,17 +258,94 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
       return parentModel;
     };
 
+    TreeView.prototype.findRootNode = function findRootNode(node) {
+      var root = null;
+      var parent = this.findParentNode(node);
+      while (parent !== null) {
+        root = parent;
+        parent = this.findParentNode(parent);
+      }
+      return root;
+    };
+
+    TreeView.prototype.expandAll = function expandAll(visitor) {
+      var _this5 = this;
+
+      return Promise.all(this.nodes.map(function (node) {
+        return _this5.expandNodeAndChildren(node, null, visitor);
+      })).then(function (results) {
+        _this5.log.debug('expandNodeAndChildren results:', results);
+        var joined = [];
+        results.forEach(function (j) {
+          joined = joined.concat(j);
+        });
+        _this5.log.debug('expandNodeAndChildren joined:', joined);
+        return joined;
+      });
+    };
+
+    TreeView.prototype.expandNodeAndChildren = function expandNodeAndChildren(node, parent, visitor) {
+      var _this6 = this;
+
+      return Promise.resolve(visitor(node, parent)).then(function (result) {
+        if (node.hasChildren) {
+          return node.expandNode(true).then(function () {
+            return Promise.all(node.children.map(function (child) {
+              return _this6.expandNodeAndChildren(child, node, visitor);
+            }).concat(result ? node : null));
+          }).then(function (potentials) {
+            var joined = [];
+            potentials.filter(function (p) {
+              return p !== null;
+            }).forEach(function (p) {
+              return joined = joined.concat(p);
+            });
+            return joined;
+          });
+        }
+        return result ? node : null;
+      });
+    };
+
+    TreeView.prototype.search = function search(visitor) {
+      var _this7 = this;
+
+      return this.expandAll(visitor).then(function (results) {
+        var searchResults = [];
+        results.forEach(function (res) {
+          var treeNode = res._element;
+          if (treeNode) {
+            var root = _this7.findRootNode(treeNode);
+            if (root) {
+              if (searchResults.indexOf(root.model) === -1) {
+                searchResults.push(root.model);
+              }
+            } else {
+              if (searchResults.indexOf(res) === -1) {
+                searchResults.push(res);
+              }
+            }
+          } else {
+            _this7.log.warn('tree-node not found for', res);
+          }
+        });
+        _this7.log.debug('expand results:', results);
+        _this7.log.debug('search results:', searchResults);
+        return searchResults;
+      });
+    };
+
     TreeView.prototype.moveNode = function moveNode(node, target, sibling) {
       this.log.debug('moveNode', node, target, sibling);
 
       if (target instanceof _treeNode.TreeNode) {
         target.insertChild(node.model, sibling ? sibling.model : null);
-        var parent = this.findParentNode(node);
-        if (parent === null) {
-          parent = this;
-          parent.removeNode(node);
+        var _parent = this.findParentNode(node);
+        if (_parent === null) {
+          _parent = this;
+          _parent.removeNode(node);
         } else {
-          parent.removeChild(node.model);
+          _parent.removeChild(node.model);
         }
       } else if (target instanceof TreeView) {
         var posNode = this.nodes.indexOf(node.model);
@@ -277,9 +354,9 @@ define(['exports', 'aurelia-templating', 'aurelia-dependency-injection', 'aureli
           this.nodes.splice(posNode, 1);
           this.nodes.splice(posSibling, 0, node.model);
         } else if (posSibling > -1) {
-          var _parent = this.findParentNode(node);
+          var _parent2 = this.findParentNode(node);
 
-          _parent.removeChild(node.model);
+          _parent2.removeChild(node.model);
           this.nodes.splice(posSibling, 0, node.model);
         } else {
           this.log.warn('sibling not found');

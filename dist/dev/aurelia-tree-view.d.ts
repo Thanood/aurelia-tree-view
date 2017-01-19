@@ -160,6 +160,10 @@ declare module 'aurelia-tree-view' {
     //   children.splice(pos, 1);
     // }
     findParentNode(node: TreeNode): TreeNode;
+    findRootNode(node: TreeNode): TreeNode;
+    expandAll(visitor: ((node: NodeModel, parent: NodeModel) => boolean)): any;
+    expandNodeAndChildren(node: NodeModel, parent: NodeModel, visitor: ((node: NodeModel, parent: NodeModel) => boolean)): any;
+    search(visitor: ((node: NodeModel, parent: NodeModel) => boolean)): any;
     moveNode(node: TreeNode, target: TreeNode | TreeView, sibling: TreeNode): any;
     removeNode(node: TreeNode): any;
   }
