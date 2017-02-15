@@ -8,6 +8,7 @@ export class NodeModel {
   payload = null;
   children: NodeModel[];
   childrenGetter: {():Promise<NodeModel[]>};
+  parent: NodeModel = null;
   visible = true;
   expanded = false;
   @observable() focused = false;
@@ -60,6 +61,7 @@ export class NodeModel {
       this.childrenGetter = children;
     } else {
       this.children = children || [];
+      this.children.forEach(ch => { ch.parent = this; });
     }
     if (this.hasChildren) {
       this.collapseNode(true);
@@ -84,6 +86,7 @@ export class NodeModel {
         this.loading = true;
         promise = this.childrenGetter().then(children => {
           children.forEach(child => {
+            child.parent = this;
             if (this._template) {
               child._template = this._template;
             }
