@@ -38,6 +38,9 @@
     "preselect": {
       "files": ["html", "js"]
     },
+    "preselect-lazy": {
+      "files": ["html", "js"]
+    },
     "preselect-single-select": {
       "files": ["html", "js"]
     },
