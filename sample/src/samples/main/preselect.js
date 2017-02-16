@@ -1,8 +1,14 @@
+import {inject, TaskQueue} from 'aurelia-framework';
 import {NodeModel} from 'aurelia-tree-view';
 
+@inject(TaskQueue)
 export class PreSelect {
   nodes = [];
   selected = [];
+
+  constructor(tq) {
+    this.taskQueue = tq;
+  }
 
   attached() {
     let texas = new NodeModel('Texas', [
@@ -27,6 +33,19 @@ export class PreSelect {
       new NodeModel('San Francisco')
     ]);
     this.nodes = [texas, newYork, oregon, california];
-    this.selected = [oregon, oregon.children[0]];
+    this.selected = [oregon, oregon.children[0], newYork.children[1], newYork.children[0].children[2]];
+
+    this.taskQueue.queueTask(() => {
+      const visit = (node) => {
+        if (node.parent) {
+          visit(node.parent);
+        }
+        node.expandNode();
+      };
+      this.selected.forEach(sel => {
+        visit(sel);
+        sel.selected = true;
+      });
+    });
   }
 }
