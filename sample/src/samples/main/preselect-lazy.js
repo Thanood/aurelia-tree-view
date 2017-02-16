@@ -1,12 +1,35 @@
+import {inject, TaskQueue} from 'aurelia-framework';
 import {NodeModel} from 'aurelia-tree-view';
 
+@inject(TaskQueue)
 export class LazyLoad {
   nodes = [];
   forceLazyLoad = false;
 
+  constructor(tq) {
+    this.taskQueue = tq;
+  }
+
   attached() {
     this.nodes = NodeModel.createFromJSON(this.getNodes());
     this.selected = [this.nodes[2]];
+
+    this.taskQueue.queueTask(() => {
+      const visit = (node) => {
+        if (node.parent) {
+          visit(node.parent);
+        }
+        node.expandNode();
+      };
+      this.selected.forEach(sel => {
+        visit(sel);
+        sel.selected = true;
+      });
+    });
+  }
+
+  compareNode(a, b) {
+    return a.title === b.title;
   }
 
   getNodes() {

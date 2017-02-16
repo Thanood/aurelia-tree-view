@@ -12,6 +12,12 @@
     </ul>
   </div>
   <div style="width: 300px; position: relative;">
-    <tree-view nodes.bind="nodes" multi-select="true" selected.bind="selected" view-model.ref="treeView"></tree-view>
+    <tree-view
+      nodes.bind="nodes"
+      compare-equality.call="compareNode(a, b)"
+      multi-select="true"
+      selected.bind="selected"
+      view-model.ref="treeView"
+    ></tree-view>
   </div>
 </template>
