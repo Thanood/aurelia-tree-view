@@ -1,7 +1,0 @@
-tree-view.drag-over {
-  border: dashed 1px red;
-}
-
-tree-view .drag-over {
-  border: dashed 1px grey;
-}
