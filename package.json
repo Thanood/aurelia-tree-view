@@ -28,8 +28,15 @@
     "postbuild:system": "cross-env copyfiles --up 1 src/**/*.html src/**/*.css dist/system",
     "prebuild": "cross-env rimraf dist",
     "build": "concurrently \"npm run build:amd\" \"npm run build:commonjs\" \"npm run build:es2015\" \"npm run build:system\"",
-    "prewatch": "cross-env rimraf dist",
-    "watch": "cross-env tsc --watch --project tsconfig.build.json --outDir dist/amd --module amd"
+
+    "prewatch:system": "cross-env rimraf dist && npm run build:scss && npm run build:html",
+    "watch:system": "cross-env tsc --watch --project tsconfig.build.json --outDir dist/system --module system --inlineSources --inlineSourceMap",
+    "build:scss": "cross-env node-sass src --output dist/system && postcss --use autoprefixer dist/system/*.css -d dist/system",
+    "build:html": "cross-env copyfiles --up 1 src/**/*.html src/**/*.css dist/system",
+    "watch:scss": "cross-env chokidar \"src/**/*.scss\" -c \"npm run build:scss\"",
+    "watch:html": "cross-env chokidar \"src/**/*.html\" -c \"npm run build:html\"",
+    "serve": "cross-env lite-server -c sample/build/bs-config.js",
+    "start": "concurrently \"npm run watch:system\" \"npm run watch:html\" \"npm run watch:scss\" \"npm run serve\""
   },
   "repository": {
     "type": "git",
@@ -101,6 +108,7 @@
     "aurelia-polyfills": "^1.1.1",
     "aurelia-testing": "^1.0.0-beta.2.0.1",
     "autoprefixer": "^6.6.1",
+    "chokidar-cli": "^1.2.0",
     "concurrently": "^2.2.0",
     "copyfiles": "^1.0.0",
     "cross-env": "^2.0.1",
@@ -110,6 +118,7 @@
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.0",
     "karma-requirejs": "^1.1.0",
+    "lite-server": "^2.2.2",
     "node-sass": "^4.2.0",
     "postcss-cli": "^2.6.0",
     "requirejs": "^2.3.2",
@@ -122,5 +131,8 @@
     "build": {
       "resources": []
     }
+  },
+  "directories": {
+    "test": "test"
   }
 }

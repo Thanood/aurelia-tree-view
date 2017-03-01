@@ -1,4 +1,11 @@
 <template>
-  <h1>${message}</h1>
-  <click-counter></click-counter>
+    <require from="bootstrap/css/bootstrap.css"></require>
+    <require from='./nav-bar'></require>
+
+
+    <nav-bar router.bind="router"></nav-bar>
+
+    <div class="page-host">
+        <router-view></router-view>
+    </div>
 </template>

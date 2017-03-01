@@ -1,0 +1,69 @@
+tree-node {
+  display: block;
+
+  &.tree-node--focused {
+    & > div {
+      & > ul {
+        & > li {
+          & > div {
+            background-color: lightgrey;
+          }
+        }
+      }
+    }
+  }
+
+  ul.tree-node__wrapper {
+    list-style: none;
+    padding: 0 0 0 20px;
+
+    li {
+      div.tree-node__title-wrapper {
+        border-radius: 5px;
+        display: flex;
+        line-height: 31px;
+        padding: 5px;
+        width: fit-content;
+
+        span {
+          &.tree-node-border-icon {
+            visibility: hidden;
+          }
+          &.tree-node-arrow {
+            cursor: pointer;
+            position: relative;
+            top: 4px;
+          }
+          &.tree-node-rotate {
+            animation-name: spin;
+            animation-duration: 400ms;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+          }
+          &.tree-node-title {
+            cursor: pointer;
+            display: inline-block;
+            flex-grow: 1;
+
+            &__pad-left {
+              padding-left: 24px;
+            }
+
+            &__pad-right {
+              padding-right: 24px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

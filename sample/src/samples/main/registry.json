@@ -1,0 +1,54 @@
+{
+  "title": "",
+  "samples": {
+    "basic-use": {
+      "default" : true,
+      "files": ["html", "js"]
+    },
+    "multi-select": {
+      "files": ["html", "js"]
+    },
+    "select-on-focus": {
+      "files": ["html", "js"]
+    },
+    "init-from-json": {
+      "files": ["html", "js"]
+    },
+    "expand-on-focus": {
+      "files": ["html", "js"]
+    },
+    "events": {
+      "files": ["html", "js"]
+    },
+    "drag-and-drop": {
+      "files": ["html", "js", "css"]
+    },
+    "lazy-load": {
+      "files": ["html", "js"]
+    },
+    "payload": {
+      "files": ["html", "js"]
+    },
+    "node-template": {
+      "files": ["html", "js"]
+    },
+    "node-template-commands": {
+      "files": ["html", "js", "css", "md"]
+    },
+    "preselect": {
+      "files": ["html", "js"]
+    },
+    "preselect-lazy": {
+      "files": ["html", "js"]
+    },
+    "preselect-single-select": {
+      "files": ["html", "js"]
+    },
+    "custom-compare": {
+      "files": ["html", "js"]
+    },
+    "search": {
+      "files": ["html", "js", "css"]
+    }
+  }
+}

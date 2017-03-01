@@ -1,0 +1,16 @@
+<template>
+  <require from="./multi-select.css"></require>
+  <div style="width: 300px; position: relative;">
+    <tree-view
+      nodes.bind="nodes"
+      selected.bind="selectedCategories"
+      select-on-focus="true"
+    ></tree-view>
+  </div>
+  <div>
+    You selected:
+    <ul>
+      <li repeat.for="node of selectedCategories">${node.title}</li>
+    </ul>
+  </div>
+</template>

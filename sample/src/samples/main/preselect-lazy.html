@@ -1,0 +1,23 @@
+<template>
+  <require from="./multi-select.css"></require>
+  <div style="padding: 10px 0;">
+    The node "New York / New York City" is lazy loaded with a delay of 500ms.
+    The node "California" is lazy loaded without a delay.
+    Selected nodes should be:
+    <ul>
+      <li>New York/Buffalo</li>
+      <li>New York/New York City/Bronx</li>
+      <li>Oregon</li>
+      <li>Oregon/Portland</li>
+    </ul>
+  </div>
+  <div style="width: 300px; position: relative;">
+    <tree-view
+      nodes.bind="nodes"
+      compare-equality.call="compareNode(a, b)"
+      multi-select="true"
+      selected.bind="selected"
+      view-model.ref="treeView"
+    ></tree-view>
+  </div>
+</template>
