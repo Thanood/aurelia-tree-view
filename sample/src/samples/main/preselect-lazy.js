@@ -13,13 +13,18 @@ export class LazyLoad {
         this.tree.dataSource.load(nodes);
 
         this.taskQueue.queueTask(() => {
-            // const selected = [nodes[2]];
-            californiaCities.forEach(node => {
-                this.tree.dataSource.selectNode(node);
-            });
-            newYorkCityDistricts.forEach(node => {
-                this.tree.dataSource.selectNode(node);
-            });
+            // californiaCities.forEach(node => {
+            //     this.tree.dataSource.selectNode(node);
+            // });
+            // newYorkCityDistricts.forEach(node => {
+            //     this.tree.dataSource.selectNode(node);
+            // });
+            // this.tree.dataSource.selectNode(californiaCities[0]).then(() => {
+            //     this.tree.dataSource.selectNode(californiaCities[1]).then(() => {
+            //         this.tree.dataSource.selectNode(newYorkCityDistricts[2]);
+            //     });
+            // });
+            this.tree.dataSource.selectNodes(californiaCities);
         });
     }
 

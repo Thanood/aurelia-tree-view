@@ -23,6 +23,7 @@ export class NodeModel {
         this.childrenGetter = childrenGetter || null;
         this.parent = parent || null;
         this.payload = payload || null;
+
         this.isExpanded = false;
         this.isFocused = false;
         this.isLoading = false;
@@ -88,7 +89,7 @@ export class NodeModel {
         if (this.element) {
             this.element.isSelected = newValue;
         } else {
-            this.log.warn('element is not defined yet');
+            this.log.warn('element is not defined yet - use TaskQueue', (this.payload ? this.payload.title : '- no payload!'));
         }
     }
 }

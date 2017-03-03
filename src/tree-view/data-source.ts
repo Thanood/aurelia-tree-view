@@ -1,6 +1,6 @@
 import {observable, Disposable} from 'aurelia-binding';
 import {getLogger, Logger} from 'aurelia-logging';
-import {deepEqual} from '../common/deep-equal';
+// import {deepEqual} from '../common/deep-equal';
 import {NodeModel} from './node-model';
 import {TreeViewSettings} from './settings';
 
@@ -32,15 +32,20 @@ export class DataSource {
         this.focusedNode = null;
         this.log = getLogger('aurelia-tree-view/data-source');
         this.selectedNodes = [];
-        this.settings = {};
+        this.settings = {
+            compareEquality: (args) => { return args.a === args.b; },
+            multiSelect: false
+        };
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
     }
 
     private addToFlatNodes(node: NodeModel) {
         // TODO: replace deepEqual with something faster, possibly from treeView.compareEquality
-        if (!this.flatNodes.find(n => deepEqual(n.payload, node.payload))) {
-            this.flatNodes.push(node);
-        }
+        // if (!this.flatNodes.find(n => deepEqual(n.payload, node.payload))) {
+        //     this.flatNodes.push(node);
+        // }
+        if (!this.flatNodes.find(n => this.settings.compareEquality({ a: n, b: node.payload}))) 7
+        this.flatNodes.push(node);
     }
 
     private notifySubscribers(event: string, nodes: NodeModel[]) {
@@ -105,8 +110,12 @@ export class DataSource {
     }
 
     find(item: any) {
-        // return this.flatNodes.find(node => this.settings.compareEquality({ a: node.payload, b: item }));
-        return this.flatNodes.find(node => deepEqual(node.payload, item));
+        if (this.settings.compareEquality) {
+            return this.flatNodes.find(node => this.settings.compareEquality({ a: node.payload, b: item }));
+        } else {
+            throw new Error('no equality comparer set');
+        }
+        // return this.flatNodes.find(node => deepEqual(node.payload, item));
     }
 
     findRoot(node: NodeModel): NodeModel {
@@ -147,65 +156,72 @@ export class DataSource {
         this.notifySubscribers('loaded', this.nodes);
     }
 
-    openPathTo(node: any) {
-        // const visit = (n: any): Promise<void> => {
-        //     if (n.parent) {
-        //         return visit(n.parent);
-        //     }
-        //     const found = this.find(n);
-        //     if (found) {
-        //         return (found as NodeModel).expand();
-        //     }
-        //     return Promise.resolve();
-        // }
-        // return visit(node);
-        const visit = (n: any): Promise<void> => {
+    openPathTo(node: any): Promise<NodeModel> {
+        this.log.debug('opening path to', node.title, node);
+        const visit = (n: any): Promise<NodeModel> => {
+            let promise: Promise<any>;
             if (n.parent) {
-                return visit(n.parent);
+                this.log.debug('before visit recursion', n.parent.title, n.parent);
+                promise = visit(n.parent);
+            } else {
+                promise = Promise.resolve();
             }
-            const found = this.find(n);
-            if (found) {
-                return (found as NodeModel).expand();
-            }
-            return Promise.reject('node not found: ' + JSON.stringify(n));
+            return promise.then(() => {
+                this.log.debug('after visit recursion', n.title, n);
+                const found = this.find(n);
+                if (found) {
+                    this.log.debug('expanding', found.payload.title, found);
+                    return (found as NodeModel).expand().then(() => found);
+                } else {
+                    return Promise.reject('node not found: ' + n.title);
+                }
+            });
         };
         return visit(node);
     }
 
     selectNode(node: NodeModel) {
         // this.flatNodes.forEach(node => node.isSelected = false);
+        let expandPath = false;
+        let promise: Promise<NodeModel>;
         if (node instanceof NodeModel) {
-            // this.log.debug('node is a NodeModel');
+            expandPath = true;
+            promise = Promise.resolve(node);
         } else {
-            // this.log.warn('node is NOT a NodeModel');
             const found = this.find(node);
             if (found) {
                 node = found;
+                expandPath = true;
+                promise = Promise.resolve(node);
             } else {
-                this.log.warn('node to be selected was not found', node);
-                this.openPathTo(node).then(() => {
-                    // node.isSelected = true;
-                    // if (this.settings.multiSelect) {
-                    //     this.selectedNodes.push(node);
-                    // } else {
-                    //     this.selectedNodes = [node];
-                    // }
-                    this.selectNode(node);
-                });
-                return;
+                promise = this.openPathTo(node);
             }
         }
-        node.isSelected = true;
-        if (this.settings.multiSelect) {
-            this.selectedNodes.push(node);
+        return promise.then(n => {
+            this.log.debug('selectNode got node', n.payload.title, n.payload);
+            if (this.settings.multiSelect) {
+                this.selectedNodes.push(n);
+            } else {
+                this.selectedNodes = [n];
+                this.flatNodes.forEach(node => node.isSelected = false);
+            }
+            n.isSelected = true;
+            if (expandPath && node.parent) {
+                const path = this.getPath(node);
+                this.expandPath(path);
+            }
+            this.notifySubscribers('selectionChanged', this.selectedNodes);
+        });
+    }
+
+    selectNodes(nodes: NodeModel[]): Promise<void> {
+        const rest = nodes.splice(0, 1);
+        if (rest.length > 0) {
+            return this.selectNodes(nodes).then(() => this.selectNode(rest[0]));
         } else {
-            this.selectedNodes = [node];
+            // return this.selectNode(rest[0]);
+            return Promise.resolve();
         }
-        // if (node.parent) {
-        //     const path = this.getPath(node);
-        //     this.expandPath(path);
-        // }
-        this.notifySubscribers('selectionChanged', this.selectedNodes);
     }
 
     settingsChanged(newValue: TreeViewSettings) {
