@@ -1,26 +1,33 @@
-import {computedFrom} from 'aurelia-binding';
+import {computedFrom, observable} from 'aurelia-binding';
 import {getLogger, Logger} from 'aurelia-logging';
 import {DataSourceApi} from './data-source';
+import {TreeNode} from './tree-node';
 
 export class NodeModel {
     children: NodeModel[] | null;
     childrenGetter: (() => Promise<any[]>) | null;
     dataSourceApi: DataSourceApi;
-    isFocused = false;
-    isExpanded = false;
-    isLoading = false;
-    isSelected = false;
-    isVisible = true;
+    element: TreeNode;
+    isExpanded: boolean;
+    isFocused: boolean;
+    isLoading: boolean;
+    @observable() isSelected: boolean;
+    isVisible: boolean;
     log: Logger;
     parent: NodeModel | null;
     payload: any;
 
     constructor(parent?: NodeModel | null, children?: NodeModel[] | null, childrenGetter?: (() => Promise<any[]>), payload?: any) {
+        this.log = getLogger('aurelia-tree-view/node-model');
         this.children = children || null;
         this.childrenGetter = childrenGetter || null;
-        this.log = getLogger('aurelia-tree-view/node-model');
         this.parent = parent || null;
         this.payload = payload || null;
+        this.isExpanded = false;
+        this.isFocused = false;
+        this.isLoading = false;
+        this.isSelected = false;
+        this.isVisible = true;
     }
 
     @computedFrom('children')
@@ -75,5 +82,13 @@ export class NodeModel {
             });
         }
         return Promise.resolve();
+    }
+
+    isSelectedChanged(newValue: boolean) {
+        if (this.element) {
+            this.element.isSelected = newValue;
+        } else {
+            this.log.warn('element is not defined yet');
+        }
     }
 }

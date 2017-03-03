@@ -6,4 +6,8 @@
   <div style="width: 300px; position: relative;">
     <tree-view view-model.ref="tree"></tree-view>
   </div>
+  <div>
+      <p if.bind="tree.dataSource.focusedNode">focused: ${tree.dataSource.focusedNode.payload.title}</p>
+      <p if.bind="tree.dataSource.selectedNodes.length > 0">selected: ${tree.dataSource.selectedNodes[0].payload.title}</p>
+  </div>
 </template>

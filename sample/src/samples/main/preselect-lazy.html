@@ -13,11 +13,9 @@
   </div>
   <div style="width: 300px; position: relative;">
     <tree-view
-      nodes.bind="nodes"
       compare-equality.call="compareNode(a, b)"
       multi-select="true"
-      selected.bind="selected"
-      view-model.ref="treeView"
+      view-model.ref="tree"
     ></tree-view>
   </div>
 </template>

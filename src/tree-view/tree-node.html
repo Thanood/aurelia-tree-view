@@ -8,8 +8,8 @@
             ${ model.isLoading ? 'cached' : (model.isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right') }
           </span>
           <span click.delegate="focus($event, true)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
-            <label if.bind="model._tree.multiSelect">
-              <input type="checkbox" checked.bind="model.selected" click.delegate="toggleSelected($event, true)" />
+            <label if.bind="model.dataSourceApi.settings.multiSelect">
+              <input type="checkbox" checked.bind="isSelected" click.delegate="toggleSelected($event, true)" />
             </label> ${model.payload.title}
           </span>
         </div>

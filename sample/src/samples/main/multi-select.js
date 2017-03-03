@@ -1,62 +1,89 @@
-import {computedFrom} from 'aurelia-framework';
-import {NodeModel} from 'aurelia-tree-view';
+import { computedFrom } from 'aurelia-framework';
+import { NodeModel } from 'aurelia-tree-view';
 
 export class MultiSelect {
-  nodes = [];
-  selected = [];
+    selectedNodes = [];
+    
+    attached() {
+        const nodes = this.getNodes();
+        this.tree.dataSource.load(nodes);
+    }
 
-  attached() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
+    getNodes() {
+        return [
+            {
+                title: 'Texas',
+                children: [
+                    { title: 'Austin' },
+                    { title: 'Houston' }
+                ]
+            }, {
+                title: 'New York',
+                children: [
+                    {
+                        title: 'New York City',
+                        children: () => {
+                            return new Promise((resolve, reject) => {
+                                window.setTimeout(function () {
+                                    resolve([
+                                        { title: 'Manhattan' },
+                                        { title: 'Brooklyn' },
+                                        { title: 'Bronx' },
+                                        { title: 'Queens' },
+                                        { title: 'Staten Island' }
+                                    ]);
+                                }, 500);
+                            });
+                        }
+                    }, {
+                        title: 'Buffalo'
+                    }
+                ]
+            }, {
+                title: 'Oregon',
+                children: [
+                    { title: 'Portland' }
+                ]
+            }, {
+                title: 'California',
+                children: () => {
+                    return new Promise((resolve, reject) => {
+                        resolve([
+                            { title: 'Los Angeles' },
+                            { title: 'San Francisco' }
+                        ]);
+                    });
+                }
+            }, {
+                title: 'Four levels',
+                children: [
+                    { title: 'level 1', children: [
+                        { title: 'level 2', children: [
+                            { title: 'level 3', children: [
+                                { title: 'level 4' }
+                            ]}
+                        ]}
+                    ]}
+                ]
+            }, {
+                title: 'Five levels',
+                children: [
+                    { title: 'level 1', children: [
+                        { title: 'level 2', children: [
+                            { title: 'level 3', children: [
+                                { title: 'level 4', children: [
+                                    { title: 'level 5' }
+                                ] }
+                            ]}
+                        ]}
+                    ]}
+                ]
+            }
+        ];
+    }
 
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', () => {
-        return new Promise((resolve, reject) => {
-          window.setTimeout(() => {
-            resolve([
-              new NodeModel('Manhattan'),
-              new NodeModel('Brooklyn'),
-              new NodeModel('Bronx'),
-              new NodeModel('Queens'),
-              new NodeModel('Staten Island')
-            ]);
-          }, 500);
-        });
-      }),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-
-    let fourLevels = new NodeModel('Four Levels (level 1)', [
-      new NodeModel('Level 2', [
-        new NodeModel('Level 3', [
-          new NodeModel('Level 4')
-        ])
-      ])
-    ]);
-
-    let fiveLevels = new NodeModel('Five Levels (level 1)', [
-      new NodeModel('Level 2', [
-        new NodeModel('Level 3', [
-          new NodeModel('Level 4', [
-            new NodeModel('Level 5')
-          ])
-        ])
-      ])
-    ]);
-
-    this.nodes = [texas, newYork, oregon, california, fourLevels, fiveLevels];
-  }
-
-  selectedNodes = '';
-  onSelect(e) {
-    this.selectedNodes = this.selected.map(node => node.title).join(', ');
-  }
+    onSelect(e) {
+        // this.selectedNodes = this.selected.map(node => node.title).join(', ');
+        this.selectedNodes = e.detail;
+    }
 }

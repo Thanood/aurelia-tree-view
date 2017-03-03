@@ -1,10 +1,11 @@
 import {Disposable} from 'aurelia-binding';
 import {inject} from 'aurelia-dependency-injection';
 import {getLogger, Logger} from 'aurelia-logging';
+import {DOM} from 'aurelia-pal';
 import {bindable} from 'aurelia-templating';
 import {DataSource} from './data-source';
 import {NodeModel} from './node-model';
-import {TreeViewSettings} from './settings';
+// import {TreeViewSettings} from './settings';
 
 interface TemplateInfo {
     template: string,
@@ -31,6 +32,7 @@ export class TreeView {
     }
 
     bind() {
+        this.multiSelect = ((this.multiSelect as any) === 'true' || this.multiSelect === true);
         if (!this.dataSource) {
             this.dataSource = new DataSource();
         }
@@ -61,8 +63,16 @@ export class TreeView {
         }
     }
 
-    handleDataSource(nodes: NodeModel[]) {
-        this.nodes = nodes;
-        this.log.debug('data source changed', this.nodes);
+    handleDataSource(event: string, nodes: NodeModel[]) {
+        this.log.debug('data source', event, nodes);
+        switch (event) {
+            case 'loaded':
+                this.nodes = nodes;
+                break;
+            case 'selectionChanged':
+                const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: nodes });
+                this.element.dispatchEvent(event);
+                break;
+        }
     }
 }

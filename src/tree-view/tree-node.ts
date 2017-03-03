@@ -1,3 +1,4 @@
+import {observable} from 'aurelia-binding';
 import {inject} from 'aurelia-dependency-injection';
 import {getLogger, Logger} from 'aurelia-logging';
 import {DOM} from 'aurelia-pal';
@@ -8,27 +9,42 @@ import {NodeModel} from './node-model';
 export class TreeNode {
     log: Logger;
 
+    @observable() isSelected: boolean;
     @bindable() model: NodeModel;
 
     constructor(private element: Element) {
+        this.isSelected = false;
         this.log = getLogger('aurelia-tree-view/tree-node');
     }
 
-    attached() {
-        this.log.debug('attached', this.model);
-    }
+    // attached() {
+    //     this.log.debug('attached', this.model);
+    // }
 
     modelChanged(newValue: NodeModel) {
-        if (newValue && newValue.children) {
-            newValue.children.forEach(child => {
-                child.isVisible = false;
-            });
+        if (newValue) {
+            newValue.element = this;
+            if (newValue.children) {
+                newValue.children.forEach(child => {
+                    child.isVisible = false;
+                });
+            }
         }
     }
 
     focus(e: Event, permitBubbles: boolean = false) {
         this.model.dataSourceApi.focusNode(this.model);
         return permitBubbles;
+    }
+
+    isSelectedChanged(newValue: boolean) {
+        if (this.model) {
+            if (newValue) {
+                this.model.dataSourceApi.selectNode(this.model);
+            } else {
+                this.model.dataSourceApi.deselectNode(this.model);
+            }
+        }
     }
 
     toggleExpanded() {

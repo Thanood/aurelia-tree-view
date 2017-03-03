@@ -7,9 +7,13 @@
     The node "New York / New York City" is lazy loaded with a delay of 500ms.
   </div>
   <div style="width: 300px; position: relative;">
-    <tree-view multi-select="true" selected.bind="selected" nodes.bind="nodes" selection-changed.delegate="onSelect($event)" view-model.ref="tree"></tree-view>
+    <!--<tree-view multi-select="true" selected.bind="selected" nodes.bind="nodes" selection-changed.delegate="onSelect($event)" view-model.ref="tree"></tree-view>-->
+    <tree-view multi-select="true" view-model.ref="tree" selection-changed.delegate="onSelect($event)"></tree-view>
   </div>
-  <div>
-    Selected: ${selectedNodes}
+  <div if.bind="selectedNodes">
+    Selected:
+    <ul>
+        <li repeat.for="node of selectedNodes">${node.payload.title}</li>
+    </ul>
   </div>
 </template>
