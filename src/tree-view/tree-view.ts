@@ -42,6 +42,7 @@ export class TreeView {
     }
 
     unbind() {
+        // this.log.debug('disposing subscriptions:', this.subscriptions.length);
         this.subscriptions.forEach(sub => sub.dispose());
     }
 

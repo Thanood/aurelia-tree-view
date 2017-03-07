@@ -203,9 +203,15 @@ export class DataSource {
                 this.selectedNodes.push(n);
             } else {
                 this.selectedNodes = [n];
-                this.flatNodes.forEach(node => node.isSelected = false);
+                this.flatNodes.forEach(node => {
+                    if (node !== n) {
+                        node.isSelected = false;
+                    }
+                });
             }
+            n.suspendEvents = true;
             n.isSelected = true;
+            n.suspendEvents = false;
             if (expandPath && node.parent) {
                 const path = this.getPath(node);
                 this.expandPath(path);

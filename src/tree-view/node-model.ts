@@ -16,6 +16,7 @@ export class NodeModel {
     log: Logger;
     parent: NodeModel | null;
     payload: any;
+    suspendEvents = false;
 
     constructor(parent?: NodeModel | null, children?: NodeModel[] | null, childrenGetter?: (() => Promise<any[]>), payload?: any) {
         this.log = getLogger('aurelia-tree-view/node-model');
@@ -86,10 +87,12 @@ export class NodeModel {
     }
 
     isSelectedChanged(newValue: boolean) {
-        if (this.element) {
-            this.element.isSelected = newValue;
-        } else {
-            this.log.warn('element is not defined yet - use TaskQueue', (this.payload ? this.payload.title : '- no payload!'));
+        if (!this.suspendEvents) {
+            if (this.element) {
+                this.element.isSelected = newValue;
+            } else {
+                this.log.warn('element is not defined yet - use TaskQueue', (this.payload ? this.payload.title : '- no payload!'));
+            }
         }
     }
 }
