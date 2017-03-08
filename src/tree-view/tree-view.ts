@@ -1,6 +1,7 @@
 import {Disposable} from 'aurelia-binding';
 import {inject} from 'aurelia-dependency-injection';
 import {getLogger, Logger} from 'aurelia-logging';
+import {TaskQueue} from 'aurelia-task-queue';
 import {DOM} from 'aurelia-pal';
 import {bindable} from 'aurelia-templating';
 import {DataSource} from './data-source';
@@ -12,7 +13,7 @@ interface TemplateInfo {
     viewModel: NodeModel
 }
 
-@inject(Element)
+@inject(Element, TaskQueue)
 export class TreeView {
     dataSource: DataSource;
     private log: Logger;
@@ -23,7 +24,7 @@ export class TreeView {
     @bindable() compareEquality: ((args: { a: NodeModel, b: NodeModel }) => boolean);
     @bindable() multiSelect: boolean = false;
 
-    constructor(private element: Element) {
+    constructor(private element: Element, private taskQueue: TaskQueue) {
         this.compareEquality = (args) => { return args.a === args.b; };
         this.log = getLogger('aurelia-tree-view');
         this.nodes = [];
@@ -34,7 +35,7 @@ export class TreeView {
     bind() {
         this.multiSelect = ((this.multiSelect as any) === 'true' || this.multiSelect === true);
         if (!this.dataSource) {
-            this.dataSource = new DataSource();
+            this.dataSource = new DataSource(this.taskQueue);
         }
         this.dataSource.settings.compareEquality = this.compareEquality;
         this.dataSource.settings.multiSelect = this.multiSelect;

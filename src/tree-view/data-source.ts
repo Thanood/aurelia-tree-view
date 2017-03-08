@@ -1,5 +1,6 @@
 import {observable, Disposable} from 'aurelia-binding';
 import {getLogger, Logger} from 'aurelia-logging';
+import {TaskQueue} from 'aurelia-task-queue';
 // import {deepEqual} from '../common/deep-equal';
 import {NodeModel} from './node-model';
 import {TreeViewSettings} from './settings';
@@ -27,7 +28,7 @@ export class DataSource {
 
     @observable() settings: TreeViewSettings;
 
-    constructor() {
+    constructor(private taskQueue: TaskQueue) {
         this.flatNodes = [];
         this.focusedNode = null;
         this.log = getLogger('aurelia-tree-view/data-source');
@@ -64,6 +65,7 @@ export class DataSource {
             let node: NodeModel = new NodeModel(parent);
             node.dataSourceApi = this.api;
             node.payload = item;
+            node.taskQueue = this.taskQueue;
 
             if (typeof item.children === 'function') {
                 const ch: () => Promise<any[]> = item.children;
@@ -172,6 +174,14 @@ export class DataSource {
                 if (found) {
                     this.log.debug('expanding', found.payload.title, found);
                     return (found as NodeModel).expand().then(() => found);
+                    // .then(() => {
+                    //    return new Promise(resolve => {
+                    //        new TaskQueue().queueTask(() => {
+                    //            this.log.debug('tq');
+                    //            resolve();
+                    //        });
+                    //    });
+                    // });
                 } else {
                     return Promise.reject('node not found: ' + n.title);
                 }
@@ -209,9 +219,14 @@ export class DataSource {
                     }
                 });
             }
-            n.suspendEvents = true;
+            if (!this.settings.multiSelect) {
+                n.suspendEvents = true;
+            }
             n.isSelected = true;
-            n.suspendEvents = false;
+            if (!this.settings.multiSelect) {
+                n.suspendEvents = false;
+            }
+
             if (expandPath && node.parent) {
                 const path = this.getPath(node);
                 this.expandPath(path);
@@ -220,14 +235,27 @@ export class DataSource {
         });
     }
 
+    // selectNodes(nodes: NodeModel[]): Promise<void> {
+    //     const rest = nodes.splice(0, 1);
+    //     if (rest.length > 0) {
+    //         return this.selectNodes(nodes).then(() => this.selectNode(rest[0]));
+    //     } else {
+    //         // return this.selectNode(rest[0]);
+    //         this.log.debug('selectNodes', nodes);
+    //         return Promise.resolve();
+    //     }
+    // }
+
+    _selectNodes(nodes: NodeModel[]): Promise<void> {
+        return Promise.all(nodes.map(node => this.selectNode(node)))
+            .then(() => {
+                return Promise.resolve();
+            });
+    }
+
     selectNodes(nodes: NodeModel[]): Promise<void> {
         const rest = nodes.splice(0, 1);
-        if (rest.length > 0) {
-            return this.selectNodes(nodes).then(() => this.selectNode(rest[0]));
-        } else {
-            // return this.selectNode(rest[0]);
-            return Promise.resolve();
-        }
+        return this.selectNode(rest[0]).then(() => { this.selectNodes(nodes); });
     }
 
     settingsChanged(newValue: TreeViewSettings) {

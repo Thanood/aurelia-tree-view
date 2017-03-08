@@ -1,5 +1,6 @@
 import {computedFrom, observable} from 'aurelia-binding';
 import {getLogger, Logger} from 'aurelia-logging';
+import {TaskQueue} from 'aurelia-task-queue';
 import {DataSourceApi} from './data-source';
 import {TreeNode} from './tree-node';
 
@@ -17,6 +18,7 @@ export class NodeModel {
     parent: NodeModel | null;
     payload: any;
     suspendEvents = false;
+    taskQueue: TaskQueue;
 
     constructor(parent?: NodeModel | null, children?: NodeModel[] | null, childrenGetter?: (() => Promise<any[]>), payload?: any) {
         this.log = getLogger('aurelia-tree-view/node-model');
@@ -91,7 +93,12 @@ export class NodeModel {
             if (this.element) {
                 this.element.isSelected = newValue;
             } else {
-                this.log.warn('element is not defined yet - use TaskQueue', (this.payload ? this.payload.title : '- no payload!'));
+                this.log.warn('element is not defined yet - use TaskQueue - ', (this.payload ? this.payload.title : 'no payload!'));
+                this.log.warn('local taskQueue', this.taskQueue);
+                this.taskQueue && this.taskQueue.queueTask(() => {
+                    this.element.isSelected = newValue;
+                    // this.isSelectedChanged(newValue);
+                });
             }
         }
     }
