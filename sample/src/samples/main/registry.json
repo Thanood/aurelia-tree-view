@@ -8,12 +8,6 @@
     "multi-select": {
       "files": ["html", "js"]
     },
-    "select-on-focus": {
-      "files": ["html", "js"]
-    },
-    "init-from-json": {
-      "files": ["html", "js"]
-    },
     "expand-on-focus": {
       "files": ["html", "js"]
     },
