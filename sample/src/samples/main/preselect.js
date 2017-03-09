@@ -3,8 +3,6 @@ import {NodeModel} from 'aurelia-tree-view';
 
 @inject(TaskQueue)
 export class PreSelect {
-  selectedNodes = [];
-
   constructor(tq) {
     this.taskQueue = tq;
   }

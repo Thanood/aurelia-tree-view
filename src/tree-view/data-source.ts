@@ -38,15 +38,16 @@ export class DataSource {
             multiSelect: false
         };
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
+
+        (<any>window).dbg = (<any>window).dbg || {};
+        (<any>window).dbg.dataSource = this;
     }
 
     private addToFlatNodes(node: NodeModel) {
-        // TODO: replace deepEqual with something faster, possibly from treeView.compareEquality
-        // if (!this.flatNodes.find(n => deepEqual(n.payload, node.payload))) {
-        //     this.flatNodes.push(node);
-        // }
-        if (!this.flatNodes.find(n => this.settings.compareEquality({ a: n, b: node.payload}))) 7
-        this.flatNodes.push(node);
+        if (!this.flatNodes.find(n => this.settings.compareEquality({ a: n.payload, b: node.payload || node}))) {
+            this.log.debug('(after compareEquality) adding to flat nodes', node.payload);
+            this.flatNodes.push(node);
+        }
     }
 
     private notifySubscribers(event: string, nodes: NodeModel[]) {
@@ -62,30 +63,37 @@ export class DataSource {
 
     private visitNode(item: any, parent: NodeModel | null): NodeModel {
         if (this.validateNode(item)) {
-            let node: NodeModel = new NodeModel(parent);
-            node.dataSourceApi = this.api;
-            node.payload = item;
-            node.taskQueue = this.taskQueue;
-
-            if (typeof item.children === 'function') {
-                const ch: () => Promise<any[]> = item.children;
-                node.childrenGetter = () => {
-                    return new Promise(resolve => {
-                        ch().then(children => {
-                            const nodes = children.map(child => this.visitNode(child, node));
-                            node.children = nodes;
-                            resolve(nodes);
-                        });
-                    });
-                }
+            let node: NodeModel;
+            const nodeFound: NodeModel | undefined = this.find(item);
+            if (nodeFound) {
+                node = nodeFound;
             } else {
-                if (item.children && item.children.length > 0) {
-                    const ch: any[] = item.children;
-                    node.children = ch.map(child => this.visitNode(child, node));
+                this.log.debug('creating new item', item.title);
+                node = new NodeModel(parent);
+                node.dataSourceApi = this.api;
+                node.payload = item;
+                node.taskQueue = this.taskQueue;
+
+                if (typeof item.children === 'function') {
+                    const ch: () => Promise<any[]> = item.children;
+                    node.childrenGetter = () => {
+                        return new Promise(resolve => {
+                            ch().then(children => {
+                                const nodes = children.map(child => this.visitNode(child, node));
+                                node.children = nodes;
+                                resolve(nodes);
+                                this.log.debug('childrenGetter resolved', children, nodes);
+                            });
+                        });
+                    }
+                } else {
+                    if (item.children && item.children.length > 0) {
+                        const ch: any[] = item.children;
+                        node.children = ch.map(child => this.visitNode(child, node));
+                    }
                 }
+                this.addToFlatNodes(node);
             }
-            // this.flatNodes.push(node);
-            this.addToFlatNodes(node);
             return node;
         } else {
             throw new Error('invalid node');
@@ -117,7 +125,6 @@ export class DataSource {
         } else {
             throw new Error('no equality comparer set');
         }
-        // return this.flatNodes.find(node => deepEqual(node.payload, item));
     }
 
     findRoot(node: NodeModel): NodeModel {
@@ -173,15 +180,11 @@ export class DataSource {
                 const found = this.find(n);
                 if (found) {
                     this.log.debug('expanding', found.payload.title, found);
-                    return (found as NodeModel).expand().then(() => found);
-                    // .then(() => {
-                    //    return new Promise(resolve => {
-                    //        new TaskQueue().queueTask(() => {
-                    //            this.log.debug('tq');
-                    //            resolve();
-                    //        });
-                    //    });
-                    // });
+                    return (found as NodeModel).expand().then(() => found)
+                    .then(() => {
+                        this.log.debug('expanded', found.payload.title);
+                        return found;
+                    });
                 } else {
                     return Promise.reject('node not found: ' + n.title);
                 }
@@ -191,6 +194,9 @@ export class DataSource {
     }
 
     selectNode(node: NodeModel) {
+        if (typeof node === 'undefined') {
+            return Promise.reject('node is undefined');
+        }
         // this.flatNodes.forEach(node => node.isSelected = false);
         let expandPath = false;
         let promise: Promise<NodeModel>;
@@ -220,11 +226,13 @@ export class DataSource {
                 });
             }
             if (!this.settings.multiSelect) {
+                // FIXME: correctly, this would be "if this select came from a mouse event"
                 n.suspendEvents = true;
             }
             n.isSelected = true;
             if (!this.settings.multiSelect) {
                 n.suspendEvents = false;
+                n.isFocused = true;
             }
 
             if (expandPath && node.parent) {
@@ -235,27 +243,13 @@ export class DataSource {
         });
     }
 
-    // selectNodes(nodes: NodeModel[]): Promise<void> {
-    //     const rest = nodes.splice(0, 1);
-    //     if (rest.length > 0) {
-    //         return this.selectNodes(nodes).then(() => this.selectNode(rest[0]));
-    //     } else {
-    //         // return this.selectNode(rest[0]);
-    //         this.log.debug('selectNodes', nodes);
-    //         return Promise.resolve();
-    //     }
-    // }
-
-    _selectNodes(nodes: NodeModel[]): Promise<void> {
-        return Promise.all(nodes.map(node => this.selectNode(node)))
-            .then(() => {
-                return Promise.resolve();
-            });
-    }
-
     selectNodes(nodes: NodeModel[]): Promise<void> {
-        const rest = nodes.splice(0, 1);
-        return this.selectNode(rest[0]).then(() => { this.selectNodes(nodes); });
+        const mutableNodes = [...nodes];
+        const rest = mutableNodes.splice(0, 1);
+        return rest.length > 0
+            ? this.selectNode(rest[0]).then(() => { this.selectNodes(mutableNodes); })
+            : Promise.resolve();
+
     }
 
     settingsChanged(newValue: TreeViewSettings) {

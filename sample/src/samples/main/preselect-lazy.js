@@ -1,10 +1,12 @@
-import { inject, TaskQueue } from 'aurelia-framework';
+import { inject, LogManager, TaskQueue } from 'aurelia-framework';
+import { NodeModel } from 'aurelia-tree-view';
 
 @inject(TaskQueue)
 export class LazyLoad {
     forceLazyLoad = false;
 
     constructor(tq) {
+        this.log = LogManager.getLogger('preselect-lazy');
         this.taskQueue = tq;
     }
 
@@ -19,17 +21,27 @@ export class LazyLoad {
             // newYorkCityDistricts.forEach(node => {
             //     this.tree.dataSource.selectNode(node);
             // });
-            // this.tree.dataSource.selectNode(californiaCities[0]).then(() => {
-            //     this.tree.dataSource.selectNode(californiaCities[1]).then(() => {
-            //         this.tree.dataSource.selectNode(newYorkCityDistricts[2]);
-            //     });
-            // });
+
             this.tree.dataSource.selectNodes(californiaCities);
+            this.tree.dataSource.selectNodes([nodes[1].children[1], californiaCities[1], newYorkCityDistricts[2], newYorkCityDistricts[3]]);
         });
     }
 
     compareNode(a, b) {
-        return a.title === b.title;
+        if (typeof a === 'undefined') {
+            throw new Error('a is undefined');
+        }
+        if (typeof b === 'undefined') {
+            throw new Error('b is undefined');
+        }
+        if (a.payload) {
+            this.log.warn('a is of type NodeModel', a, b);
+        }
+        if (b.payload) {
+            this.log.warn('b is of type NodeModel', a, b);
+        }
+        const result = a.title === b.title;
+        return result;
     }
 
     getNodes() {
@@ -37,6 +49,7 @@ export class LazyLoad {
             { title: 'Los Angeles' },
             { title: 'San Francisco' }
         ];
+        this.log.debug('california children defined', californiaCities);
         const newYorkCityDistricts = [
             { title: 'Manhattan' },
             { title: 'Brooklyn' },
@@ -79,6 +92,7 @@ export class LazyLoad {
                 children: () => {
                     return new Promise((resolve, reject) => {
                         resolve(californiaCities);
+                        this.log.debug('california children resolved', californiaCities);
                     });
                 }
             }

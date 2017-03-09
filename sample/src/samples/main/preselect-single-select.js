@@ -1,32 +1,48 @@
-import {NodeModel} from 'aurelia-tree-view';
+import { NodeModel } from 'aurelia-tree-view';
 
 export class PreSelect {
-  nodes = [];
-  selectedCategories = [];
+    attached() {
+        const nodes = this.getNodes();
+        this.tree.dataSource.load(nodes);
+        this.tree.dataSource.selectNode(nodes[1]);
+    }
 
-  attached() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
-
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    this.nodes = [texas, newYork, oregon, california];
-    this.selectedCategories = [oregon];
-  }
+    getNodes() {
+        return [
+            {
+                title: 'Texas',
+                children: [
+                    { title: 'Austin' },
+                    { title: 'Houston' }
+                ]
+            }, {
+                title: 'New York',
+                children: [
+                    {
+                        title: 'New York City',
+                        children: [
+                            { title: 'Manhattan' },
+                            { title: 'Brooklyn' },
+                            { title: 'Bronx' },
+                            { title: 'Queens' },
+                            { title: 'Staten Island' }
+                        ]
+                    }, {
+                        title: 'Buffalo'
+                    }
+                ]
+            }, {
+                title: 'Oregon',
+                children: [
+                    { title: 'Portland' }
+                ]
+            }, {
+                title: 'California',
+                children: [
+                    { title: 'Los Angeles' },
+                    { title: 'San Francisco' }
+                ]
+            }
+        ];
+    }
 }
