@@ -9,7 +9,7 @@
   </div>
   <hr />
   <div style="width: 300px; position: relative;">
-    <tree-view nodes.bind="nodes">
+    <tree-view view-model.ref="tree">
       <tree-node-template model.bind="nodeInterface">
         <div>
           -- <span click.delegate="nodeClicked(model)">${model.title}</span>

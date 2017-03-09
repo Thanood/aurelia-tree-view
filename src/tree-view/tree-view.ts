@@ -3,15 +3,11 @@ import {inject} from 'aurelia-dependency-injection';
 import {getLogger, Logger} from 'aurelia-logging';
 import {TaskQueue} from 'aurelia-task-queue';
 import {DOM} from 'aurelia-pal';
-import {bindable} from 'aurelia-templating';
-import {DataSource} from './data-source';
+import {bindable, child} from 'aurelia-templating';
+import {DataSource, TemplateInfo} from './data-source';
 import {NodeModel} from './node-model';
+import {TreeNodeTemplate} from './tree-node-template';
 // import {TreeViewSettings} from './settings';
-
-interface TemplateInfo {
-    template: string,
-    viewModel: NodeModel
-}
 
 @inject(Element, TaskQueue)
 export class TreeView {
@@ -24,6 +20,7 @@ export class TreeView {
     @bindable() compareEquality: ((args: { a: NodeModel, b: NodeModel }) => boolean);
     @bindable() expandOnFocus: boolean = false;
     @bindable() multiSelect: boolean = false;
+    @child('tree-node-template') templateElement: TreeNodeTemplate;
 
     constructor(private element: Element, private taskQueue: TaskQueue) {
         this.compareEquality = (args) => { return args.a === args.b; };
@@ -50,21 +47,18 @@ export class TreeView {
         this.subscriptions.forEach(sub => sub.dispose());
     }
 
-    created() {
-        const templateElement = this.element.querySelector('tree-node-template');
-        if (templateElement) {
-            const te = (templateElement as any);
-            if (te.au) {
-                const template = te.au.controller.viewModel.template;
-                const viewModel = te.au.controller.viewModel.model;
-                this.templateInfo = {
-                    template,
-                    viewModel
-                }
-                this.log.debug('template info', this.templateInfo);
-            } else {
-                this.log.warn('no viewModel found for template', templateElement);
+    attached() {
+        if (this.templateElement) {
+            const template = this.templateElement.template;
+            const viewModel = this.templateElement.model;
+            this.templateInfo = {
+                template,
+                viewModel
             }
+            this.dataSource.settings.templateInfo = this.templateInfo;
+            this.log.debug('template info', this.templateInfo);
+        } else {
+            this.log.debug('no template element');
         }
     }
 

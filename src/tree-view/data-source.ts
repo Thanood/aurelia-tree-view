@@ -12,6 +12,11 @@ export interface DataSourceApi {
     settings: TreeViewSettings | null;
 }
 
+export interface TemplateInfo {
+    template: string,
+    viewModel: NodeModel
+}
+
 export class DataSource {
     api: DataSourceApi = {
         deselectNode: this.deselectNode.bind(this),
@@ -36,7 +41,8 @@ export class DataSource {
         this.settings = {
             compareEquality: (args) => { return args.a === args.b; },
             expandOnFocus: false,
-            multiSelect: false
+            multiSelect: false,
+            templateInfo: null
         };
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
     }

@@ -15,8 +15,8 @@ import { NodeModel } from './node-model';
 @inject(TargetInstruction)
 export class TreeNodeTemplate {
     @bindable() model: NodeModel;
+    template: any;
     private log: Logger;
-    private template: any;
 
     constructor(targetInstruction: any) {
         this.log = getLogger('aurelia-tree-view/tree-node-template');
