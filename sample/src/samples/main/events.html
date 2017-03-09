@@ -1,7 +1,7 @@
 <template>
   <div style="width: 300px">
     <tree-view
-      nodes.bind="nodes"
+    view-model.ref="tree"
       focused.delegate="onFocus($event)"
       selection-changed.delegate="onSelect($event)"
       collapsed.delegate="onCollapsed($event)"

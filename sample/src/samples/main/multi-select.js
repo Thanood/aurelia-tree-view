@@ -84,6 +84,6 @@ export class MultiSelect {
 
     onSelect(e) {
         // this.selectedNodes = this.selected.map(node => node.title).join(', ');
-        this.selectedNodes = e.detail;
+        this.selectedNodes = e.detail.nodes;
     }
 }
