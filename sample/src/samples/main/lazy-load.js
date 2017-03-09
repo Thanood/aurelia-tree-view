@@ -7,6 +7,10 @@ export class LazyLoad {
         this.tree.dataSource.load(this.getNodes());
     }
 
+    expandAll() {
+        this.tree.dataSource.expandAllNodes();
+    }
+
     getNodes() {
         return [
             {
@@ -47,8 +51,8 @@ export class LazyLoad {
                 children: () => {
                     return new Promise((resolve, reject) => {
                         resolve([
-                            // { title: 'Los Angeles' },
-                            // { title: 'San Francisco' }
+                            { title: 'Los Angeles' },
+                            { title: 'San Francisco' }
                         ]);
                     });
                 }

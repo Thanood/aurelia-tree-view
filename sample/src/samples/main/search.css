@@ -1,3 +1,21 @@
+.search-legend {
+    margin-bottom: 15px;
+}
+
+.search-legend .box-highlight {
+    display: inline-block;
+    background-color: green;
+    height: 16px;
+    width: 16px;
+}
+
+.search-legend .box-highlight-parent {
+    display: inline-block;
+    background-color: orange;
+    height: 16px;
+    width: 16px;
+}
+
 .search-tree {
   position: relative;
   width: 300px;

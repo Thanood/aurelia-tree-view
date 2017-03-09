@@ -39,9 +39,6 @@ export class DataSource {
             multiSelect: false
         };
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
-
-        (<any>window).dbg = (<any>window).dbg || {};
-        (<any>window).dbg.dataSource = this;
     }
 
     private addToFlatNodes(node: NodeModel) {
@@ -112,11 +109,39 @@ export class DataSource {
         this.notifySubscribers('selectionChanged', this.selectedNodes);
     }
 
+    expandAllNodes(): Promise<void> {
+        return Promise.all(this.nodes.map(node => this.expandNodeAndChildren(node))).then(() => {});
+    }
+
+    expandNodeAndChildren(node: NodeModel): Promise<void> {
+        return Promise.resolve().then(() => {
+            if (node.hasChildren) {
+                return node.expand().then(() => {
+                    if (node.children) {
+                        return Promise.all(node.children.map(child => {
+                            return this.expandNodeAndChildren(child);
+                        })).then(() => {});
+                    } else {
+                        throw new Error('node has no children (=== null) after expand');
+                    }
+                });
+            }
+            return Promise.resolve();
+        });
+    }
+
     expandPath(path: NodeModel[]) {
         return Promise.resolve().then(() => {
             path.forEach(p => {
                 p.expand();
             });
+        });
+    }
+
+    filter(visitor: (node: NodeModel, i?: number) => boolean): Promise<NodeModel[]> {
+        return this.expandAllNodes()
+        .then(() => {
+            return Promise.all(this.flatNodes.filter((node, i) => visitor(node, i)));
         });
     }
 

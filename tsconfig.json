@@ -23,6 +23,8 @@
     "dist",
     "doc",
     "node_modules",
-    "sample_fuse"
+    "sample",
+    "sample_fuse",
+    "sample_webpack"
   ]
 }
