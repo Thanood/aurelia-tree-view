@@ -35,6 +35,7 @@ export class DataSource {
         this.selectedNodes = [];
         this.settings = {
             compareEquality: (args) => { return args.a === args.b; },
+            expandOnFocus: false,
             multiSelect: false
         };
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
@@ -143,6 +144,9 @@ export class DataSource {
         node.isFocused = true;
         this.focusedNode = node;
 
+        if (this.settings.expandOnFocus) {
+            node.expand();
+        }
         if (!this.settings.multiSelect) {
             this.api.selectNode(node);
         }

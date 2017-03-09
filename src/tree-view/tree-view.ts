@@ -22,6 +22,7 @@ export class TreeView {
     private templateInfo: TemplateInfo;
 
     @bindable() compareEquality: ((args: { a: NodeModel, b: NodeModel }) => boolean);
+    @bindable() expandOnFocus: boolean = false;
     @bindable() multiSelect: boolean = false;
 
     constructor(private element: Element, private taskQueue: TaskQueue) {
@@ -37,7 +38,9 @@ export class TreeView {
         if (!this.dataSource) {
             this.dataSource = new DataSource(this.taskQueue);
         }
+        // TODO: use a settings service or something similar
         this.dataSource.settings.compareEquality = this.compareEquality;
+        this.dataSource.settings.expandOnFocus = this.expandOnFocus;
         this.dataSource.settings.multiSelect = this.multiSelect;
         this.subscriptions.push(this.dataSource.subscribe(this.handleDataSource.bind(this)));
     }
