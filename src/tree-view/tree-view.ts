@@ -72,7 +72,7 @@ export class TreeView {
                 this.nodes = nodes;
                 break;
             case 'selectionChanged':
-                const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: nodes });
+                const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: {nodes} });
                 this.element.dispatchEvent(event);
                 break;
         }
