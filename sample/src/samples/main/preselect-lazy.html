@@ -1,15 +1,20 @@
 <template>
   <require from="./multi-select.css"></require>
+  <style>
+    .found {
+      color: green;
+    }
+  </style>
   <div style="padding: 10px 0;">
     The node "New York / New York City" is lazy loaded with a delay of 500ms.<br />
     The node "California" is lazy loaded without a delay.<br />
     Selected nodes should be:
     <ul>
-      <li>New York/Buffalo</li>
-      <li>New York/New York City/Bronx</li>
-      <li>New York/New York City/Quuens</li>
-      <li>California/Los Angeles</li>
-      <li>California/San Francisco</li>
+      <li ref="Buffalo">New York/Buffalo</li>
+      <li ref="Bronx">New York/New York City/Bronx</li>
+      <li ref="Queens">New York/New York City/Queens</li>
+      <li ref="LosAngeles">California/Los Angeles</li>
+      <li ref="SanFrancisco">California/San Francisco</li>
     </ul>
   </div>
   <div style="width: 300px; position: relative;">
