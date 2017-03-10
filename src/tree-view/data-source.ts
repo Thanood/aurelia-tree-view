@@ -6,19 +6,39 @@ import {NodeModel} from './node-model';
 import {TreeViewSettings} from './settings';
 
 export interface DataSourceApi {
-    deselectNode(node: NodeModel): void;
+    deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void>;
+    expandNodeAndChildren(node: NodeModel): Promise<void>;
     focusNode(node: NodeModel): void;
-    selectNode(node: NodeModel): void;
-    settings: TreeViewSettings | null;
+    selectNode(node: NodeModel, selectChildren?: boolean, recurse?: boolean): Promise<void>;
+    settings: TreeViewSettings;
+}
+
+class DataSourceApiImplementation implements DataSourceApi {
+    settings: TreeViewSettings;
+
+    constructor(private dataSource: DataSource) {
+        this.settings = this.dataSource.settings;
+    }
+
+    deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void> {
+        return this.dataSource.deselectNode(node, deselectChildren, recurse);
+    };
+
+    expandNodeAndChildren(node: NodeModel): Promise<void> {
+        return this.dataSource.expandNodeAndChildren(node);
+    }
+
+    focusNode(node: NodeModel): void {
+        this.dataSource.focusNode(node);
+    }
+
+    selectNode(node: NodeModel, selectChildren?: boolean, recurse?: boolean): Promise<void> {
+        return this.dataSource.selectNode(node, selectChildren, recurse);
+    }
 }
 
 export class DataSource {
-    api: DataSourceApi = {
-        deselectNode: this.deselectNode.bind(this),
-        focusNode: this.focusNode.bind(this),
-        selectNode: this.selectNode.bind(this),
-        settings: null
-    };
+    api: DataSourceApi;
     flatNodes: NodeModel[];
     focusedNode: NodeModel | null;
     log: Logger;
@@ -28,7 +48,10 @@ export class DataSource {
 
     @observable() settings: TreeViewSettings;
 
+    private suspendSettingsObservable = false;
+
     constructor(private taskQueue: TaskQueue) {
+        this.suspendSettingsObservable = true;
         this.flatNodes = [];
         this.focusedNode = null;
         this.log = getLogger('aurelia-tree-view/data-source');
@@ -36,10 +59,14 @@ export class DataSource {
         this.settings = {
             compareEquality: (args) => { return args.a === args.b; },
             expandOnFocus: false,
+            processChildrenKey: 'shift',
+            processChildrenRecursiveKey: 'alt',
             multiSelect: false,
             templateInfo: null
         };
+        this.api = new DataSourceApiImplementation(this);
         this.subscriptions = new Set<(event: string, nodes: NodeModel[]) => void>();
+        this.suspendSettingsObservable = false;
     }
 
     private addToFlatNodes(node: NodeModel) {
@@ -51,6 +78,73 @@ export class DataSource {
 
     private notifySubscribers(event: string, nodes: NodeModel[]) {
         this.subscriptions.forEach(sub => sub(event, nodes));
+    }
+
+    private setNodeSelection(node: NodeModel, isSelected: boolean, setChildren: boolean = false, recurse: boolean = false): Promise<void> {
+        if (typeof node === 'undefined') {
+            return Promise.reject('node is undefined');
+        }
+
+        let expandPath = false;
+        let promise: Promise<NodeModel>;
+        if (node instanceof NodeModel) {
+            expandPath = true;
+            promise = Promise.resolve(node);
+        } else {
+            const found = this.find(node);
+            if (found) {
+                node = found;
+                expandPath = true;
+                promise = Promise.resolve(node);
+            } else {
+                promise = this.openPathTo(node);
+            }
+        }
+        return promise.then(n => {
+            this.log.debug('setNodeSelection got node', n.payload.title, n.payload);
+
+            if (isSelected) {
+                if (this.settings.multiSelect) {
+                    this.selectedNodes.push(n);
+                } else {
+                    this.selectedNodes = [n];
+                    this.flatNodes.forEach(node => {
+                        if (node !== n) {
+                            node.isSelected = false;
+                        }
+                    });
+                }
+            } else {
+                if (this.settings.multiSelect) {
+                    const index = this.selectedNodes.indexOf(node);
+                    this.selectedNodes.splice(index, 1);
+                } else {
+                    this.selectedNodes = [];
+                }
+            }
+
+            if (!this.settings.multiSelect) {
+                // FIXME: correctly, this would be "if this select came from a mouse event"
+                // n.suspendEvents = true;
+            }
+            n.isSelected = isSelected;
+            if (!this.settings.multiSelect) {
+                // n.suspendEvents = false;
+                n.isFocused = true;
+            }
+
+            if (expandPath && node.parent) {
+                const path = this.getPath(node);
+                this.expandPath(path);
+            }
+            if (setChildren && node.hasChildren && node.children) {
+                return this.expandNodeAndChildren(node).then(() => {
+                    return node.children ? Promise.all(node.children.map(child => this.setNodeSelection(child, isSelected, recurse, recurse))).then(() => { }) : Promise.resolve();
+                });
+            }
+            this.notifySubscribers('selectionChanged', this.selectedNodes);
+            return Promise.resolve();
+        });
     }
 
     private validateNode(node: any): boolean {
@@ -99,19 +193,16 @@ export class DataSource {
         }
     }
 
-    deselectNode(node: NodeModel) {
-        node.isSelected = false;
-        if (this.settings.multiSelect) {
-            const index = this.selectedNodes.indexOf(node);
-            this.selectedNodes.splice(index, 1);
-        } else {
-            this.selectedNodes = [];
-        }
-        this.notifySubscribers('selectionChanged', this.selectedNodes);
+    deselectNode(node: NodeModel, deselectChildren: boolean = false, recurse: boolean = false): Promise<void> {
+        return this.setNodeSelection(node, false, deselectChildren, recurse);
     }
 
     expandAllNodes(): Promise<void> {
         return Promise.all(this.nodes.map(node => this.expandNodeAndChildren(node))).then(() => {});
+    }
+
+    expandNode(node: NodeModel): Promise<void> {
+        return node.expand();
     }
 
     expandNodeAndChildren(node: NodeModel): Promise<void> {
@@ -223,54 +314,8 @@ export class DataSource {
         return visit(node);
     }
 
-    selectNode(node: NodeModel) {
-        if (typeof node === 'undefined') {
-            return Promise.reject('node is undefined');
-        }
-        // this.flatNodes.forEach(node => node.isSelected = false);
-        let expandPath = false;
-        let promise: Promise<NodeModel>;
-        if (node instanceof NodeModel) {
-            expandPath = true;
-            promise = Promise.resolve(node);
-        } else {
-            const found = this.find(node);
-            if (found) {
-                node = found;
-                expandPath = true;
-                promise = Promise.resolve(node);
-            } else {
-                promise = this.openPathTo(node);
-            }
-        }
-        return promise.then(n => {
-            this.log.debug('selectNode got node', n.payload.title, n.payload);
-            if (this.settings.multiSelect) {
-                this.selectedNodes.push(n);
-            } else {
-                this.selectedNodes = [n];
-                this.flatNodes.forEach(node => {
-                    if (node !== n) {
-                        node.isSelected = false;
-                    }
-                });
-            }
-            if (!this.settings.multiSelect) {
-                // FIXME: correctly, this would be "if this select came from a mouse event"
-                n.suspendEvents = true;
-            }
-            n.isSelected = true;
-            if (!this.settings.multiSelect) {
-                n.suspendEvents = false;
-                n.isFocused = true;
-            }
-
-            if (expandPath && node.parent) {
-                const path = this.getPath(node);
-                this.expandPath(path);
-            }
-            this.notifySubscribers('selectionChanged', this.selectedNodes);
-        });
+    selectNode(node: NodeModel, selectChildren: boolean = false, recurse: boolean = false): Promise<void> {
+        return this.setNodeSelection(node, true, selectChildren, recurse);
     }
 
     selectNodes(nodes: NodeModel[]): Promise<void> {
@@ -283,8 +328,10 @@ export class DataSource {
     }
 
     settingsChanged(newValue: TreeViewSettings) {
-        this.log.debug('new settings:', newValue);
-        this.api.settings = newValue;
+        if (!this.suspendSettingsObservable) {
+            this.log.debug('new settings:', newValue);
+            this.api.settings = newValue;
+        }
     }
 
     subscribe(callback: (event: string, nodes: NodeModel[]) => void): Disposable {

@@ -6,7 +6,7 @@
         <div class="tree-node__title-wrapper">
           <span
                 if.bind="model.hasChildren"
-                click.trigger="toggleExpanded()"
+                click.trigger="toggleExpanded($event)"
                 class="tree-node-arrow fa ${ model.isLoading ? 'tree-node-rotate fa-refresh' : (model.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right') }"
             >
           </span>

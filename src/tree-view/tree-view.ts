@@ -20,6 +20,8 @@ export class TreeView {
     @bindable() compareEquality: ((args: { a: NodeModel, b: NodeModel }) => boolean);
     @bindable() expandOnFocus: boolean = false;
     @bindable() multiSelect: boolean = false;
+    @bindable() processChildrenKey = 'ctrl';
+    @bindable() processChildrenRecursiveKey = 'alt';
     @child('tree-node-template') templateElement: TreeNodeTemplate;
 
     constructor(private element: Element, private taskQueue: TaskQueue) {
@@ -38,6 +40,8 @@ export class TreeView {
         this.dataSource.settings.compareEquality = this.compareEquality;
         this.dataSource.settings.expandOnFocus = this.expandOnFocus;
         this.dataSource.settings.multiSelect = this.multiSelect;
+        this.dataSource.settings.processChildrenKey = this.processChildrenKey;
+        this.dataSource.settings.processChildrenRecursiveKey = this.processChildrenRecursiveKey;
         this.subscriptions.push(this.dataSource.subscribe(this.handleDataSource.bind(this)));
     }
 

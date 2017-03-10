@@ -1,21 +1,22 @@
-import {computedFrom, createOverrideContext, observable} from 'aurelia-binding';
+import {computedFrom, createOverrideContext} from 'aurelia-binding';
 import {inject, Container} from 'aurelia-dependency-injection';
 import {getLogger, Logger} from 'aurelia-logging';
 import {DOM} from 'aurelia-pal';
+import {TaskQueue} from 'aurelia-task-queue';
 import {bindable, ViewCompiler, ViewResources, ViewSlot} from 'aurelia-templating';
 import {NodeModel} from './node-model';
 import {TemplateInfo} from './template-info';
 
-@inject(Element, ViewCompiler, ViewResources, Container)
+@inject(Element, ViewCompiler, ViewResources, Container, TaskQueue)
 export class TreeNode {
     log: Logger;
+    isSelected: boolean;
     templateTarget: Node;
     viewSlot: ViewSlot | null;
 
-    @observable() isSelected: boolean;
     @bindable() model: NodeModel;
 
-    constructor(private element: Element, private viewCompiler: ViewCompiler, private viewResources: ViewResources, private container: Container) {
+    constructor(private element: Element, private viewCompiler: ViewCompiler, private viewResources: ViewResources, private container: Container, private taskQueue: TaskQueue) {
         this.isSelected = false;
         this.log = getLogger('aurelia-tree-view/tree-node');
         this.viewSlot = null;
@@ -46,17 +47,7 @@ export class TreeNode {
         return permitBubbles;
     }
 
-    isSelectedChanged(newValue: boolean) {
-        if (this.model) {
-            if (newValue) {
-                this.model.dataSourceApi.selectNode(this.model);
-            } else {
-                this.model.dataSourceApi.deselectNode(this.model);
-            }
-        }
-    }
-
-    toggleExpanded() {
+    toggleExpanded(e: MouseEvent): Promise<void> {
         // TODO: only change this using a store
         let promise: Promise<void>;
         if (this.model.isExpanded) {
@@ -70,11 +61,27 @@ export class TreeNode {
                 this.element.dispatchEvent(event);
             });
         }
+        const processChildren = (<any>e)[`${this.model.dataSourceApi.settings.processChildrenKey}Key`];
+        if (this.model && processChildren) {
+            promise = promise.then(() => {
+                this.model.dataSourceApi.expandNodeAndChildren(this.model);
+            });
+        }
         return promise;
     }
 
     toggleSelected(e: MouseEvent, permitBubbles: boolean = false) {
-        // TODO: only change this using a store
+        if (this.model) {
+            this.taskQueue.queueTask(() => {
+                const processChildren = (<any>e)[`${this.model.dataSourceApi.settings.processChildrenKey}Key`];
+                const processChildrenRecursive = (<any>e)[`${this.model.dataSourceApi.settings.processChildrenRecursiveKey}Key`];
+                if (this.isSelected) {
+                    this.model.dataSourceApi.selectNode(this.model, processChildren, processChildrenRecursive);
+                } else {
+                    this.model.dataSourceApi.deselectNode(this.model, processChildren, processChildrenRecursive);
+                }
+            });
+        }
         return permitBubbles;
     }
 

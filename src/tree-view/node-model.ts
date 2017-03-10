@@ -17,8 +17,9 @@ export class NodeModel {
     log: Logger;
     parent: NodeModel | null;
     payload: any;
-    suspendEvents = false;
     taskQueue: TaskQueue;
+
+    private suspendEvents = false;
 
     constructor(parent?: NodeModel | null, children?: NodeModel[] | null, childrenGetter?: (() => Promise<any[]>), payload?: any) {
         this.log = getLogger('aurelia-tree-view/node-model');
@@ -64,16 +65,6 @@ export class NodeModel {
             let promise: Promise<any>;
             if (this.childrenGetter) {
                 this.isLoading = true;
-                // promise = this.childrenGetter().then(children => {
-                //     children.forEach(child => {
-                //         // child.parent = this;
-                //         // if (this._template) {
-                //         //     child._template = this._template;
-                //         // }
-                //         // child._tree = this._tree;
-                //     });
-                //     this.children = children;
-                // });
                 promise = this.childrenGetter();
             } else {
                 promise = Promise.resolve();
@@ -98,14 +89,6 @@ export class NodeModel {
             } else {
                 this.log.warn('element is not defined yet - use TaskQueue - ', (this.payload ? this.payload.title : 'no payload!'));
                 this.log.warn('local taskQueue', this.taskQueue);
-                // this.taskQueue && this.taskQueue.queueTask(() => {
-                //     if (this.element) {
-                //         this.element.isSelected = newValue;
-                //     } else {
-                //         this.log.error('element is undefined', this.payload);
-                //     }
-                //     // this.isSelectedChanged(newValue);
-                // });
             }
         }
     }
