@@ -43,6 +43,9 @@
     },
     "search": {
       "files": ["html", "js", "css"]
+    },
+    "multiple-trees": {
+      "files": ["html", "js"]
     }
   }
 }
