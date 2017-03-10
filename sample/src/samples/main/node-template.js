@@ -24,19 +24,13 @@ export class NodeTemplate {
                 children: [
                     {
                         title: 'New York City',
-                        children: () => {
-                            return new Promise((resolve, reject) => {
-                                window.setTimeout(function () {
-                                    resolve([
-                                        { title: 'Manhattan' },
-                                        { title: 'Brooklyn' },
-                                        { title: 'Bronx' },
-                                        { title: 'Queens' },
-                                        { title: 'Staten Island' }
-                                    ]);
-                                }, 500);
-                            });
-                        }
+                        children: [
+                            { title: 'Manhattan' },
+                            { title: 'Brooklyn' },
+                            { title: 'Bronx' },
+                            { title: 'Queens' },
+                            { title: 'Staten Island' }
+                        ]
                     }, {
                         title: 'Buffalo'
                     }
@@ -48,14 +42,10 @@ export class NodeTemplate {
                 ]
             }, {
                 title: 'California',
-                children: () => {
-                    return new Promise((resolve, reject) => {
-                        resolve([
-                            { title: 'Los Angeles' },
-                            { title: 'San Francisco' }
-                        ]);
-                    });
-                }
+                children: [
+                    { title: 'Los Angeles' },
+                    { title: 'San Francisco' }
+                ]
             }
         ];
     }

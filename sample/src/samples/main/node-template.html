@@ -5,14 +5,14 @@
     </p>
   </div>
   <div>
-    <span style="font-weight: bold;">clicked node:</span> <span>${clickedNode ? clickedNode.title : 'none'}</span>
+    <span style="font-weight: bold;">clicked node:</span> <span>${clickedNode ? clickedNode.payload.title : 'none'}</span>
   </div>
   <hr />
   <div style="width: 300px; position: relative;">
     <tree-view view-model.ref="tree">
       <tree-node-template model.bind="nodeInterface">
         <div>
-          -- <span click.delegate="nodeClicked(model)">${model.title}</span>
+          -- <span click.delegate="nodeClicked(model)">${model.payload.title}</span>
         </div>
         <div style="padding: 5px 15px;">
           <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>

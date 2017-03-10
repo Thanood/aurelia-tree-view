@@ -1,62 +1,76 @@
-import {inject} from 'aurelia-framework';
-import {NodeModel} from 'aurelia-tree-view';
+import { inject } from 'aurelia-framework';
+import { NodeModel } from 'aurelia-tree-view';
 
 const stockCommands = [
-  { title: 'edit' },
-  { title: 'delete' },
-  { title: 'export' },
-  { title: 'lock' }
+    { title: 'edit' },
+    { title: 'delete' },
+    { title: 'export' },
+    { title: 'lock' }
 ];
 
 export class NodeTemplateCommands {
-  commands = [];
-  nodes = [];
+    commands = [];
+    nodes = [];
 
-  nodeInterface = {
-    commands: [],
-    executeCommand: this.executeCommand.bind(this)
-  }
+    nodeInterface = {
+        commands: [],
+        executeCommand: this.executeCommand.bind(this)
+    }
 
-  executeCommand(cmd, model) {
-    this.logger.log(`command execute: ${cmd.title} ${model.title}`);
-  }
+    executeCommand(cmd, model) {
+        this.logger.log(`command execute: ${cmd.title} ${model.payload.title}`);
+    }
 
-  constructor() {
-    // this.commands = stockCommands;
-    this.nodeInterface.commands = this.commands;
-  }
+    constructor() {
+        // these are initializeed later to simulate fetching commands frm a service
+        this.nodeInterface.commands = this.commands;
+    }
 
-  attached() {
-    // simulate fetching commands from a service
-    window.setTimeout(() => {
-      this.nodeInterface.commands = stockCommands;
-    }, 500);
+    attached() {
+        // simulate fetching commands from a service
+        window.setTimeout(() => {
+            this.nodeInterface.commands = stockCommands;
+        }, 500);
 
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
+        this.tree.dataSource.load(this.getNodes());
+    }
 
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    this.nodes = [texas, newYork, oregon, california];
-  }
-
-  clearSelection() {
-    this.tree.clearSelection();
-  }
+    getNodes() {
+        return [
+            {
+                title: 'Texas',
+                children: [
+                    { title: 'Austin' },
+                    { title: 'Houston' }
+                ]
+            }, {
+                title: 'New York',
+                children: [
+                    {
+                        title: 'New York City',
+                        children: [
+                            { title: 'Manhattan' },
+                            { title: 'Brooklyn' },
+                            { title: 'Bronx' },
+                            { title: 'Queens' },
+                            { title: 'Staten Island' }
+                        ]
+                    }, {
+                        title: 'Buffalo'
+                    }
+                ]
+            }, {
+                title: 'Oregon',
+                children: [
+                    { title: 'Portland' }
+                ]
+            }, {
+                title: 'California',
+                children: [
+                    { title: 'Los Angeles' },
+                    { title: 'San Francisco' }
+                ]
+            }
+        ];
+    }
 }
