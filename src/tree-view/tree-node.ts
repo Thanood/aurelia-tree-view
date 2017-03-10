@@ -38,8 +38,6 @@ export class TreeNode {
                     child.isVisible = false;
                 });
             }
-            // this.updateTemplate();
-            this.log.debug('model changed', newValue.payload.title);
         }
     }
 
@@ -90,27 +88,27 @@ export class TreeNode {
     }
 
     updateTemplate() {
-        this.log.debug('updating template', this.model.payload.title);
         this.unbindTemplate();
         this.useTemplate();
     }
 
     useTemplate() {
-        this.log.debug('useTemplate called', this.model.payload.title);
-        if (this.model && this.model.dataSourceApi.settings && this.model.dataSourceApi.settings.templateInfo) {
-            const templateInfo: TemplateInfo = this.model.dataSourceApi.settings.templateInfo;
-            const viewFactory = this.viewCompiler.compile(`<template>${templateInfo.template}</template>`, this.viewResources);
-            const view = viewFactory.create(this.container);
-            this.viewSlot = new ViewSlot(this.templateTarget, true);
-            this.viewSlot.add(view);
-            this.viewSlot.bind(this, createOverrideContext(this, createOverrideContext(templateInfo.viewModel)));
-            this.viewSlot.attached();
-        } else {
-            this.log.warn('something was not set');
-            this.log.warn('templateTarget', this.templateTarget);
-            this.log.warn('settings', this.model.dataSourceApi.settings);
-            this.log.warn('templateInfo', this.model.dataSourceApi.settings ? this.model.dataSourceApi.settings.templateInfo : 'null');
-            this.log.warn('model', this.model);
+        if (this.hasTemplate) {
+            if (this.model && this.model.dataSourceApi.settings && this.model.dataSourceApi.settings.templateInfo) {
+                const templateInfo: TemplateInfo = this.model.dataSourceApi.settings.templateInfo;
+                const viewFactory = this.viewCompiler.compile(`<template>${templateInfo.template}</template>`, this.viewResources);
+                const view = viewFactory.create(this.container);
+                this.viewSlot = new ViewSlot(this.templateTarget, true);
+                this.viewSlot.add(view);
+                this.viewSlot.bind(this, createOverrideContext(this, createOverrideContext(templateInfo.viewModel)));
+                this.viewSlot.attached();
+            } else {
+                this.log.warn('hasTemplate is true but something was not set');
+                this.log.warn('templateTarget', this.templateTarget);
+                this.log.warn('settings', this.model.dataSourceApi.settings);
+                this.log.warn('templateInfo', this.model.dataSourceApi.settings ? this.model.dataSourceApi.settings.templateInfo : 'null');
+                this.log.warn('model', this.model);
+            }
         }
     }
 }

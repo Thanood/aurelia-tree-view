@@ -56,9 +56,9 @@ export class TreeView {
                 viewModel
             }
             this.dataSource.settings.templateInfo = this.templateInfo;
-            this.log.debug('(attached) template info', this.templateInfo);
+            this.log.debug('template element found template info', this.templateInfo);
         } else {
-            this.log.debug('(attached) no template element');
+            this.log.debug('no template element');
         }
     }
 
