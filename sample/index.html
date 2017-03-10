@@ -1,39 +1,41 @@
 <!doctype html>
 <html>
-  <head>
+
+<head>
     <title>Skeleton Bridge App</title>
     <link rel="stylesheet" href="styles/styles.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
+</head>
 
-  <body aurelia-app="main">
+<body aurelia-app="main">
     <div class="splash">
-      <div class="message">&lt;aurelia-tree-view&gt;</div>
-      <i class="fa fa-spinner fa-spin"></i>
+        <div class="message">&lt;aurelia-tree-view&gt;</div>
+        <i class="fa fa-spinner fa-spin"></i>
     </div>
 
     <script src="jspm_packages/system.js"></script>
     <script src="config.js"></script>
     <script>
-      System.import('font-awesome/css/font-awesome.css!')
-      System.import('aurelia-bootstrapper');
+        System.import('font-awesome/css/font-awesome.css!')
+        System.import('aurelia-bootstrapper');
 
-      // Load the package.json from the root to get the package name
-      System.import("root/package.json!").then(function(m) {
-        var cfg = {
-           packages: {}
-        };
+        // Load the package.json from the root to get the package name
+        System.import("root/package.json!").then(function (m) {
+            var cfg = {
+                packages: {}
+            };
 
-        // Create a new systemjs package with the package name
-        cfg.packages[m.name] = {
-            "main": "index",
-            "dependencies": m.jspm.dependencies
-        };
+            // Create a new systemjs package with the package name
+            cfg.packages[m.name] = {
+                "main": "index",
+                "dependencies": m.jspm.dependencies
+            };
 
-        System.config(cfg);
-      });
-
+            System.config(cfg);
+        }, function(error) {
+            console.error('error loading plugin:', error);
+        });
     </script>
-  </body>
+</body>
+
 </html>

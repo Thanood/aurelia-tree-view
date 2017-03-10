@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "jspm": "0.16.15",
-    "babel-eslint": "^4.1.1"
+    "babel-eslint": "^4.1.1",
+    "jspm": "0.16.15"
   }
 }

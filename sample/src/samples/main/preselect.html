@@ -10,6 +10,6 @@
     </ul>
   </div>
   <div style="width: 300px; position: relative;">
-    <tree-view nodes.bind="nodes" multi-select="true" selected.bind="selected" view-model.ref="treeView"></tree-view>
+    <tree-view multi-select="true" view-model.ref="tree" selection-changed.delegate="onSelect($event)"></tree-view>
   </div>
 </template>

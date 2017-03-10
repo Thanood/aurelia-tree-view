@@ -1,6 +1,5 @@
-// Platzieren Sie Ihre Einstellungen in dieser Datei, um Standard- und Benutzereinstellungen zu überschreiben.
+// Place your settings in this file to overwrite default and user settings.
 {
-"stylelint.enable": true,
-"typescript.check.workspaceVersion": false,
-"vsicons.presets.angular": false
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "vsicons.presets.angular": false
 }

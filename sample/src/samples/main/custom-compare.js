@@ -1,42 +1,72 @@
-import {NodeModel} from 'aurelia-tree-view';
-
 export class CustomCompare {
-  nodes = [];
-  selected = [];
+    attached() {
+        this.tree.dataSource.load(this.getNodes());
+        this.tree.dataSource.selectNodes([
+            { id: 2 }, { id: 21 }, { id: 22 },
+            { id: 211, parent: { id: 21 } },
+            { id: 212, parent: { id: 21 } },
+            { id: 213, parent: { id: 21 } },
+            { id: 214, parent: { id: 21 } },
+            { id: 215, parent: { id: 21 } }
+        ]);
+    }
 
-  attached() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
+    compareNode(a, b) {
+        return a.id === b.id;
+    }
 
-    let manhattan = new NodeModel('Manhattan');
-    let brooklyn = new NodeModel('Brooklyn');
-    let bronx = new NodeModel('Bronx');
-    let queens = new NodeModel('Queens');
-    let statenIsland = new NodeModel('Staten Island');
-
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', () => {
-        return new Promise(resolve => {
-          window.setTimeout(() => {
-            resolve([manhattan, brooklyn, bronx, queens, statenIsland]);
-          }, 500);
-        });
-      }),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    this.nodes = [texas, newYork, oregon, california];
-    this.selected = [oregon, oregon.children[0], newYork, newYork.children[0], manhattan, brooklyn, bronx, queens, statenIsland];
-  }
-
-  compareNode(a, b) {
-    return a.title === b.title;
-  }
+    getNodes() {
+        return [
+            {
+                id: 1,
+                title: 'Texas',
+                children: [
+                    { id: 11, title: 'Austin' },
+                    { id: 12, title: 'Houston' }
+                ]
+            }, {
+                id: 2,
+                title: 'New York',
+                children: [
+                    {
+                        id: 21,
+                        title: 'New York City',
+                        children: () => {
+                            return new Promise((resolve, reject) => {
+                                window.setTimeout(function () {
+                                    resolve([
+                                        { id: 211, title: 'Manhattan' },
+                                        { id: 212, title: 'Brooklyn' },
+                                        { id: 213, title: 'Bronx' },
+                                        { id: 214, title: 'Queens' },
+                                        { id: 215, title: 'Staten Island' }
+                                    ]);
+                                }, 500);
+                            });
+                        }
+                    }, {
+                        id: 22,
+                        title: 'Buffalo'
+                    }
+                ]
+            }, {
+                id: 3,
+                title: 'Oregon',
+                children: [
+                    { id: 31, title: 'Portland' }
+                ]
+            }, {
+                id: 4,
+                title: 'California',
+                children: () => {
+                    return new Promise((resolve, reject) => {
+                        resolve([
+                            { id: 41, title: 'Los Angeles' },
+                            { id: 42, title: 'San Francisco' }
+                        ]);
+                    });
+                }
+            }
+        ];
+    }
 }

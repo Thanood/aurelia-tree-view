@@ -1,30 +1,57 @@
 import {NodeModel} from 'aurelia-tree-view';
 
 export class ExpandOnFocus {
-  nodes = [];
-
   attached() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
-
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    this.nodes = [texas, newYork, oregon, california];
+    const nodes = this.getNodes();
+    this.tree.dataSource.load(nodes);
   }
+
+  getNodes() {
+        return [
+            {
+                title: 'Texas',
+                children: [
+                    { title: 'Austin' },
+                    { title: 'Houston' }
+                ]
+            }, {
+                title: 'New York',
+                children: [
+                    {
+                        title: 'New York City',
+                        children: () => {
+                            return new Promise((resolve, reject) => {
+                                window.setTimeout(function () {
+                                    resolve([
+                                        { title: 'Manhattan' },
+                                        { title: 'Brooklyn' },
+                                        { title: 'Bronx' },
+                                        { title: 'Queens' },
+                                        { title: 'Staten Island' }
+                                    ]);
+                                }, 500);
+                            });
+                        }
+                    }, {
+                        title: 'Buffalo'
+                    }
+                ]
+            }, {
+                title: 'Oregon',
+                children: [
+                    { title: 'Portland' }
+                ]
+            }, {
+                title: 'California',
+                children: () => {
+                    return new Promise((resolve, reject) => {
+                        resolve([
+                            { title: 'Los Angeles' },
+                            { title: 'San Francisco' }
+                        ]);
+                    });
+                }
+            }
+        ];
+    }
 }

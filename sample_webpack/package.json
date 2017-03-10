@@ -1,0 +1,30 @@
+{
+  "name": "sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+      "build": "webpack",
+      "web": "webpack-dev-server --hot --inline"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aurelia-bootstrapper": "^2.0.1",
+    "aurelia-loader-webpack": "^2.0.0"
+  },
+  "devDependencies": {
+    "aurelia-core-dependencies": "https://github.com/jods4/aurelia-webpack-build.git#aurelia-core-deps",
+    "aurelia-webpack-plugin": "https://github.com/aurelia/webpack-plugin.git#v2.0",
+    "css-loader": "^0.26.1",
+    "html-loader": "^0.4.4",
+    "sass": "^0.5.0",
+    "sass-loader": "^6.0.2",
+    "style-loader": "^0.13.1",
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.1.6",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}

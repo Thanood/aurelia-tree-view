@@ -1,16 +1,18 @@
 <template>
-  <require from="./multi-select.css"></require>
-  <div>
-    Oregon and its sub nodes should be selected.<br />
-    New York, New York City and its sub nodes should be selected.<br />
-    New York City (New York's first child) is lazy loaded.
-  </div>
-  <div style="width: 300px; position: relative;">
-    <tree-view
-      nodes.bind="nodes"
-      multi-select="true"
-      compare-equality.call="compareNode(a, b)"
-      selected.bind="selected"
-    ></tree-view>
-  </div>
+    <require from="./multi-select.css"></require>
+    <div>
+        <p>
+            Selected nodes are found by their ids.<br />
+            To use this, any lazy loaded nodes to be found must provide their parent nodes in a way the custom comparer can find them.<br />
+            In this case, nodes should provide their parents' ids'.<br />
+            See JS code for details.
+        </p>
+        <p>
+        Oregon and its sub nodes should be selected.<br /> New York, New York City and its sub nodes should be selected.<br/>
+        New York City (New York's first child) is lazy loaded.
+        </p>
+    </div>
+    <div style="width: 300px; position: relative;">
+        <tree-view multi-select="true" compare-equality.call="compareNode(a, b)" view-model.ref="tree"></tree-view>
+    </div>
 </template>

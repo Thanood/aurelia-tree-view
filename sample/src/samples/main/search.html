@@ -1,12 +1,13 @@
 <template>
-  <require from="./search.css"></require>
-  <div>
-    <input type="text" value.bind="term & debounce" />
-  </div>
-  <div class="search-tree">
-    <tree-view nodes.bind="filteredNodes" view-model.ref="tree"></tree-view>
-  </div>
-  <div>
-    <button click.delegate="clearSelection()">clear selection</button>
-  </div>
+    <require from="./search.css"></require>
+    <div class="search-legend">
+        <span class="box-highlight"></span> found node
+        <span class="box-highlight-parent"></span> parent of found node
+    </div>
+    <div>
+        <input type="text" value.bind="term & debounce" />
+    </div>
+    <div class="search-tree">
+        <tree-view view-model.ref="tree" ref="treeView"></tree-view>
+    </div>
 </template>

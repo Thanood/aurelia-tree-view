@@ -1,8 +1,12 @@
 <template>
   <div style="width: 300px; position: relative;">
-    <tree-view nodes.bind="nodes" view-model.ref="tree"></tree-view>
+    <tree-view view-model.ref="tree"></tree-view>
   </div>
   <div>
-    <button click.delegate="clearSelection()">clear selection</button>
+      <p if.bind="tree.dataSource.focusedNode">focused: ${tree.dataSource.focusedNode.payload.title}</p>
+      <p if.bind="tree.dataSource.selectedNodes.length > 0">selected(${tree.dataSource.selectedNodes.length}): ${tree.dataSource.selectedNodes[0].payload.title}</p>
+  </div>
+  <div>
+    <!--<button click.delegate="clearSelection()">clear selection</button>-->
   </div>
 </template>

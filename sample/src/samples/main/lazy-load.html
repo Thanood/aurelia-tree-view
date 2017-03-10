@@ -3,7 +3,14 @@
     The node "New York / New York City" is lazy loaded with a delay of 500ms.
     The node "California" is lazy loaded without a delay.
   </div>
+  <div>
+      <button class="btn" click.delegate="expandAll()">expand all</button>
+  </div>
   <div style="width: 300px; position: relative;">
-    <tree-view nodes.bind="nodes"></tree-view>
+    <tree-view view-model.ref="tree"></tree-view>
+  </div>
+  <div>
+      <p if.bind="tree.dataSource.focusedNode">focused: ${tree.dataSource.focusedNode.payload.title}</p>
+      <p if.bind="tree.dataSource.selectedNodes.length > 0">selected: ${tree.dataSource.selectedNodes[0].payload.title}</p>
   </div>
 </template>
