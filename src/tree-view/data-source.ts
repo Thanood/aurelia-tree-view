@@ -12,11 +12,6 @@ export interface DataSourceApi {
     settings: TreeViewSettings | null;
 }
 
-export interface TemplateInfo {
-    template: string,
-    viewModel: NodeModel
-}
-
 export class DataSource {
     api: DataSourceApi = {
         deselectNode: this.deselectNode.bind(this),

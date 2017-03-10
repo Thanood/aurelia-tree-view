@@ -4,10 +4,10 @@ import {getLogger, Logger} from 'aurelia-logging';
 import {TaskQueue} from 'aurelia-task-queue';
 import {DOM} from 'aurelia-pal';
 import {bindable, child} from 'aurelia-templating';
-import {DataSource, TemplateInfo} from './data-source';
+import {DataSource} from './data-source';
 import {NodeModel} from './node-model';
+import {TemplateInfo} from './template-info';
 import {TreeNodeTemplate} from './tree-node-template';
-// import {TreeViewSettings} from './settings';
 
 @inject(Element, TaskQueue)
 export class TreeView {
@@ -27,7 +27,6 @@ export class TreeView {
         this.log = getLogger('aurelia-tree-view');
         this.nodes = [];
         this.subscriptions = [];
-        // this.templateElement = this.element.querySelector('tree-node-template');
     }
 
     bind() {

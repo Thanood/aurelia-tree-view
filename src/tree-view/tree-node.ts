@@ -4,7 +4,7 @@ import {getLogger, Logger} from 'aurelia-logging';
 import {DOM} from 'aurelia-pal';
 import {bindable, ViewCompiler, ViewResources, ViewSlot} from 'aurelia-templating';
 import {NodeModel} from './node-model';
-import {TemplateInfo} from './data-source';
+import {TemplateInfo} from './template-info';
 
 @inject(Element, ViewCompiler, ViewResources, Container)
 export class TreeNode {
