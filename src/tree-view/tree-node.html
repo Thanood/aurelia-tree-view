@@ -1,6 +1,6 @@
 <template class="${model.hasChildren ? 'tree-node--node' : 'tree-node--leaf'} ${model.isFocused ? 'tree-node--focused' : ''}">
   <require from="./tree-node.css"></require>
-  <div if.bind="!model._template">
+  <div if.bind="!hasTemplate">
     <ul show.bind="model.isVisible" class="tree-node__wrapper">
       <li>
         <div class="tree-node__title-wrapper">
@@ -19,5 +19,5 @@
       </li>
     </ul>
   </div>
-  <div if.bind="model._template" ref="templateTarget"></div>
+  <div if.bind="hasTemplate" ref="templateTarget"></div>
 </template>
