@@ -31,16 +31,19 @@ tree-node {
           }
           &.tree-node-arrow {
             cursor: pointer;
+            margin-right: 15px;
             position: relative;
-            top: 4px;
+            top: 7px;
           }
           &.tree-node-rotate {
             animation-name: spin;
             animation-duration: 400ms;
             animation-iteration-count: infinite;
             animation-timing-function: linear;
-            height: 24px;
-            width: 24px;
+            // height: 24px;
+            // width: 24px;
+            height: 13px;
+            width: 13px;
           }
           &.tree-node-title {
             cursor: pointer;
