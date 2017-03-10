@@ -6,13 +6,8 @@
     </div>
     <div>
         <input type="text" value.bind="term & debounce" />
-        <button class="btn" click.delegate="hideUnHighlightedNodes()">hide unhighlighted</button>
-        <button class="btn" click.delegate="showAllNodes()">show all</button>
     </div>
     <div class="search-tree">
         <tree-view view-model.ref="tree" ref="treeView"></tree-view>
     </div>
-    <!--<div>
-    <button click.delegate="clearSelection()">clear selection</button>
-  </div>-->
 </template>

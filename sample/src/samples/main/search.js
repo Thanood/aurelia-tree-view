@@ -72,48 +72,26 @@ export class Search {
     termChanged(newValue) {
         this.filteredNodes = this.nodes;
         this.unHighlightNodes();
-        // this.taskQueue.queueTask(() => {
-            if (newValue) {
-                let results = [];
-                this.tree.dataSource.filter(node => {
-                    const rx = new RegExp(newValue, 'i');
-                    const result = rx.test(node.payload.title);
-                    if (result) {
-                        results.push(node);
-                        this.highlightNode(node);
-                    }
-                    return result;
-                })
-                .then((searchResults) => {
-                    this.filteredNodes = searchResults;
-                    // searchResults.forEach(node => {
-                    //     const element = node.element.element;
-                    //     if (!element.classList.contains('highlight') && !element.classList.contains('highlight-parent')) {
-                    //         element.style.display = 'none';
-                    //     }
-                    // });
-                });
-            }
-        // });
-    }
-
-    hideUnHighlightedNodes() {
-        const nodes = this.treeView.querySelectorAll('tree-node');
-        Array.from(nodes).forEach(node => {
-            const title = node.querySelector('.tree-node-title');
-            if (title.classList.contains('highlight') || title.classList.contains('highlight-parent')) {
-                node.style.display = '';
-            } else {
-                node.style.display = 'none';
-            }
-        });
-    }
-
-    showAllNodes() {
-        const nodes = this.treeView.querySelectorAll('tree-node');
-        Array.from(nodes).forEach(node => {
-            node.style.display = '';
-        });
+        if (newValue) {
+            let results = [];
+            this.tree.dataSource.filter(node => {
+                const rx = new RegExp(newValue, 'i');
+                const result = rx.test(node.payload.title);
+                if (result) {
+                    results.push(node);
+                    this.highlightNode(node);
+                }
+                return result;
+            })
+            .then((searchResults) => {
+                this.filteredNodes = searchResults;
+                const roots = searchResults.map(res => this.tree.dataSource.findRoot(res));
+                this.tree.dataSource.nodes.forEach(node => node.isVisible = false);
+                roots.forEach(node => node.isVisible = true);
+            });
+        } else {
+            this.tree.dataSource.nodes.forEach(node => node.isVisible = true);
+        }
     }
 
     highlightNode(node) {
