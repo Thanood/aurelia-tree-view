@@ -6,6 +6,10 @@
     </div>
     <div>
         <input type="text" value.bind="term & debounce" />
+        <label>
+          <input type="checkbox" checked.bind="hideNonHighlightedNodes" />
+          hide non-highlighted nodes
+        </label>
     </div>
     <div class="search-tree">
         <tree-view view-model.ref="tree" ref="treeView"></tree-view>
