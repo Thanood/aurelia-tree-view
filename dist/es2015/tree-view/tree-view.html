@@ -1,0 +1,6 @@
+<template>
+    <require from="./tree-view.css"></require>
+
+    <slot></slot>
+    <tree-node repeat.for="node of nodes" model.bind="node"></tree-node>
+</template>

@@ -1,0 +1,26 @@
+<template class="${model.hasChildren ? 'tree-node--node' : 'tree-node--leaf'} ${model.isFocused ? 'tree-node--focused' : ''}">
+  <require from="./tree-node.css"></require>
+  <div if.bind="!hasTemplate">
+    <ul show.bind="model.isVisible" class="tree-node__wrapper">
+      <li>
+        <div class="tree-node__title-wrapper">
+          <span
+                if.bind="model.hasChildren"
+                click.trigger="toggleExpanded($event)"
+                class="tree-node-arrow fa ${ model.isLoading ? 'tree-node-rotate fa-refresh' : (model.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right') }"
+            >
+          </span>
+          <span click.delegate="focus($event, true)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+            <label if.bind="model.dataSourceApi.settings.multiSelect">
+              <input type="checkbox" checked.bind="isSelected" click.delegate="toggleSelected($event, true)" />
+            </label> ${model.payload.title}
+          </span>
+        </div>
+
+        <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>
+
+      </li>
+    </ul>
+  </div>
+  <div if.bind="hasTemplate" ref="templateTarget"></div>
+</template>
