@@ -30,10 +30,12 @@
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "clean-css": "npm:clean-css@^4.0.8",
       "core-js": "npm:core-js@^1.1.4"
     }
   },
   "devDependencies": {
+    "aurelia-bundler": "^0.6.0-beta.3",
     "babel-eslint": "^4.1.1",
     "jspm": "0.16.15"
   }
