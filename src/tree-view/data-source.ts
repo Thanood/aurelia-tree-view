@@ -105,7 +105,9 @@ export class DataSource {
 
       if (isSelected) {
         if (this.settings.multiSelect) {
-          this.selectedNodes.push(n);
+          if (this.selectedNodes.indexOf(n) === -1) {
+            this.selectedNodes.push(n);
+          }
         } else {
           this.selectedNodes = [n];
           this.flatNodes.forEach(node => {
@@ -116,8 +118,10 @@ export class DataSource {
         }
       } else {
         if (this.settings.multiSelect) {
-          const index = this.selectedNodes.indexOf(node);
-          this.selectedNodes.splice(index, 1);
+          const index = this.selectedNodes.indexOf(n);
+          if (index > -1) {
+            this.selectedNodes.splice(index, 1);
+          }
         } else {
           this.selectedNodes = [];
         }
