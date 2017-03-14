@@ -85,7 +85,9 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                 _this.log.debug('setNodeSelection got node', n.payload.title, n.payload);
                 if (isSelected) {
                     if (_this.settings.multiSelect) {
-                        _this.selectedNodes.push(n);
+                        if (_this.selectedNodes.indexOf(n) === -1) {
+                            _this.selectedNodes.push(n);
+                        }
                     }
                     else {
                         _this.selectedNodes = [n];
@@ -98,8 +100,10 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                 }
                 else {
                     if (_this.settings.multiSelect) {
-                        var index = _this.selectedNodes.indexOf(node);
-                        _this.selectedNodes.splice(index, 1);
+                        var index = _this.selectedNodes.indexOf(n);
+                        if (index > -1) {
+                            _this.selectedNodes.splice(index, 1);
+                        }
                     }
                     else {
                         _this.selectedNodes = [];
