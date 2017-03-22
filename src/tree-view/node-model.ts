@@ -84,12 +84,14 @@ export class NodeModel {
 
     isSelectedChanged(newValue: boolean) {
         if (!this.suspendEvents) {
-            if (this.element) {
+            this.taskQueue.queueTask(() => {
+              if (this.element) {
                 this.element.isSelected = newValue;
-            } else {
+              } else {
                 this.log.warn('element is not defined yet - use TaskQueue - ', (this.payload ? this.payload.title : 'no payload!'));
                 this.log.warn('local taskQueue', this.taskQueue);
-            }
+              }
+            });
         }
     }
 }
