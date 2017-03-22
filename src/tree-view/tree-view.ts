@@ -51,32 +51,48 @@ export class TreeView {
   }
 
   attached() {
+    // if (this.templateElement) {
+    //   const template = this.templateElement.template;
+    //   const viewModel = this.templateElement.model;
+    //   this.templateInfo = {
+    //     template,
+    //     viewModel
+    //   }
+    //   this.dataSource.settings.templateInfo = this.templateInfo;
+    //   this.log.debug('template element found - template info:', this.templateInfo);
+    // } else {
+    //   this.log.debug('no template element');
+    // }
+  }
+
+  handleDataSource(event: string, nodes: NodeModel[]) {
     // this.taskQueue.queueTask(() => {
-      if (this.templateElement) {
-        const template = this.templateElement.template;
-        const viewModel = this.templateElement.model;
-        this.templateInfo = {
-          template,
-          viewModel
-        }
-        this.dataSource.settings.templateInfo = this.templateInfo;
-        this.log.debug('template element found - template info:', this.templateInfo);
-      } else {
-        this.log.debug('no template element');
+      this.log.debug('data source', event, nodes);
+      switch (event) {
+        case 'loaded':
+          this.nodes = nodes;
+          break;
+        case 'selectionChanged':
+          const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes } });
+          this.element.dispatchEvent(event);
+          break;
       }
     // });
   }
 
-  handleDataSource(event: string, nodes: NodeModel[]) {
-    this.log.debug('data source', event, nodes);
-    switch (event) {
-      case 'loaded':
-        this.nodes = nodes;
-        break;
-      case 'selectionChanged':
-        const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes } });
-        this.element.dispatchEvent(event);
-        break;
+  templateElementChanged(newValue: TreeNodeTemplate) {
+    this.log.debug('templateElementChanged');
+    const template = newValue.template;
+    const viewModel = newValue.model;
+    this.templateInfo = {
+      template,
+      viewModel
+    }
+    this.dataSource.settings.templateInfo = this.templateInfo;
+    if (this.nodes.length) {
+      const temp = this.nodes;
+      this.nodes = [];
+      this.taskQueue.queueTask(() => { this.nodes = temp; });
     }
   }
 }
