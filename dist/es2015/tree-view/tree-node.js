@@ -22,6 +22,7 @@ var TreeNode = (function () {
         this.viewSlot = null;
     }
     TreeNode.prototype.attached = function () {
+        // this.log.debug('attached called');
         this.updateTemplate();
     };
     Object.defineProperty(TreeNode.prototype, "hasTemplate", {

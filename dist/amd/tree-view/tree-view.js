@@ -37,21 +37,21 @@ define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging",
             this.subscriptions.forEach(function (sub) { return sub.dispose(); });
         };
         TreeView.prototype.attached = function () {
-            if (this.templateElement) {
-                var template = this.templateElement.template;
-                var viewModel = this.templateElement.model;
-                this.templateInfo = {
-                    template: template,
-                    viewModel: viewModel
-                };
-                this.dataSource.settings.templateInfo = this.templateInfo;
-                this.log.debug('template element found template info', this.templateInfo);
-            }
-            else {
-                this.log.debug('no template element');
-            }
+            // if (this.templateElement) {
+            //   const template = this.templateElement.template;
+            //   const viewModel = this.templateElement.model;
+            //   this.templateInfo = {
+            //     template,
+            //     viewModel
+            //   }
+            //   this.dataSource.settings.templateInfo = this.templateInfo;
+            //   this.log.debug('template element found - template info:', this.templateInfo);
+            // } else {
+            //   this.log.debug('no template element');
+            // }
         };
         TreeView.prototype.handleDataSource = function (event, nodes) {
+            // this.taskQueue.queueTask(() => {
             this.log.debug('data source', event, nodes);
             switch (event) {
                 case 'loaded':
@@ -61,6 +61,23 @@ define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging",
                     var event_1 = aurelia_pal_1.DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
                     this.element.dispatchEvent(event_1);
                     break;
+            }
+            // });
+        };
+        TreeView.prototype.templateElementChanged = function (newValue) {
+            var _this = this;
+            this.log.debug('templateElementChanged');
+            var template = newValue.template;
+            var viewModel = newValue.model;
+            this.templateInfo = {
+                template: template,
+                viewModel: viewModel
+            };
+            this.dataSource.settings.templateInfo = this.templateInfo;
+            if (this.nodes.length) {
+                var temp_1 = this.nodes;
+                this.nodes = [];
+                this.taskQueue.queueTask(function () { _this.nodes = temp_1; });
             }
         };
         return TreeView;

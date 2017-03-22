@@ -24,4 +24,5 @@ export declare class TreeView {
     unbind(): void;
     attached(): void;
     handleDataSource(event: string, nodes: NodeModel[]): void;
+    templateElementChanged(newValue: TreeNodeTemplate): void;
 }

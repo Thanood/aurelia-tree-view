@@ -73,14 +73,17 @@ var NodeModel = (function () {
         return Promise.resolve();
     };
     NodeModel.prototype.isSelectedChanged = function (newValue) {
+        var _this = this;
         if (!this.suspendEvents) {
-            if (this.element) {
-                this.element.isSelected = newValue;
-            }
-            else {
-                this.log.warn('element is not defined yet - use TaskQueue - ', (this.payload ? this.payload.title : 'no payload!'));
-                this.log.warn('local taskQueue', this.taskQueue);
-            }
+            this.taskQueue.queueTask(function () {
+                if (_this.element) {
+                    _this.element.isSelected = newValue;
+                }
+                else {
+                    _this.log.warn('element is not defined yet - use TaskQueue - ', (_this.payload ? _this.payload.title : 'no payload!'));
+                    _this.log.warn('local taskQueue', _this.taskQueue);
+                }
+            });
         }
     };
     return NodeModel;

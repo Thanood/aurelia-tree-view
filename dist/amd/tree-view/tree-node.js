@@ -18,6 +18,7 @@ define(["require", "exports", "aurelia-binding", "aurelia-dependency-injection",
             this.viewSlot = null;
         }
         TreeNode.prototype.attached = function () {
+            // this.log.debug('attached called');
             this.updateTemplate();
         };
         Object.defineProperty(TreeNode.prototype, "hasTemplate", {
