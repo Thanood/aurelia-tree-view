@@ -1,42 +1,37 @@
 <template>
-    <require from="./node-template-commands.css"></require>
-    <div class="node-template-commands-sample">
-        <tree-view multi-select="true" view-model.ref="tree">
-            <tree-node-template model.bind="nodeInterface">
-                <ul show.bind="model.isVisible" class="tree-node__wrapper">
-                    <li>
-                        <div class="tree-node__title-wrapper">
-                            <span
-                                if.bind="model.hasChildren"
-                                click.trigger="toggleExpanded()"
-                                class="tree-node-arrow fa ${ model.isLoading ? 'tree-node-rotate fa-refresh' : (model.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right') }"
-                            >
-                            </span>
-                                            <span click.delegate="focus($event, true)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
-                                <label if.bind="model.dataSourceApi.settings.multiSelect">
-                                <input type="checkbox" checked.bind="model.selected" click.delegate="toggleSelected($event, true)" />
-                                </label> ${model.payload.title}
-                            </span>
-                                            <span style="flex-grow: 1;"></span>
-                                            <span>
-                                <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="fa fa-caret-down"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li repeat.for="cmd of commands"><a href="#" click.delegate="executeCommand(cmd, model)">${cmd.title}</a></li>
-                                </ul>
-                                </div>
-                            </span>
-                        </div>
+  <require from="./node-template-commands.css"></require>
+  <div class="node-template-commands-sample">
+    <tree-view multi-select="true" view-model.ref="tree">
+      <tree-node-template model.bind="nodeInterface">
+        <ul show.bind="model.isVisible" class="tree-node__wrapper">
+          <li>
+            <div class="tree-node__title-wrapper">
+              <span if.bind="model.hasChildren" click.trigger="toggleExpanded()" class="tree-node-arrow fa ${ model.isLoading ? 'tree-node-rotate fa-refresh' : (model.isExpanded ? 'fa-chevron-down' : 'fa-chevron-right') }"></span>
+              <span click.delegate="focus($event, true)" class="tree-node-title tree-node-title__pad-right ${ model.hasChildren ? '' : 'tree-node-title__pad-left' }">
+                <label if.bind="model.dataSourceApi.settings.multiSelect">
+                  <input type="checkbox" checked.bind="isSelected" click.delegate="toggleSelected($event, true)" />
+                </label> ${model.payload.title}
+              </span>
+              <span style="flex-grow: 1;"></span>
+              <span>
+                <div class="dropdown">
+                  <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown">
+                      <i class="fa fa-caret-down"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                      <li repeat.for="cmd of commands"><a href="#" click.delegate="executeCommand(cmd, model)">${cmd.title}</a></li>
+                  </ul>
+                </div>
+              </span>
+            </div>
 
-                        <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>
+            <tree-node repeat.for="node of model.children" model.bind="node"></tree-node>
 
-                    </li>
-                </ul>
-            </tree-node-template>
-        </tree-view>
-    </div>
-    <logger view-model.ref="logger"></logger>
+          </li>
+        </ul>
+      </tree-node-template>
+    </tree-view>
+  </div>
+  <logger view-model.ref="logger"></logger>
 
 </template>
