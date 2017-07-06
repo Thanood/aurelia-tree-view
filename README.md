@@ -30,4 +30,4 @@ Other loaders (aurelia-cli/webpack) following..
 * clone it
 * `npm install` in root
 * `jspm install` in sample directory
-* `gulp watch` in root or sample directory
+* `npm start` in root
