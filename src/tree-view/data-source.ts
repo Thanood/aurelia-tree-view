@@ -311,7 +311,7 @@ export class DataSource {
               return found;
             });
         } else {
-          return Promise.reject(new Error('node not found: ' + n.title);
+          return Promise.reject(new Error('node not found: ' + n.title));
         }
       });
     };
