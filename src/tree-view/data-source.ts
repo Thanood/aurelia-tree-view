@@ -82,7 +82,7 @@ export class DataSource {
 
   private setNodeSelection(node: NodeModel, isSelected: boolean, setChildren: boolean = false, recurse: boolean = false): Promise<void> {
     if (typeof node === 'undefined') {
-      return Promise.reject('node is undefined');
+      return Promise.reject(new Error('node is undefined'));
     }
 
     let expandPath = false;
@@ -311,7 +311,7 @@ export class DataSource {
               return found;
             });
         } else {
-          return Promise.reject('node not found: ' + n.title);
+          return Promise.reject(new Error('node not found: ' + n.title);
         }
       });
     };
