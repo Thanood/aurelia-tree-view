@@ -28,6 +28,6 @@ Other loaders (aurelia-cli/webpack) following..
 ## Running this repo
 
 * clone it
-* `npm install && jspm install` in root
+* `npm install` in root
 * `jspm install` in sample directory
 * `gulp watch` in root or sample directory
