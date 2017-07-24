@@ -131,18 +131,20 @@ export class DataSource {
         // FIXME: correctly, this would be "if this select came from a mouse event"
         // n.suspendEvents = true;
       }
-      this.taskQueue.queueTask(() => {
-        n.isSelected = isSelected;
-        if (!this.settings.multiSelect) {
-          // n.suspendEvents = false;
-          n.isFocused = true;
-        }
-      });
-      // n.isSelected = isSelected;
-      // if (!this.settings.multiSelect) {
-      //   // n.suspendEvents = false;
-      //   n.isFocused = true;
-      // }
+      // doesn't help :-(
+      // this.taskQueue.queueTask(() => {
+      //   n.isSelected = isSelected;
+      //   if (!this.settings.multiSelect) {
+      //     // n.suspendEvents = false;
+      //     n.isFocused = true;
+      //   }
+      // });
+
+      n.isSelected = isSelected;
+      if (!this.settings.multiSelect) {
+        // n.suspendEvents = false;
+        n.isFocused = true;
+      }
 
       if (expandPath && node.parent) {
         const path = this.getPath(node);
