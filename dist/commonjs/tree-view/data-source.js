@@ -65,7 +65,7 @@ var DataSource = (function () {
         if (setChildren === void 0) { setChildren = false; }
         if (recurse === void 0) { recurse = false; }
         if (typeof node === 'undefined') {
-            return Promise.reject('node is undefined');
+            return Promise.reject(new Error('node is undefined'));
         }
         var expandPath = false;
         var promise;
@@ -114,11 +114,18 @@ var DataSource = (function () {
             }
             if (!_this.settings.multiSelect) {
             }
-            n.isSelected = isSelected;
-            if (!_this.settings.multiSelect) {
-                // n.suspendEvents = false;
-                n.isFocused = true;
-            }
+            _this.taskQueue.queueTask(function () {
+                n.isSelected = isSelected;
+                if (!_this.settings.multiSelect) {
+                    // n.suspendEvents = false;
+                    n.isFocused = true;
+                }
+            });
+            // n.isSelected = isSelected;
+            // if (!this.settings.multiSelect) {
+            //   // n.suspendEvents = false;
+            //   n.isFocused = true;
+            // }
             if (expandPath && node.parent) {
                 var path = _this.getPath(node);
                 _this.expandPath(path);
@@ -292,7 +299,7 @@ var DataSource = (function () {
                     });
                 }
                 else {
-                    return Promise.reject('node not found: ' + n.title);
+                    return Promise.reject(new Error('node not found: ' + n.title));
                 }
             });
         };
