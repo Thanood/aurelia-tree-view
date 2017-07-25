@@ -1,12 +1,14 @@
-import {NodeModel} from 'aurelia-tree-view';
+// import {TreeView} from 'aurelia-tree-view';
 import dragula from 'dragula';
 
 export class DragAndDrop {
   nodes = [];
   dragApi = null;
+  tree;
 
   attached() {
     this.nodes = this.getNodes();
+    this.tree.dataSource.load(this.nodes);
     this.activateDnd(this.tree);
   }
 
@@ -54,10 +56,11 @@ export class DragAndDrop {
           sibling = sibling.parentNode;
         }
       }
+      console.log('dragula drop sibling (resolved)', sibling);
       let siblingViewModel = (sibling) ? sibling.au['tree-node'].viewModel : null;
-      // dragApi._viewModel.moveNode(source.au['tree-node'].viewModel, (container.au['tree-node'] || container.au['tree-view']).viewModel);
-      // console.log(sourceViewModel, targetViewModel, siblingViewModel);
-      dragApi._viewModel.moveNode(sourceViewModel, targetViewModel, siblingViewModel);
+      // dragApi._viewModel.moveNode(sourceViewModel, targetViewModel, siblingViewModel);
+      // let flatNodes = dragApi._viewModel.dataSource.flatNodes;
+      // sourceViewModel.model.parent = (siblingViewModel || targetViewModel).model.parent;
     });
   }
 
@@ -71,27 +74,41 @@ export class DragAndDrop {
   }
 
   getNodes() {
-    let texas = new NodeModel('Texas', [
-      new NodeModel('Austin'),
-      new NodeModel('Houston')
-    ]);
-
-    let newYork = new NodeModel('New York', [
-      new NodeModel('New York City', [
-        new NodeModel('Manhattan'),
-        new NodeModel('Brooklyn'),
-        new NodeModel('Bronx'),
-        new NodeModel('Queens'),
-        new NodeModel('Staten Island')
-      ]),
-      new NodeModel('Buffalo')]);
-
-    let oregon = new NodeModel('Oregon', [new NodeModel('Portland')]);
-
-    let california = new NodeModel('California', [
-      new NodeModel('Los Angeles'),
-      new NodeModel('San Francisco')
-    ]);
-    return [texas, newYork, oregon, california];
+    return [
+      {
+        title: 'Texas',
+        children: [
+          { title: 'Austin' },
+          { title: 'Houston' }
+        ]
+      }, {
+        title: 'New York',
+        children: [
+          {
+            title: 'New York City',
+            children: [
+              { title: 'Manhattan' },
+              { title: 'Brooklyn' },
+              { title: 'Bronx' },
+              { title: 'Queens' },
+              { title: 'Staten Island' }
+            ]
+          }, {
+            title: 'Buffalo'
+          }
+        ]
+      }, {
+        title: 'Oregon',
+        children: [
+          { title: 'Portland' }
+        ]
+      }, {
+        title: 'California',
+        children: [
+          { title: 'Los Angeles' },
+          { title: 'San Francisco' }
+        ]
+      }
+    ];
   }
 }
