@@ -68,13 +68,22 @@ export class TreeView {
   handleDataSource(event: string, nodes: NodeModel[]) {
     // this.taskQueue.queueTask(() => {
       this.log.debug('data source', event, nodes);
+      let customEvent: CustomEvent;
       switch (event) {
+        case 'collapsed':
+          customEvent = DOM.createCustomEvent('collapsed', { bubbles: true, detail: { nodes } });
+          this.element.dispatchEvent(customEvent);
+          break;
+        case 'expanded':
+          customEvent = DOM.createCustomEvent('expanded', { bubbles: true, detail: { nodes } });
+          this.element.dispatchEvent(customEvent);
+          break;
         case 'loaded':
           this.nodes = nodes;
           break;
         case 'selectionChanged':
-          const event = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes } });
-          this.element.dispatchEvent(event);
+          customEvent = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes } });
+          this.element.dispatchEvent(customEvent);
           break;
       }
     // });
