@@ -24,8 +24,13 @@ export class LazyLoad {
       Promise.all([
         this.tree.dataSource.selectNodes(californiaCities),
         // this.tree.dataSource.selectNodes([nodes[1].children[1], californiaCities[1], newYorkCityDistricts[2], newYorkCityDistricts[3]])
-        this.tree.dataSource.selectNodes([californiaCities[1], newYorkCityDistricts[2], newYorkCityDistricts[3]])
+        this.tree.dataSource.selectNodes([
+          { title: 'Buffalo', parent: { title: 'New York' } },
+          californiaCities[1], newYorkCityDistricts[2],
+          newYorkCityDistricts[3]
+        ])
       ]).then(() => {
+        this.log.debug('after select', this.tree.dataSource.selectedNodes.length);
         this.tree.dataSource.selectedNodes.forEach(node => {
           const element = node.payload.title.replace(/ /g, '').replace(/\//g, '');
           this.log.debug('el', element, this[element]);
@@ -69,8 +74,9 @@ export class LazyLoad {
       title: 'New York City',
       children: () => {
         return new Promise((resolve, reject) => {
-          window.setTimeout(function() {
+          window.setTimeout(() => {
             resolve(newYorkCityDistricts);
+            this.log.debug('NewYork City districts resolved', californiaCities);
           }, 500);
         });
       }
@@ -92,8 +98,9 @@ export class LazyLoad {
         // ]
         children: () => {
           return new Promise(resolve => {
-            window.setTimeout(function() {
+            window.setTimeout(() => {
               resolve([newYorkCity, { title: 'Buffalo' }]);
+              this.log.debug('NewYork resolved', californiaCities);
             }, 500);
           });
         }

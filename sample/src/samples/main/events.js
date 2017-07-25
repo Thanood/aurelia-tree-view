@@ -46,16 +46,18 @@ export class Events {
     }
 
   onCollapsed(e) {
-    this.logger.log(`node collapsed: ${e.detail.node.payload.title}`);
+    let titles = e.detail.nodes.map(node => node.payload.title).join(', ');
+    this.logger.log(`node collapsed: ${titles}`);
   }
 
   onExpanded(e) {
-      console.log('[sample] events - ', e);
-    this.logger.log(`node expanded: ${e.detail.node.payload.title}`);
+    let titles = e.detail.nodes.map(node => node.payload.title).join(', ');
+    this.logger.log(`node expanded: ${titles}`);
   }
 
   onFocus(e) {
-    this.logger.log(`node focused: ${e.detail.node.title}`);
+    let titles = e.detail.nodes.map(node => node.payload.title).join(', ');
+    this.logger.log(`node focused: ${titles}`);
   }
 
   onSelect(e) {
