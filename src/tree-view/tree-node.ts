@@ -1,7 +1,6 @@
 import { computedFrom, createOverrideContext } from 'aurelia-binding';
 import { inject, Container } from 'aurelia-dependency-injection';
 import { getLogger, Logger } from 'aurelia-logging';
-import { DOM } from 'aurelia-pal';
 import { TaskQueue } from 'aurelia-task-queue';
 import { bindable, ViewCompiler, ViewResources, ViewSlot } from 'aurelia-templating';
 import { NodeModel } from './node-model';
@@ -16,14 +15,13 @@ export class TreeNode {
 
   @bindable() model: NodeModel;
 
-  constructor(private element: Element, private viewCompiler: ViewCompiler, private viewResources: ViewResources, private container: Container, private taskQueue: TaskQueue) {
+  constructor(public element: Element, private viewCompiler: ViewCompiler, private viewResources: ViewResources, private container: Container, private taskQueue: TaskQueue) {
     this.isSelected = false;
     this.log = getLogger('aurelia-tree-view/tree-node');
     this.viewSlot = null;
   }
 
   attached() {
-    // this.log.debug('attached called');
     this.updateTemplate();
   }
 
@@ -49,24 +47,23 @@ export class TreeNode {
   }
 
   toggleExpanded(e: MouseEvent): Promise<void> {
-    // TODO: only change this using a store
     let promise: Promise<void>;
-    if (this.model.isExpanded) {
-      promise = this.model.collapse().then(() => {
-        const event = DOM.createCustomEvent('collapsed', { bubbles: true, detail: { node: this.model } });
-        this.element.dispatchEvent(event);
+    if (this.model) {
+      promise = new Promise(resolve => {
+        this.taskQueue.queueTask(() => {
+          let promises: Promise<void>[] = [];
+          if (this.model.isExpanded) {
+            promises.push(this.model.dataSourceApi.collapseNode(this.model));
+          } else {
+            promises.push(this.model.dataSourceApi.expandNode(this.model));
+          }
+          Promise.all(promises).then(() => {
+            resolve();
+          });
+        });
       });
     } else {
-      promise = this.model.expand().then(() => {
-        const event = DOM.createCustomEvent('expanded', { bubbles: true, detail: { node: this.model } });
-        this.element.dispatchEvent(event);
-      });
-    }
-    const processChildren = (<any>e)[`${this.model.dataSourceApi.settings.processChildrenKey}Key`];
-    if (this.model && processChildren) {
-      promise = promise.then(() => {
-        this.model.dataSourceApi.expandNodeAndChildren(this.model);
-      });
+      promise = Promise.reject(new Error('no tree-node model'));
     }
     return promise;
   }
