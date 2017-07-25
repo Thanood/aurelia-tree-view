@@ -111,18 +111,19 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                 }
                 if (!_this.settings.multiSelect) {
                 }
-                _this.taskQueue.queueTask(function () {
-                    n.isSelected = isSelected;
-                    if (!_this.settings.multiSelect) {
-                        // n.suspendEvents = false;
-                        n.isFocused = true;
-                    }
-                });
-                // n.isSelected = isSelected;
-                // if (!this.settings.multiSelect) {
-                //   // n.suspendEvents = false;
-                //   n.isFocused = true;
-                // }
+                // doesn't help :-(
+                // this.taskQueue.queueTask(() => {
+                //   n.isSelected = isSelected;
+                //   if (!this.settings.multiSelect) {
+                //     // n.suspendEvents = false;
+                //     n.isFocused = true;
+                //   }
+                // });
+                n.isSelected = isSelected;
+                if (!_this.settings.multiSelect) {
+                    // n.suspendEvents = false;
+                    n.isFocused = true;
+                }
                 if (expandPath && node.parent) {
                     var path = _this.getPath(node);
                     _this.expandPath(path);
