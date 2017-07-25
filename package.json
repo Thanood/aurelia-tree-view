@@ -13,7 +13,7 @@
     "lint": "cross-env tslint --project tsconfig.json",
     "pretest": "cross-env npm run lint",
     "test": "cross-env tsc && karma start --single-run",
-    "test-watch": "concurrently \"./node_modules/.bin/tsc --watch\" \"./node_modules/.bin/karma start\"",
+    "test-watch": "concurrently -p name --prefix-colors bgBlue.bold,bgMagenta.bold --names watch-tsc,karma \"./node_modules/.bin/tsc --watch\" \"./node_modules/.bin/karma start\"",
     "prebuild:amd": "cross-env rimraf dist/amd && node-sass src --output dist/amd && postcss --use autoprefixer dist/amd/*.css -d dist/amd",
     "build:amd": "cross-env tsc --project tsconfig.build.json --outDir dist/amd --module amd",
     "postbuild:amd": "cross-env copyfiles --up 1 src/**/*.html src/**/*.css dist/amd",
@@ -27,7 +27,7 @@
     "build:system": "cross-env tsc --project tsconfig.build.json --outDir dist/system --module system",
     "postbuild:system": "cross-env copyfiles --up 1 src/**/*.html src/**/*.css dist/system",
     "prebuild": "cross-env rimraf dist",
-    "build": "concurrently \"npm run build:amd\" \"npm run build:commonjs\" \"npm run build:es2015\" \"npm run build:system\"",
+    "build": "concurrently -p name --prefix-colors bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgYellow.bold --names amd,commonjs,es2015,systemjs \"npm run build:amd\" \"npm run build:commonjs\" \"npm run build:es2015\" \"npm run build:system\"",
 
     "prewatch:system": "cross-env rimraf devbuild && npm run build:scss && npm run build:html",
     "watch:system": "cross-env tsc --watch --project tsconfig.build.json --outDir devbuild/system --module system --inlineSources --inlineSourceMap",
@@ -36,7 +36,7 @@
     "watch:scss": "cross-env chokidar \"src/**/*.scss\" -c \"npm run build:scss\"",
     "watch:html": "cross-env chokidar \"src/**/*.html\" -c \"npm run build:html\"",
     "serve": "cross-env lite-server -c sample/build/bs-config.js",
-    "start": "concurrently \"npm run watch:system\" \"npm run watch:html\" \"npm run watch:scss\" \"npm run serve\""
+    "start": "concurrently -p name --prefix-colors bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgYellow.bold --names watch-tsc,watch-html,watch-scss,serve \"npm run watch:system\" \"npm run watch:html\" \"npm run watch:scss\" \"npm run serve\""
   },
   "repository": {
     "type": "git",
@@ -125,7 +125,7 @@
     "requirejs-text": "^2.0.15",
     "rimraf": "^2.5.4",
     "tslint": "^3.15.1",
-    "typescript": "^2.1.4"
+    "typescript": "^2.4.2"
   },
   "aurelia": {
     "build": {
