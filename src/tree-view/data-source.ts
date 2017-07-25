@@ -141,14 +141,6 @@ export class DataSource {
         // FIXME: correctly, this would be "if this select came from a mouse event"
         // n.suspendEvents = true;
       }
-      // doesn't help :-(
-      // this.taskQueue.queueTask(() => {
-      //   n.isSelected = isSelected;
-      //   if (!this.settings.multiSelect) {
-      //     // n.suspendEvents = false;
-      //     n.isFocused = true;
-      //   }
-      // });
 
       n.isSelected = isSelected;
       if (!this.settings.multiSelect) {
@@ -217,7 +209,8 @@ export class DataSource {
   }
 
   collapseNode(node: NodeModel): Promise<void> {
-    return node.collapse();
+    return node.collapse()
+    .then(() => this.notifySubscribers('collapsed', [node]));
   }
 
   deselectNode(node: NodeModel, deselectChildren: boolean = false, recurse: boolean = false): Promise<void> {
@@ -229,7 +222,8 @@ export class DataSource {
   }
 
   expandNode(node: NodeModel): Promise<void> {
-    return node.expand();
+    return node.expand()
+    .then(() => this.notifySubscribers('expanded', [node]));
   }
 
   expandNodeAndChildren(node: NodeModel): Promise<void> {
