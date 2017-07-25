@@ -57,13 +57,22 @@ var TreeView = (function () {
     TreeView.prototype.handleDataSource = function (event, nodes) {
         // this.taskQueue.queueTask(() => {
         this.log.debug('data source', event, nodes);
+        var customEvent;
         switch (event) {
+            case 'collapsed':
+                customEvent = DOM.createCustomEvent('collapsed', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
+                break;
+            case 'expanded':
+                customEvent = DOM.createCustomEvent('expanded', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
+                break;
             case 'loaded':
                 this.nodes = nodes;
                 break;
             case 'selectionChanged':
-                var event_1 = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
-                this.element.dispatchEvent(event_1);
+                customEvent = DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
                 break;
         }
         // });
@@ -84,27 +93,27 @@ var TreeView = (function () {
             this.taskQueue.queueTask(function () { _this.nodes = temp_1; });
         }
     };
+    __decorate([
+        bindable()
+    ], TreeView.prototype, "compareEquality", void 0);
+    __decorate([
+        bindable()
+    ], TreeView.prototype, "expandOnFocus", void 0);
+    __decorate([
+        bindable()
+    ], TreeView.prototype, "multiSelect", void 0);
+    __decorate([
+        bindable()
+    ], TreeView.prototype, "processChildrenKey", void 0);
+    __decorate([
+        bindable()
+    ], TreeView.prototype, "processChildrenRecursiveKey", void 0);
+    __decorate([
+        child('tree-node-template')
+    ], TreeView.prototype, "templateElement", void 0);
+    TreeView = __decorate([
+        inject(Element, TaskQueue)
+    ], TreeView);
     return TreeView;
 }());
-__decorate([
-    bindable()
-], TreeView.prototype, "compareEquality", void 0);
-__decorate([
-    bindable()
-], TreeView.prototype, "expandOnFocus", void 0);
-__decorate([
-    bindable()
-], TreeView.prototype, "multiSelect", void 0);
-__decorate([
-    bindable()
-], TreeView.prototype, "processChildrenKey", void 0);
-__decorate([
-    bindable()
-], TreeView.prototype, "processChildrenRecursiveKey", void 0);
-__decorate([
-    child('tree-node-template')
-], TreeView.prototype, "templateElement", void 0);
-TreeView = __decorate([
-    inject(Element, TaskQueue)
-], TreeView);
 export { TreeView };

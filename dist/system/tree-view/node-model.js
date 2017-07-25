@@ -98,14 +98,14 @@ System.register(["aurelia-binding", "aurelia-logging"], function (exports_1, con
                         });
                     }
                 };
+                __decorate([
+                    aurelia_binding_1.observable()
+                ], NodeModel.prototype, "isSelected", void 0);
+                __decorate([
+                    aurelia_binding_1.computedFrom('children')
+                ], NodeModel.prototype, "hasChildren", null);
                 return NodeModel;
             }());
-            __decorate([
-                aurelia_binding_1.observable()
-            ], NodeModel.prototype, "isSelected", void 0);
-            __decorate([
-                aurelia_binding_1.computedFrom('children')
-            ], NodeModel.prototype, "hasChildren", null);
             exports_1("NodeModel", NodeModel);
         }
     };

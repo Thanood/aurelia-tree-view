@@ -4,7 +4,7 @@ import { TaskQueue } from 'aurelia-task-queue';
 import { ViewCompiler, ViewResources, ViewSlot } from 'aurelia-templating';
 import { NodeModel } from './node-model';
 export declare class TreeNode {
-    private element;
+    element: Element;
     private viewCompiler;
     private viewResources;
     private container;

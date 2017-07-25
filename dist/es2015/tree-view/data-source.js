@@ -13,10 +13,16 @@ var DataSourceApiImplementation = (function () {
         this.dataSource = dataSource;
         this.settings = this.dataSource.settings;
     }
+    DataSourceApiImplementation.prototype.collapseNode = function (node) {
+        return this.dataSource.collapseNode(node);
+    };
     DataSourceApiImplementation.prototype.deselectNode = function (node, deselectChildren, recurse) {
         return this.dataSource.deselectNode(node, deselectChildren, recurse);
     };
     ;
+    DataSourceApiImplementation.prototype.expandNode = function (node) {
+        return this.dataSource.expandNode(node);
+    };
     DataSourceApiImplementation.prototype.expandNodeAndChildren = function (node) {
         return this.dataSource.expandNodeAndChildren(node);
     };
@@ -112,15 +118,9 @@ var DataSource = (function () {
                 }
             }
             if (!_this.settings.multiSelect) {
+                // FIXME: correctly, this would be "if this select came from a mouse event"
+                // n.suspendEvents = true;
             }
-            // doesn't help :-(
-            // this.taskQueue.queueTask(() => {
-            //   n.isSelected = isSelected;
-            //   if (!this.settings.multiSelect) {
-            //     // n.suspendEvents = false;
-            //     n.isFocused = true;
-            //   }
-            // });
             n.isSelected = isSelected;
             if (!_this.settings.multiSelect) {
                 // n.suspendEvents = false;
@@ -186,6 +186,11 @@ var DataSource = (function () {
             throw new Error('invalid node');
         }
     };
+    DataSource.prototype.collapseNode = function (node) {
+        var _this = this;
+        return node.collapse()
+            .then(function () { return _this.notifySubscribers('collapsed', [node]); });
+    };
     DataSource.prototype.deselectNode = function (node, deselectChildren, recurse) {
         if (deselectChildren === void 0) { deselectChildren = false; }
         if (recurse === void 0) { recurse = false; }
@@ -196,7 +201,9 @@ var DataSource = (function () {
         return Promise.all(this.nodes.map(function (node) { return _this.expandNodeAndChildren(node); })).then(function () { });
     };
     DataSource.prototype.expandNode = function (node) {
-        return node.expand();
+        var _this = this;
+        return node.expand()
+            .then(function () { return _this.notifySubscribers('expanded', [node]); });
     };
     DataSource.prototype.expandNodeAndChildren = function (node) {
         var _this = this;
@@ -315,7 +322,7 @@ var DataSource = (function () {
         var mutableNodes = nodes.slice();
         var rest = mutableNodes.splice(0, 1);
         return rest.length > 0
-            ? this.selectNode(rest[0]).then(function () { _this.selectNodes(mutableNodes); })
+            ? this.selectNode(rest[0]).then(function () { return _this.selectNodes(mutableNodes); })
             : Promise.resolve();
     };
     DataSource.prototype.settingsChanged = function (newValue) {
@@ -333,9 +340,9 @@ var DataSource = (function () {
             }
         };
     };
+    __decorate([
+        observable()
+    ], DataSource.prototype, "settings", void 0);
     return DataSource;
 }());
 export { DataSource };
-__decorate([
-    observable()
-], DataSource.prototype, "settings", void 0);

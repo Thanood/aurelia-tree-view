@@ -1,4 +1,4 @@
-System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-logging", "aurelia-pal", "aurelia-task-queue", "aurelia-templating"], function (exports_1, context_1) {
+System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-logging", "aurelia-task-queue", "aurelia-templating"], function (exports_1, context_1) {
     "use strict";
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -7,7 +7,7 @@ System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-log
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     };
     var __moduleName = context_1 && context_1.id;
-    var aurelia_binding_1, aurelia_dependency_injection_1, aurelia_logging_1, aurelia_pal_1, aurelia_task_queue_1, aurelia_templating_1, TreeNode;
+    var aurelia_binding_1, aurelia_dependency_injection_1, aurelia_logging_1, aurelia_task_queue_1, aurelia_templating_1, TreeNode;
     return {
         setters: [
             function (aurelia_binding_1_1) {
@@ -18,9 +18,6 @@ System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-log
             },
             function (aurelia_logging_1_1) {
                 aurelia_logging_1 = aurelia_logging_1_1;
-            },
-            function (aurelia_pal_1_1) {
-                aurelia_pal_1 = aurelia_pal_1_1;
             },
             function (aurelia_task_queue_1_1) {
                 aurelia_task_queue_1 = aurelia_task_queue_1_1;
@@ -42,7 +39,6 @@ System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-log
                     this.viewSlot = null;
                 }
                 TreeNode.prototype.attached = function () {
-                    // this.log.debug('attached called');
                     this.updateTemplate();
                 };
                 Object.defineProperty(TreeNode.prototype, "hasTemplate", {
@@ -69,25 +65,25 @@ System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-log
                 };
                 TreeNode.prototype.toggleExpanded = function (e) {
                     var _this = this;
-                    // TODO: only change this using a store
                     var promise;
-                    if (this.model.isExpanded) {
-                        promise = this.model.collapse().then(function () {
-                            var event = aurelia_pal_1.DOM.createCustomEvent('collapsed', { bubbles: true, detail: { node: _this.model } });
-                            _this.element.dispatchEvent(event);
+                    if (this.model) {
+                        promise = new Promise(function (resolve) {
+                            _this.taskQueue.queueTask(function () {
+                                var promises = [];
+                                if (_this.model.isExpanded) {
+                                    promises.push(_this.model.dataSourceApi.collapseNode(_this.model));
+                                }
+                                else {
+                                    promises.push(_this.model.dataSourceApi.expandNode(_this.model));
+                                }
+                                Promise.all(promises).then(function () {
+                                    resolve();
+                                });
+                            });
                         });
                     }
                     else {
-                        promise = this.model.expand().then(function () {
-                            var event = aurelia_pal_1.DOM.createCustomEvent('expanded', { bubbles: true, detail: { node: _this.model } });
-                            _this.element.dispatchEvent(event);
-                        });
-                    }
-                    var processChildren = e[this.model.dataSourceApi.settings.processChildrenKey + "Key"];
-                    if (this.model && processChildren) {
-                        promise = promise.then(function () {
-                            _this.model.dataSourceApi.expandNodeAndChildren(_this.model);
-                        });
+                        promise = Promise.reject(new Error('no tree-node model'));
                     }
                     return promise;
                 };
@@ -140,17 +136,17 @@ System.register(["aurelia-binding", "aurelia-dependency-injection", "aurelia-log
                         }
                     }
                 };
+                __decorate([
+                    aurelia_templating_1.bindable()
+                ], TreeNode.prototype, "model", void 0);
+                __decorate([
+                    aurelia_binding_1.computedFrom('model.dataSourceApi.settings')
+                ], TreeNode.prototype, "hasTemplate", null);
+                TreeNode = __decorate([
+                    aurelia_dependency_injection_1.inject(Element, aurelia_templating_1.ViewCompiler, aurelia_templating_1.ViewResources, aurelia_dependency_injection_1.Container, aurelia_task_queue_1.TaskQueue)
+                ], TreeNode);
                 return TreeNode;
             }());
-            __decorate([
-                aurelia_templating_1.bindable()
-            ], TreeNode.prototype, "model", void 0);
-            __decorate([
-                aurelia_binding_1.computedFrom('model.dataSourceApi.settings')
-            ], TreeNode.prototype, "hasTemplate", null);
-            TreeNode = __decorate([
-                aurelia_dependency_injection_1.inject(Element, aurelia_templating_1.ViewCompiler, aurelia_templating_1.ViewResources, aurelia_dependency_injection_1.Container, aurelia_task_queue_1.TaskQueue)
-            ], TreeNode);
             exports_1("TreeNode", TreeNode);
         }
     };

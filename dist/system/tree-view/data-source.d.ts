@@ -4,7 +4,9 @@ import { TaskQueue } from 'aurelia-task-queue';
 import { NodeModel } from './node-model';
 import { TreeViewSettings } from './settings';
 export interface DataSourceApi {
+    collapseNode(node: NodeModel): Promise<void>;
     deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void>;
+    expandNode(node: NodeModel): Promise<void>;
     expandNodeAndChildren(node: NodeModel): Promise<void>;
     focusNode(node: NodeModel): void;
     selectNode(node: NodeModel, selectChildren?: boolean, recurse?: boolean): Promise<void>;
@@ -27,6 +29,7 @@ export declare class DataSource {
     private setNodeSelection(node, isSelected, setChildren?, recurse?);
     private validateNode(node);
     private visitNode(item, parent);
+    collapseNode(node: NodeModel): Promise<void>;
     deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void>;
     expandAllNodes(): Promise<void>;
     expandNode(node: NodeModel): Promise<void>;

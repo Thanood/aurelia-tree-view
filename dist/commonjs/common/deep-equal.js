@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // source: http://stackoverflow.com/questions/25456013/javascript-deepequal-comparison
 function deepEqual(x, y) {
     if ((typeof x == 'object' && x != null) && (typeof y == 'object' && y != null)) {

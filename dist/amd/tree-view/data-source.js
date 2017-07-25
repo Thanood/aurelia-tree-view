@@ -6,15 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-model"], function (require, exports, aurelia_binding_1, aurelia_logging_1, node_model_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var DataSourceApiImplementation = (function () {
         function DataSourceApiImplementation(dataSource) {
             this.dataSource = dataSource;
             this.settings = this.dataSource.settings;
         }
+        DataSourceApiImplementation.prototype.collapseNode = function (node) {
+            return this.dataSource.collapseNode(node);
+        };
         DataSourceApiImplementation.prototype.deselectNode = function (node, deselectChildren, recurse) {
             return this.dataSource.deselectNode(node, deselectChildren, recurse);
         };
         ;
+        DataSourceApiImplementation.prototype.expandNode = function (node) {
+            return this.dataSource.expandNode(node);
+        };
         DataSourceApiImplementation.prototype.expandNodeAndChildren = function (node) {
             return this.dataSource.expandNodeAndChildren(node);
         };
@@ -110,15 +117,9 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                     }
                 }
                 if (!_this.settings.multiSelect) {
+                    // FIXME: correctly, this would be "if this select came from a mouse event"
+                    // n.suspendEvents = true;
                 }
-                // doesn't help :-(
-                // this.taskQueue.queueTask(() => {
-                //   n.isSelected = isSelected;
-                //   if (!this.settings.multiSelect) {
-                //     // n.suspendEvents = false;
-                //     n.isFocused = true;
-                //   }
-                // });
                 n.isSelected = isSelected;
                 if (!_this.settings.multiSelect) {
                     // n.suspendEvents = false;
@@ -184,6 +185,11 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                 throw new Error('invalid node');
             }
         };
+        DataSource.prototype.collapseNode = function (node) {
+            var _this = this;
+            return node.collapse()
+                .then(function () { return _this.notifySubscribers('collapsed', [node]); });
+        };
         DataSource.prototype.deselectNode = function (node, deselectChildren, recurse) {
             if (deselectChildren === void 0) { deselectChildren = false; }
             if (recurse === void 0) { recurse = false; }
@@ -194,7 +200,9 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
             return Promise.all(this.nodes.map(function (node) { return _this.expandNodeAndChildren(node); })).then(function () { });
         };
         DataSource.prototype.expandNode = function (node) {
-            return node.expand();
+            var _this = this;
+            return node.expand()
+                .then(function () { return _this.notifySubscribers('expanded', [node]); });
         };
         DataSource.prototype.expandNodeAndChildren = function (node) {
             var _this = this;
@@ -313,7 +321,7 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
             var mutableNodes = nodes.slice();
             var rest = mutableNodes.splice(0, 1);
             return rest.length > 0
-                ? this.selectNode(rest[0]).then(function () { _this.selectNodes(mutableNodes); })
+                ? this.selectNode(rest[0]).then(function () { return _this.selectNodes(mutableNodes); })
                 : Promise.resolve();
         };
         DataSource.prototype.settingsChanged = function (newValue) {
@@ -331,10 +339,10 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging", "./node-mode
                 }
             };
         };
+        __decorate([
+            aurelia_binding_1.observable()
+        ], DataSource.prototype, "settings", void 0);
         return DataSource;
     }());
-    __decorate([
-        aurelia_binding_1.observable()
-    ], DataSource.prototype, "settings", void 0);
     exports.DataSource = DataSource;
 });

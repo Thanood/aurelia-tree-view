@@ -5,6 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var aurelia_dependency_injection_1 = require("aurelia-dependency-injection");
 var aurelia_logging_1 = require("aurelia-logging");
 var aurelia_task_queue_1 = require("aurelia-task-queue");
@@ -58,13 +59,22 @@ var TreeView = (function () {
     TreeView.prototype.handleDataSource = function (event, nodes) {
         // this.taskQueue.queueTask(() => {
         this.log.debug('data source', event, nodes);
+        var customEvent;
         switch (event) {
+            case 'collapsed':
+                customEvent = aurelia_pal_1.DOM.createCustomEvent('collapsed', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
+                break;
+            case 'expanded':
+                customEvent = aurelia_pal_1.DOM.createCustomEvent('expanded', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
+                break;
             case 'loaded':
                 this.nodes = nodes;
                 break;
             case 'selectionChanged':
-                var event_1 = aurelia_pal_1.DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
-                this.element.dispatchEvent(event_1);
+                customEvent = aurelia_pal_1.DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
+                this.element.dispatchEvent(customEvent);
                 break;
         }
         // });
@@ -85,27 +95,27 @@ var TreeView = (function () {
             this.taskQueue.queueTask(function () { _this.nodes = temp_1; });
         }
     };
+    __decorate([
+        aurelia_templating_1.bindable()
+    ], TreeView.prototype, "compareEquality", void 0);
+    __decorate([
+        aurelia_templating_1.bindable()
+    ], TreeView.prototype, "expandOnFocus", void 0);
+    __decorate([
+        aurelia_templating_1.bindable()
+    ], TreeView.prototype, "multiSelect", void 0);
+    __decorate([
+        aurelia_templating_1.bindable()
+    ], TreeView.prototype, "processChildrenKey", void 0);
+    __decorate([
+        aurelia_templating_1.bindable()
+    ], TreeView.prototype, "processChildrenRecursiveKey", void 0);
+    __decorate([
+        aurelia_templating_1.child('tree-node-template')
+    ], TreeView.prototype, "templateElement", void 0);
+    TreeView = __decorate([
+        aurelia_dependency_injection_1.inject(Element, aurelia_task_queue_1.TaskQueue)
+    ], TreeView);
     return TreeView;
 }());
-__decorate([
-    aurelia_templating_1.bindable()
-], TreeView.prototype, "compareEquality", void 0);
-__decorate([
-    aurelia_templating_1.bindable()
-], TreeView.prototype, "expandOnFocus", void 0);
-__decorate([
-    aurelia_templating_1.bindable()
-], TreeView.prototype, "multiSelect", void 0);
-__decorate([
-    aurelia_templating_1.bindable()
-], TreeView.prototype, "processChildrenKey", void 0);
-__decorate([
-    aurelia_templating_1.bindable()
-], TreeView.prototype, "processChildrenRecursiveKey", void 0);
-__decorate([
-    aurelia_templating_1.child('tree-node-template')
-], TreeView.prototype, "templateElement", void 0);
-TreeView = __decorate([
-    aurelia_dependency_injection_1.inject(Element, aurelia_task_queue_1.TaskQueue)
-], TreeView);
 exports.TreeView = TreeView;

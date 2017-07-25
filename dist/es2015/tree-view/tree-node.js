@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { computedFrom, createOverrideContext } from 'aurelia-binding';
 import { inject, Container } from 'aurelia-dependency-injection';
 import { getLogger } from 'aurelia-logging';
-import { DOM } from 'aurelia-pal';
 import { TaskQueue } from 'aurelia-task-queue';
 import { bindable, ViewCompiler, ViewResources, ViewSlot } from 'aurelia-templating';
 var TreeNode = (function () {
@@ -22,7 +21,6 @@ var TreeNode = (function () {
         this.viewSlot = null;
     }
     TreeNode.prototype.attached = function () {
-        // this.log.debug('attached called');
         this.updateTemplate();
     };
     Object.defineProperty(TreeNode.prototype, "hasTemplate", {
@@ -49,25 +47,25 @@ var TreeNode = (function () {
     };
     TreeNode.prototype.toggleExpanded = function (e) {
         var _this = this;
-        // TODO: only change this using a store
         var promise;
-        if (this.model.isExpanded) {
-            promise = this.model.collapse().then(function () {
-                var event = DOM.createCustomEvent('collapsed', { bubbles: true, detail: { node: _this.model } });
-                _this.element.dispatchEvent(event);
+        if (this.model) {
+            promise = new Promise(function (resolve) {
+                _this.taskQueue.queueTask(function () {
+                    var promises = [];
+                    if (_this.model.isExpanded) {
+                        promises.push(_this.model.dataSourceApi.collapseNode(_this.model));
+                    }
+                    else {
+                        promises.push(_this.model.dataSourceApi.expandNode(_this.model));
+                    }
+                    Promise.all(promises).then(function () {
+                        resolve();
+                    });
+                });
             });
         }
         else {
-            promise = this.model.expand().then(function () {
-                var event = DOM.createCustomEvent('expanded', { bubbles: true, detail: { node: _this.model } });
-                _this.element.dispatchEvent(event);
-            });
-        }
-        var processChildren = e[this.model.dataSourceApi.settings.processChildrenKey + "Key"];
-        if (this.model && processChildren) {
-            promise = promise.then(function () {
-                _this.model.dataSourceApi.expandNodeAndChildren(_this.model);
-            });
+            promise = Promise.reject(new Error('no tree-node model'));
         }
         return promise;
     };
@@ -120,15 +118,15 @@ var TreeNode = (function () {
             }
         }
     };
+    __decorate([
+        bindable()
+    ], TreeNode.prototype, "model", void 0);
+    __decorate([
+        computedFrom('model.dataSourceApi.settings')
+    ], TreeNode.prototype, "hasTemplate", null);
+    TreeNode = __decorate([
+        inject(Element, ViewCompiler, ViewResources, Container, TaskQueue)
+    ], TreeNode);
     return TreeNode;
 }());
-__decorate([
-    bindable()
-], TreeNode.prototype, "model", void 0);
-__decorate([
-    computedFrom('model.dataSourceApi.settings')
-], TreeNode.prototype, "hasTemplate", null);
-TreeNode = __decorate([
-    inject(Element, ViewCompiler, ViewResources, Container, TaskQueue)
-], TreeNode);
 export { TreeNode };

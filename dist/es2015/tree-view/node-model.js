@@ -86,12 +86,12 @@ var NodeModel = (function () {
             });
         }
     };
+    __decorate([
+        observable()
+    ], NodeModel.prototype, "isSelected", void 0);
+    __decorate([
+        computedFrom('children')
+    ], NodeModel.prototype, "hasChildren", null);
     return NodeModel;
 }());
 export { NodeModel };
-__decorate([
-    observable()
-], NodeModel.prototype, "isSelected", void 0);
-__decorate([
-    computedFrom('children')
-], NodeModel.prototype, "hasChildren", null);

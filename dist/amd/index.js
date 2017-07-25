@@ -3,6 +3,7 @@ define(["require", "exports", "aurelia-pal", "./tree-view/tree-node", "./tree-vi
     function __export(m) {
         for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
     }
+    Object.defineProperty(exports, "__esModule", { value: true });
     function configure(aurelia) {
         aurelia.globalResources([
             aurelia_pal_1.PLATFORM.moduleName('./tree-view/tree-node'),

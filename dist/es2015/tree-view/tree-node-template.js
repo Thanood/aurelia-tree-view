@@ -13,21 +13,21 @@ var TreeNodeTemplate = (function () {
         this.template = targetInstruction.elementInstruction.template;
         // this.log.debug(targetInstruction);
     }
+    __decorate([
+        bindable()
+    ], TreeNodeTemplate.prototype, "model", void 0);
+    TreeNodeTemplate = __decorate([
+        customElement('tree-node-template'),
+        noView(),
+        processContent(function (compiler, resources, element, instruction) {
+            var html = element.innerHTML;
+            if (html !== '') {
+                instruction.template = html;
+            }
+            element.innerHTML = '';
+        }),
+        inject(TargetInstruction)
+    ], TreeNodeTemplate);
     return TreeNodeTemplate;
 }());
-__decorate([
-    bindable()
-], TreeNodeTemplate.prototype, "model", void 0);
-TreeNodeTemplate = __decorate([
-    customElement('tree-node-template'),
-    noView(),
-    processContent(function (compiler, resources, element, instruction) {
-        var html = element.innerHTML;
-        if (html !== '') {
-            instruction.template = html;
-        }
-        element.innerHTML = '';
-    }),
-    inject(TargetInstruction)
-], TreeNodeTemplate);
 export { TreeNodeTemplate };

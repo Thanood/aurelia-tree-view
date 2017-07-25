@@ -6,28 +6,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging", "aurelia-templating"], function (require, exports, aurelia_dependency_injection_1, aurelia_logging_1, aurelia_templating_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var TreeNodeTemplate = (function () {
         function TreeNodeTemplate(targetInstruction) {
             this.log = aurelia_logging_1.getLogger('aurelia-tree-view/tree-node-template');
             this.template = targetInstruction.elementInstruction.template;
             // this.log.debug(targetInstruction);
         }
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeNodeTemplate.prototype, "model", void 0);
+        TreeNodeTemplate = __decorate([
+            aurelia_templating_1.customElement('tree-node-template'),
+            aurelia_templating_1.noView(),
+            aurelia_templating_1.processContent(function (compiler, resources, element, instruction) {
+                var html = element.innerHTML;
+                if (html !== '') {
+                    instruction.template = html;
+                }
+                element.innerHTML = '';
+            }),
+            aurelia_dependency_injection_1.inject(aurelia_templating_1.TargetInstruction)
+        ], TreeNodeTemplate);
         return TreeNodeTemplate;
     }());
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeNodeTemplate.prototype, "model", void 0);
-    TreeNodeTemplate = __decorate([
-        aurelia_templating_1.customElement('tree-node-template'),
-        aurelia_templating_1.noView(),
-        aurelia_templating_1.processContent(function (compiler, resources, element, instruction) {
-            var html = element.innerHTML;
-            if (html !== '') {
-                instruction.template = html;
-            }
-            element.innerHTML = '';
-        }),
-        aurelia_dependency_injection_1.inject(aurelia_templating_1.TargetInstruction)
-    ], TreeNodeTemplate);
     exports.TreeNodeTemplate = TreeNodeTemplate;
 });

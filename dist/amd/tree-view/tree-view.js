@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging", "aurelia-task-queue", "aurelia-pal", "aurelia-templating", "./data-source"], function (require, exports, aurelia_dependency_injection_1, aurelia_logging_1, aurelia_task_queue_1, aurelia_pal_1, aurelia_templating_1, data_source_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var TreeView = (function () {
         function TreeView(element, taskQueue) {
             this.element = element;
@@ -53,13 +54,22 @@ define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging",
         TreeView.prototype.handleDataSource = function (event, nodes) {
             // this.taskQueue.queueTask(() => {
             this.log.debug('data source', event, nodes);
+            var customEvent;
             switch (event) {
+                case 'collapsed':
+                    customEvent = aurelia_pal_1.DOM.createCustomEvent('collapsed', { bubbles: true, detail: { nodes: nodes } });
+                    this.element.dispatchEvent(customEvent);
+                    break;
+                case 'expanded':
+                    customEvent = aurelia_pal_1.DOM.createCustomEvent('expanded', { bubbles: true, detail: { nodes: nodes } });
+                    this.element.dispatchEvent(customEvent);
+                    break;
                 case 'loaded':
                     this.nodes = nodes;
                     break;
                 case 'selectionChanged':
-                    var event_1 = aurelia_pal_1.DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
-                    this.element.dispatchEvent(event_1);
+                    customEvent = aurelia_pal_1.DOM.createCustomEvent('selection-changed', { bubbles: true, detail: { nodes: nodes } });
+                    this.element.dispatchEvent(customEvent);
                     break;
             }
             // });
@@ -80,28 +90,28 @@ define(["require", "exports", "aurelia-dependency-injection", "aurelia-logging",
                 this.taskQueue.queueTask(function () { _this.nodes = temp_1; });
             }
         };
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeView.prototype, "compareEquality", void 0);
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeView.prototype, "expandOnFocus", void 0);
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeView.prototype, "multiSelect", void 0);
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeView.prototype, "processChildrenKey", void 0);
+        __decorate([
+            aurelia_templating_1.bindable()
+        ], TreeView.prototype, "processChildrenRecursiveKey", void 0);
+        __decorate([
+            aurelia_templating_1.child('tree-node-template')
+        ], TreeView.prototype, "templateElement", void 0);
+        TreeView = __decorate([
+            aurelia_dependency_injection_1.inject(Element, aurelia_task_queue_1.TaskQueue)
+        ], TreeView);
         return TreeView;
     }());
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeView.prototype, "compareEquality", void 0);
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeView.prototype, "expandOnFocus", void 0);
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeView.prototype, "multiSelect", void 0);
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeView.prototype, "processChildrenKey", void 0);
-    __decorate([
-        aurelia_templating_1.bindable()
-    ], TreeView.prototype, "processChildrenRecursiveKey", void 0);
-    __decorate([
-        aurelia_templating_1.child('tree-node-template')
-    ], TreeView.prototype, "templateElement", void 0);
-    TreeView = __decorate([
-        aurelia_dependency_injection_1.inject(Element, aurelia_task_queue_1.TaskQueue)
-    ], TreeView);
     exports.TreeView = TreeView;
 });

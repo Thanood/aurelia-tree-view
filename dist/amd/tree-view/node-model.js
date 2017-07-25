@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "aurelia-binding", "aurelia-logging"], function (require, exports, aurelia_binding_1, aurelia_logging_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var NodeModel = (function () {
         function NodeModel(parent, children, childrenGetter, payload) {
             this.suspendEvents = false;
@@ -86,13 +87,13 @@ define(["require", "exports", "aurelia-binding", "aurelia-logging"], function (r
                 });
             }
         };
+        __decorate([
+            aurelia_binding_1.observable()
+        ], NodeModel.prototype, "isSelected", void 0);
+        __decorate([
+            aurelia_binding_1.computedFrom('children')
+        ], NodeModel.prototype, "hasChildren", null);
         return NodeModel;
     }());
-    __decorate([
-        aurelia_binding_1.observable()
-    ], NodeModel.prototype, "isSelected", void 0);
-    __decorate([
-        aurelia_binding_1.computedFrom('children')
-    ], NodeModel.prototype, "hasChildren", null);
     exports.NodeModel = NodeModel;
 });

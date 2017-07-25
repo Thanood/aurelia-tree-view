@@ -27,23 +27,23 @@ System.register(["aurelia-dependency-injection", "aurelia-logging", "aurelia-tem
                     this.template = targetInstruction.elementInstruction.template;
                     // this.log.debug(targetInstruction);
                 }
+                __decorate([
+                    aurelia_templating_1.bindable()
+                ], TreeNodeTemplate.prototype, "model", void 0);
+                TreeNodeTemplate = __decorate([
+                    aurelia_templating_1.customElement('tree-node-template'),
+                    aurelia_templating_1.noView(),
+                    aurelia_templating_1.processContent(function (compiler, resources, element, instruction) {
+                        var html = element.innerHTML;
+                        if (html !== '') {
+                            instruction.template = html;
+                        }
+                        element.innerHTML = '';
+                    }),
+                    aurelia_dependency_injection_1.inject(aurelia_templating_1.TargetInstruction)
+                ], TreeNodeTemplate);
                 return TreeNodeTemplate;
             }());
-            __decorate([
-                aurelia_templating_1.bindable()
-            ], TreeNodeTemplate.prototype, "model", void 0);
-            TreeNodeTemplate = __decorate([
-                aurelia_templating_1.customElement('tree-node-template'),
-                aurelia_templating_1.noView(),
-                aurelia_templating_1.processContent(function (compiler, resources, element, instruction) {
-                    var html = element.innerHTML;
-                    if (html !== '') {
-                        instruction.template = html;
-                    }
-                    element.innerHTML = '';
-                }),
-                aurelia_dependency_injection_1.inject(aurelia_templating_1.TargetInstruction)
-            ], TreeNodeTemplate);
             exports_1("TreeNodeTemplate", TreeNodeTemplate);
         }
     };
