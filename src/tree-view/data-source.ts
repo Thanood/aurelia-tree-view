@@ -6,7 +6,9 @@ import { NodeModel } from './node-model';
 import { TreeViewSettings } from './settings';
 
 export interface DataSourceApi {
+  collapseNode(node: NodeModel): Promise<void>;
   deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void>;
+  expandNode(node: NodeModel): Promise<void>;
   expandNodeAndChildren(node: NodeModel): Promise<void>;
   focusNode(node: NodeModel): void;
   selectNode(node: NodeModel, selectChildren?: boolean, recurse?: boolean): Promise<void>;
@@ -20,9 +22,17 @@ class DataSourceApiImplementation implements DataSourceApi {
     this.settings = this.dataSource.settings;
   }
 
+  collapseNode(node: NodeModel): Promise<void> {
+    return this.dataSource.collapseNode(node);
+  }
+
   deselectNode(node: NodeModel, deselectChildren?: boolean, recurse?: boolean): Promise<void> {
     return this.dataSource.deselectNode(node, deselectChildren, recurse);
   };
+
+  expandNode(node: NodeModel): Promise<void> {
+    return this.dataSource.expandNode(node);
+  }
 
   expandNodeAndChildren(node: NodeModel): Promise<void> {
     return this.dataSource.expandNodeAndChildren(node);
@@ -206,6 +216,10 @@ export class DataSource {
     }
   }
 
+  collapseNode(node: NodeModel): Promise<void> {
+    return node.collapse();
+  }
+
   deselectNode(node: NodeModel, deselectChildren: boolean = false, recurse: boolean = false): Promise<void> {
     return this.setNodeSelection(node, false, deselectChildren, recurse);
   }
@@ -335,7 +349,7 @@ export class DataSource {
     const mutableNodes = [...nodes];
     const rest = mutableNodes.splice(0, 1);
     return rest.length > 0
-      ? this.selectNode(rest[0]).then(() => { this.selectNodes(mutableNodes); })
+      ? this.selectNode(rest[0]).then(() => this.selectNodes(mutableNodes))
       : Promise.resolve();
 
   }
